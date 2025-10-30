@@ -13,4 +13,7 @@ export default defineConfig({
       "@repo/shadcn-ui": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    allowedHosts: ["epiploic-temperance-unwhimperingly.ngrok-free.dev"],
+  },
 });

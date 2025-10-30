@@ -1,46 +1,21 @@
-import Campaign from "@/components/Campaign";
-import TableData from "@/components/ContactsTable";
-import { Separator } from "@/components/ui/separator";
-import { Navbar05 } from "@/components/ui/shadcn-io/navbar-05";
+import {
+  Route,
+  Routes,
+} from "react-router";
+
+import { Navbar05 } from "./components/ui/shadcn-io/navbar-05";
+import Admin from "./pages/Admin";
+import Home from "./pages/Home";
 
 function App() {
   return (
     <>
-      <Navbar05 />
+      <Navbar05 onNavItemClick={(item) => console.log(item)} />
 
-      <div className="flex justify-around items-center gap-5 mx-auto p-6 w-full max-w-4xl font-extrabold text-4xl text-balance tracking-tight scroll-m-20">
-        <div className="flex flex-col w-full">
-          <h4 className="font-semibold text-xl tracking-tight scroll-m-20">
-            Campaign
-          </h4>
-
-          <Campaign />
-        </div>
-
-        <div className="flex flex-col w-full">
-          <h4 className="font-semibold text-xl tracking-tight scroll-m-20">
-            Client
-          </h4>
-
-          <Campaign />
-        </div>
-      </div>
-
-      <Separator className="my-4" />
-
-      <h1 className="mx-auto p-6 w-full max-w-4xl font-extrabold text-4xl text-balance tracking-tight scroll-m-20">
-        Client Contacts
-      </h1>
-
-      <TableData />
-
-      <Separator className="mx-auto my-4 w-full max-w-6xl" />
-
-      <h1 className="mx-auto p-6 w-full max-w-4xl font-extrabold text-4xl text-balance tracking-tight scroll-m-20">
-        Calls
-      </h1>
-
-      <TableData />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<Admin />} />
+      </Routes>
     </>
   );
 }

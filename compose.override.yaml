@@ -1,0 +1,27 @@
+services:
+  nexus_api:
+    container_name: nexus_api_prod
+    build:
+      target: production
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=development
+    networks:
+      - nexus_network
+
+  nexus_db:
+    container_name: nexus_db_prod
+    ports: []
+
+  nexus_app:
+    container_name: nexus_app_prod
+    build:
+      target: production
+      args:
+        VITE_BACKEND_URL: https://epiploic-temperance-unwhimperingly.ngrok-free.dev/api
+    ports:
+      - "4173:4173"
+    networks:
+      - nexus_network

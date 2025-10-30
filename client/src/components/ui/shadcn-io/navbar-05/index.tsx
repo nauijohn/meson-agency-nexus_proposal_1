@@ -1,9 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-import { BellIcon, ChevronDownIcon, HelpCircleIcon } from "lucide-react";
+import {
+  BellIcon,
+  ChevronDownIcon,
+  HelpCircleIcon,
+} from "lucide-react";
+import { NavLink } from "react-router";
 
 import { cn } from "@/lib/utils";
 import {
@@ -260,10 +269,10 @@ export interface Navbar05Props extends React.HTMLAttributes<HTMLElement> {
 
 // Default navigation links
 const defaultNavigationLinks: Navbar05NavItem[] = [
-  { href: "#", label: "Home" },
-  { href: "#", label: "Features" },
-  { href: "#", label: "Pricing" },
-  { href: "#", label: "About" },
+  { href: "/", label: "Home" },
+  { href: "/admin", label: "Admin" },
+  // { href: "#", label: "Pricing" },
+  // { href: "#", label: "About" },
 ];
 
 export const Navbar05 = React.forwardRef<HTMLElement, Navbar05Props>(
@@ -384,8 +393,8 @@ export const Navbar05 = React.forwardRef<HTMLElement, Navbar05Props>(
                   <NavigationMenuList className="gap-1">
                     {navigationLinks.map((link, index) => (
                       <NavigationMenuItem key={index}>
-                        <NavigationMenuLink
-                          href={link.href}
+                        {/* <NavigationMenuLink
+                          href={link.href || "#"}
                           onClick={(e) => {
                             e.preventDefault();
                             if (onNavItemClick && link.href)
@@ -394,6 +403,22 @@ export const Navbar05 = React.forwardRef<HTMLElement, Navbar05Props>(
                           className="group inline-flex justify-center items-center bg-background focus:bg-accent disabled:opacity-50 px-4 py-1.5 py-2 rounded-md focus:outline-none w-max h-10 font-medium text-muted-foreground hover:text-primary text-sm transition-colors focus:text-accent-foreground cursor-pointer disabled:pointer-events-none"
                         >
                           {link.label}
+                        </NavigationMenuLink> */}
+
+                        <NavigationMenuLink asChild>
+                          <NavLink
+                            to={link.href || "#"}
+                            className={({ isActive }) =>
+                              cn(
+                                "inline-flex justify-center items-center bg-background px-4 py-2 rounded-md w-max h-10 font-medium text-sm transition-colors cursor-pointer",
+                                isActive
+                                  ? "text-primary bg-accent"
+                                  : "text-muted-foreground hover:text-primary hover:bg-accent/30",
+                              )
+                            }
+                          >
+                            {link.label}
+                          </NavLink>
                         </NavigationMenuLink>
                       </NavigationMenuItem>
                     ))}

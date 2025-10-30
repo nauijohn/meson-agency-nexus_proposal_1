@@ -1,0 +1,46 @@
+# @host = https://epiploic-temperance-unwhimperingly.ngrok-free.dev/api
+@host = http://localhost:3000/api
+
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGFkMmZjZi1hODkwLTQ3ZTYtODUyMi0yYmZmY2QyNjFjZjQiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxNTYyMjgyLCJleHAiOjE3NjE1NjIyODd9.66PeomXMrMS9DHGvzGMPdnGcahwe37u0-6snEGJTEXI
+
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGFkMmZjZi1hODkwLTQ3ZTYtODUyMi0yYmZmY2QyNjFjZjQiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxNTYyMjgyLCJleHAiOjE3NjIxNjcwODJ9.FkTU2tZB3AnAWXvl61wktm9CAY1-LMPVNO_4xejfm_s
+
+POST {{host}}/auth/sign-up
+Content-Type: application/json
+
+{
+	"email": "test2@example.com",
+	"password": "testpass"
+}
+
+###
+
+POST {{host}}/auth/sign-in
+Content-Type: application/json
+
+{
+	"email": "test@example.com",
+	"password": "testpass"
+}
+
+###
+
+POST {{host}}/auth/refresh-token
+Authorization: Bearer {{refreshToken}}
+
+###
+GET {{host}}/twilio/token
+
+###
+
+GET {{host}}/campaigns/
+###
+GET {{host}}/campaigns/1
+###
+POST {{host}}/campaigns/
+Content-Type: application/json
+
+{
+	"title": "New Campaign",
+	"description": "Description of the new campaign"
+}

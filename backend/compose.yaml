@@ -1,0 +1,49 @@
+name: nexus_backend
+
+services:
+  nexus_api:
+    container_name: nexus_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+    env_file:
+      - ./.env
+    develop:
+      watch:
+        - path: ./src
+          action: sync
+          target: /app/src
+    depends_on:
+      - nexus_db
+    networks:
+      - nexus_backend_network
+
+  nexus_db:
+    image: mysql:8.0
+    container_name: nexus_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: nexus_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - 3306:3306
+    networks:
+      - nexus_backend_network
+    volumes:
+      - type: volume
+        source: nexus_mysql_data
+        target: /var/lib/mysql
+
+volumes:
+  nexus_mysql_data:
+
+networks:
+  nexus_backend_network:

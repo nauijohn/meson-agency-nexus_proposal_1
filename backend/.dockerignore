@@ -1,0 +1,13 @@
+node_modules/
+coverage/
+dist/
+test/
+.gitignore
+Dockerfile
+compose.yaml
+.prettierrc
+.env*
+README.md
+*.http
+src/**/*.spec.ts
+.vscode

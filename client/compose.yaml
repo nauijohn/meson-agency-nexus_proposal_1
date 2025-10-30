@@ -1,0 +1,25 @@
+name: nexus_frontend
+
+services:
+  nexus_app:
+    container_name: nexus_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+    develop:
+      watch:
+        - path: ./src
+          action: sync
+          target: /app/src
+    networks:
+      nexus_frontend_network:
+
+networks:
+  nexus_frontend_network:
