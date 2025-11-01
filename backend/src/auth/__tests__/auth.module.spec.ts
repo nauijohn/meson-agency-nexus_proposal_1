@@ -5,8 +5,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 
 import { TestCommonModule } from "../../../test/utils/test-common.module";
-import { RefreshToken } from "../../refresh-tokens";
-import { User } from "../../users";
+import { RefreshToken } from "../../refresh-tokens/index.ts";
+import { User } from "../../users/index.ts";
 import { AuthModule } from "../auth.module";
 
 describe("AuthModule", () => {

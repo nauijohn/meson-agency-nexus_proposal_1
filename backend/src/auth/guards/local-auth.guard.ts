@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 
-import { User } from "../../users";
+import { User } from "../../users/";
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard("local") {

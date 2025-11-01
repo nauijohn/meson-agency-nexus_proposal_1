@@ -3,8 +3,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 
 import { TestCommonModule } from "../../../test/utils/test-common.module";
-import { RefreshToken } from "../../refresh-tokens";
-import { User, UsersModule, UsersService } from "../../users";
+import { RefreshToken } from "../../refresh-tokens/index.ts";
+import { User, UsersModule, UsersService } from "../../users/index.ts";
 import { AuthService } from "../auth.service";
 import { hash } from "../utils/security";
 

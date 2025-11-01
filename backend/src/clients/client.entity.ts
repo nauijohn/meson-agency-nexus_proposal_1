@@ -12,16 +12,20 @@ import {
 import { Campaign } from "../campaigns/campaign.entity";
 import { ClientContact } from "../client-contacts/client-contact.entity";
 import { ClientNumber } from "../client-numbers/client-number.entity";
+import { UserClient } from "../user-clients/user-client.entity";
 
 @Entity({ name: "clients" })
 export class Client {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Column({ unique: true })
+  name: string;
+
   @Column({ name: "business_name" })
   businessName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ name: "contact_person" })
@@ -30,7 +34,7 @@ export class Client {
   @Column({ name: "phone_number" })
   phoneNumber: string;
 
-  @Column()
+  @Column({ default: "active" })
   status: "active" | "inactive";
 
   @ManyToMany(() => ClientContact, (contact) => contact.clients)
@@ -52,8 +56,21 @@ export class Client {
   })
   numbers: ClientNumber[];
 
-  @OneToMany(() => Campaign, (campaign) => campaign.client)
+  @OneToMany(() => Campaign, (campaign) => campaign.client, {
+    eager: true,
+    cascade: false,
+  })
   campaigns: Campaign[];
+
+  // @ManyToMany(() => User, (user) => user.clients, {
+  //   eager: false,
+  //   cascade: false,
+  // })
+  // users: User[];
+
+  // client.entity.ts
+  @OneToMany(() => UserClient, (uc) => uc.client)
+  users: UserClient[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
@@ -61,14 +78,3 @@ export class Client {
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 }
-
-// | Column         | Type                       | Notes |
-// | -------------- | -------------------------- | ----- |
-// | id             | UUID (PK)                  |       |
-// | business_name  | string                     |       |
-// | contact_person | string                     |       |
-// | email          | string                     |       |
-// | phone_number   | string                     |       |
-// | status         | enum(‘active’, ‘inactive’) |       |
-// | created_at     | timestamp                  |       |
-// | updated_at     | timestamp                  |       |

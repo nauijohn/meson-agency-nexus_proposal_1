@@ -1,7 +1,7 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 
-import { User } from "../../../users";
+import { User } from "../../../users/index.ts";
 import { AuthService } from "../../auth.service";
 import { hash } from "../../utils/security";
 import { LocalStrategy } from "../local.strategy";

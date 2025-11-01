@@ -6,8 +6,12 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { RefreshToken } from "../src/refresh-tokens";
-import { User, UsersController, UsersService } from "../src/users";
+import { RefreshToken } from "../src/refresh-tokens/index.ts";
+import {
+  User,
+  UsersController,
+  UsersService,
+} from "../src/users/index.ts/index.js";
 
 describe("UsersController (e2e)", () => {
   let app: INestApplication<App>;

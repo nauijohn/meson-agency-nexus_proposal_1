@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 
 import { RefreshTokensService } from "../refresh-tokens/refresh-tokens.service";
-import { User, UsersService } from "../users";
+import { User, UsersService } from "../users/";
 import { AuthService } from "./auth.service";
 import { BearerToken } from "./decorators/bearer-token.decorator";
 import { ReqUser } from "./decorators/req-user.decorator";

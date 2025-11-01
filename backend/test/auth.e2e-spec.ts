@@ -11,8 +11,11 @@ import { AuthService } from "../src/auth/auth.service";
 import { LocalStrategy } from "../src/auth/strategies/local.strategy";
 import { RefreshTokenStrategy } from "../src/auth/strategies/refresh-token.strategy";
 import { config } from "../src/main.config";
-import { RefreshToken, RefreshTokensModule } from "../src/refresh-tokens";
-import { User, UsersModule } from "../src/users";
+import {
+  RefreshToken,
+  RefreshTokensModule,
+} from "../src/refresh-tokens/index.ts";
+import { User, UsersModule } from "../src/users/index.ts";
 import { TestCommonModule } from "./utils/test-common.module";
 
 describe("AuthController (e2e)", () => {

@@ -14,11 +14,19 @@ export class CampaignsService {
 
   async create(dto: Partial<Campaign>): Promise<Campaign> {
     const entity = this.repository.create(dto);
+    console.log("Saving campaign entity:", entity);
     return this.repository.save(entity);
   }
 
   findAll(): Promise<Campaign[]> {
-    return this.repository.find();
+    return this.repository.find({
+      relations: {
+        client: true,
+      },
+      select: {
+        client: false,
+      },
+    });
   }
 
   findOne(id: string): Promise<Campaign | null> {

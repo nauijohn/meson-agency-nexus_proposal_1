@@ -44,3 +44,28 @@ Content-Type: application/json
 	"title": "New Campaign",
 	"description": "Description of the new campaign"
 }
+
+###
+
+GET {{host}}/campaigns/
+
+
+###
+GET {{host}}/users
+
+###
+GET {{host}}/users/15f7650d-8c01-45c5-bbd4-27480d720504
+
+###
+PATCH {{host}}/users/15f7650d-8c01-45c5-bbd4-27480d720504
+Content-Type: application/json
+
+{
+	"clientIds": ["client1", "client2", "client3"]
+}
+
+###
+GET {{host}}/clients
+
+###
+GET {{host}}/user-clients

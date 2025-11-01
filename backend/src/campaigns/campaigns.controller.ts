@@ -11,16 +11,20 @@ import {
   Post,
 } from "@nestjs/common";
 
+import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CampaignsService } from "./campaigns.service";
+import { CampaignDto } from "./dto/campaign.dto";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
 import { UpdateCampaignDto } from "./dto/update-campaign.dto";
 
+@Serialize(CampaignDto)
 @Controller("campaigns")
 export class CampaignsController {
   constructor(private readonly service: CampaignsService) {}
 
   @Post()
   create(@Body() dto: CreateCampaignDto) {
+    console.log("Creating campaign with DTO:", dto);
     return this.service.create(dto);
   }
 

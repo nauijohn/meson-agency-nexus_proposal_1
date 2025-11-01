@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -26,13 +27,18 @@ export class Campaign {
   @Column({ name: "end_date", type: "date", nullable: true })
   endDate: Date | null;
 
-  @Column()
+  @Column({ default: "active" })
   status: "active" | "paused" | "completed";
 
   @ManyToOne(() => Client, (client) => client.campaigns, {
     onDelete: "CASCADE", // optional: delete campaigns if client is deleted
   })
+  @JoinColumn({ name: "client_id" }) // links this column to the relation
   client: Client;
+
+  // 👇 Hidden foreign key column (no direct relation exposure)
+  @Column({ name: "client_id", select: false })
+  clientId: string;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

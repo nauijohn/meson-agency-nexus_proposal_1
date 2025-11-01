@@ -1,4 +1,4 @@
-import { User } from "../users";
+import { User } from "../users/index.ts";
 
 declare module "express" {
   interface Request {

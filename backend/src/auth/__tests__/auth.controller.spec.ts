@@ -4,8 +4,8 @@ import {
 } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 
-import { RefreshTokensService } from "../../refresh-tokens";
-import { User, UsersService } from "../../users";
+import { RefreshTokensService } from "../../refresh-tokens/index.ts";
+import { User, UsersService } from "../../users/index.ts/index.js";
 import { AuthController } from "../auth.controller";
 import { AuthService } from "../auth.service";
 import { SignUpDto } from "../dto";

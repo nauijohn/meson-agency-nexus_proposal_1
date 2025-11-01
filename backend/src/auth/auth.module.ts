@@ -3,8 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
-import { RefreshTokensModule } from "../refresh-tokens";
-import { UsersModule } from "../users";
+import { RefreshTokensModule } from "../refresh-tokens/";
+import { UsersModule } from "../users/";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { JwtStrategy } from "./strategies";

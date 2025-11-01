@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 
-import { User, UsersService } from "../users";
+import { User, UsersService } from "../users/";
 import { compare, hash } from "./utils/security";
 
 type TokenPayload = {

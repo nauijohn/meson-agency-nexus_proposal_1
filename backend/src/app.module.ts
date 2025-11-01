@@ -6,9 +6,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AuthModule } from "./auth/auth.module";
 import { CampaignsModule } from "./campaigns/campaigns.module";
+import { ClientsModule } from "./clients/clients.module";
 import { RefreshTokensModule } from "./refresh-tokens/refresh-tokens.module";
 import { TwilioModule } from "./twilio/twilio.mdule";
 import { typeOrmConfigFactory } from "./typeorm.config";
+import { UserClientsModule } from "./user-clients/user-clients.module";
 import { UsersModule } from "./users";
 
 @Module({
@@ -40,6 +42,8 @@ import { UsersModule } from "./users";
     RefreshTokensModule,
     CampaignsModule,
     TwilioModule,
+    ClientsModule,
+    UserClientsModule,
   ],
 })
 export class AppModule {}

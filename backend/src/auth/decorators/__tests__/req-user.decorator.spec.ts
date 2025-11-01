@@ -1,6 +1,6 @@
 import { ExecutionContext } from "@nestjs/common";
 
-import { User } from "../../../users";
+import { User } from "../../../users/index.ts";
 import { reqUser } from "../req-user.decorator";
 
 describe("ReqUser decorator", () => {

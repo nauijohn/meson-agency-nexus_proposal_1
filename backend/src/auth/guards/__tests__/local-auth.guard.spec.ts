@@ -2,7 +2,7 @@ import { InternalServerErrorException } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common/interfaces/features/execution-context.interface";
 import { Test, TestingModule } from "@nestjs/testing";
 
-import { User } from "../../../users";
+import { User } from "../../../users/index.ts";
 import { LocalAuthGuard } from "../local-auth.guard";
 
 describe("LocalAuthGuard", () => {

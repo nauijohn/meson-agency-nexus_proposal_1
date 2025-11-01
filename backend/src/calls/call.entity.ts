@@ -14,7 +14,7 @@ import { Campaign } from "../campaigns/campaign.entity";
 import { ClientContact } from "../client-contacts/client-contact.entity";
 import { Client } from "../clients/client.entity";
 import { Outcome } from "../outcomes/outcome.entity";
-import { User } from "../users";
+import { User } from "../users/";
 
 @Entity({ name: "calls" })
 export class Call {
