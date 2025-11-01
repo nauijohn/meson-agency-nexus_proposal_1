@@ -271,6 +271,7 @@ export interface Navbar05Props extends React.HTMLAttributes<HTMLElement> {
 const defaultNavigationLinks: Navbar05NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/admin", label: "Admin" },
+  { href: "/admin2", label: "Admin2" },
   // { href: "#", label: "Pricing" },
   // { href: "#", label: "About" },
 ];

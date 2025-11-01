@@ -45,9 +45,11 @@ import {
 export default function TableData<T>({
   data,
   columns,
+  filterBy,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
+  filterBy?: string;
 }) {
   const [currIndexPage, setCurrIndexPage] = React.useState(0);
   const currPage = React.useRef<HTMLAnchorElement>(null);
@@ -83,16 +85,20 @@ export default function TableData<T>({
   });
 
   return (
-    <div className="mx-auto p-6 w-full max-w-4xl">
+    <div className="">
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        {filterBy && (
+          <Input
+            placeholder="Filter emails..."
+            value={
+              (table.getColumn(filterBy)?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn(filterBy)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -206,12 +212,12 @@ export default function TableData<T>({
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      <div className="flex justify-between items-center pt-4">
+      {/* <div className="flex justify-between items-center pt-4">
         <div className="text-muted-foreground text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

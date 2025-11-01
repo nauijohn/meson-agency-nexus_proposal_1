@@ -3,20 +3,19 @@ import {
   Routes,
 } from "react-router";
 
-import { Navbar05 } from "./components/ui/shadcn-io/navbar-05";
 import Admin from "./pages/Admin";
+import Admin2 from "./pages/Admin2";
 import Home from "./pages/Home";
 
 function App() {
   return (
-    <>
-      <Navbar05 onNavItemClick={(item) => console.log(item)} />
-
+    <main className="relative mx-auto px-6 w-full max-w-7xl">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin2" element={<Admin2 />} />
       </Routes>
-    </>
+    </main>
   );
 }
 

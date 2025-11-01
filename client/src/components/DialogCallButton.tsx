@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import axios from "axios";
 
@@ -15,7 +18,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Call, Device } from "@twilio/voice-sdk";
+import {
+  Call,
+  Device,
+} from "@twilio/voice-sdk";
 
 export function DialogCallButton() {
   const [open, setOpen] = useState(false);
@@ -108,11 +114,11 @@ export function DialogCallButton() {
           <div className="gap-4 grid">
             <div className="gap-3 grid">
               <Label htmlFor="name-1">Name</Label>
-              <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
+              <Input name="name" defaultValue="Pedro Duarte" />
             </div>
             <div className="gap-3 grid">
               <Label htmlFor="username-1">Username</Label>
-              <Input id="username-1" name="username" defaultValue="@peduarte" />
+              <Input name="username" defaultValue="@peduarte" />
             </div>
           </div>
 
