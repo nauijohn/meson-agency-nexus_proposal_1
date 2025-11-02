@@ -1,55 +1,47 @@
 import { ArrowUpDown } from "lucide-react";
 
-import TableData from "@/components/ContactsTable";
 import { Button } from "@/components/ui/button";
-import { useGetUsersQuery } from "@/services/users.api";
+import { useGetTransformedUserClientsQuery } from "@/services/user-clients/user-clients.api";
+import type { TransformedUserClient } from "@/services/user-clients/user-clients.type";
 import type { ColumnDef } from "@tanstack/react-table";
 
-export type ClientUser = {
-  id: string;
-  name: string;
-  businessName: string;
-  email: string;
-  status: string;
-};
+import TableData from "../TableData";
 
-const clientColumns: ColumnDef<ClientUser>[] = [
+const columns: ColumnDef<TransformedUserClient>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "clientName",
+    header: "Client Name",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("clientName")}</div>
+    ),
+  },
+  {
+    accessorKey: "userName",
+    header: "Agent Name",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("userName")}</div>
+    ),
+  },
+  {
+    accessorKey: "assignedDate",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Assigned Date
           <ArrowUpDown className="ml-2 w-4 h-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "businessName",
-    header: "Business Name",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("businessName")}</div>
+      <div className="">
+        {new Date(row.getValue("assignedDate")).toISOString()}
+      </div>
     ),
   },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("email")}</div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("status")}</div>
-    ),
-  },
+
   // {
   //   id: "actions",
   //   enableHiding: false,
@@ -81,11 +73,8 @@ const clientColumns: ColumnDef<ClientUser>[] = [
 ];
 
 const Table = () => {
-  const { data: users } = useGetUsersQuery();
-  console.log("users:", users);
-
-  // return <>{clients && <TableData data={clients} columns={clientColumns} />}</>;
-  return <>{users && <TableData data={users} columns={clientColumns} />}</>;
+  const { data } = useGetTransformedUserClientsQuery();
+  return <>{data && <TableData data={data} columns={columns} />}</>;
 };
 
 export default Table;

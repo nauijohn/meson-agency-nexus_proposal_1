@@ -5,11 +5,11 @@ import z from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-import { useAddUserClientMutation } from "@/services/user-clients.api";
+import { useAddUserClientMutation } from "@/services/user-clients/user-clients.api";
 import {
-  useGetUsersQuery,
+  useGetTransformedUsersQuery,
   useGetUserWithUnassignedClientsQuery,
-} from "@/services/users.api";
+} from "@/services/users/users.api";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useForm, useStore } from "@tanstack/react-form";
 
@@ -31,7 +31,6 @@ const Form = () => {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value: { userId, ...body } }) => {
-      console.log("Form submitted with body:", body);
       const x = await Promise.all(
         body.clientIds?.map((clientId) => addUserClient({ userId, clientId })),
       );
@@ -69,15 +68,14 @@ const Form = () => {
     }
   }, [isSuccess, isError, reset, form]);
 
-  const { data: users } = useGetUsersQuery();
-  const userAvatars = users
-    ? users?.map(({ id, firstName, lastName }) => ({
-        id,
-        name: `${firstName} ${lastName}`,
-        src: "",
-        fallback: firstName.charAt(0) + lastName.charAt(0),
-      }))
-    : [];
+  const { data: users } = useGetTransformedUsersQuery();
+  const userAvatars =
+    users?.map(({ id, name }) => ({
+      id,
+      name,
+      src: "",
+      fallback: name.split(" ")[0].charAt(0) + name.split(" ")[1].charAt(0),
+    })) || [];
 
   const selectedUserUnassignedClients = user?.unassignedClients
     ? user.unassignedClients.map((client) => ({

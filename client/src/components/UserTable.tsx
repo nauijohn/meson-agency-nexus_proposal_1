@@ -1,26 +1,13 @@
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 
-import TableData from "@/components/ContactsTable";
+import TableData from "@/components/TableData";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import api from "@/utils/request";
-import { useQuery } from "@tanstack/react-query";
+import { useGetTransformedUsersQuery } from "@/services/users/users.api";
+import type { TransformedUser } from "@/services/users/users.type";
 import type { ColumnDef } from "@tanstack/react-table";
 
-type User = {
-  id: string;
-  email: string;
-};
-
-const userColumns: ColumnDef<User>[] = [
+const columns: ColumnDef<TransformedUser>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -44,6 +31,21 @@ const userColumns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 w-4 h-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+  },
+  {
     accessorKey: "email",
     header: ({ column }) => {
       return (
@@ -58,47 +60,40 @@ const userColumns: ColumnDef<User>[] = [
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const user = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="p-0 w-8 h-8">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
+  // {
+  //   id: "actions",
+  //   enableHiding: false,
+  //   cell: ({ row }) => {
+  //     const user = row.original;
+  //     return (
+  //       <DropdownMenu>
+  //         <DropdownMenuTrigger asChild>
+  //           <Button variant="ghost" className="p-0 w-8 h-8">
+  //             <span className="sr-only">Open menu</span>
+  //             <MoreHorizontal className="w-4 h-4" />
+  //           </Button>
+  //         </DropdownMenuTrigger>
+  //         <DropdownMenuContent align="end">
+  //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+  //           <DropdownMenuItem
+  //             onClick={() => navigator.clipboard.writeText(user.id)}
+  //           >
+  //             Copy payment ID
+  //           </DropdownMenuItem>
+  //           <DropdownMenuSeparator />
+  //           <DropdownMenuItem>View customer</DropdownMenuItem>
+  //           <DropdownMenuItem>View payment details</DropdownMenuItem>
+  //         </DropdownMenuContent>
+  //       </DropdownMenu>
+  //     );
+  //   },
+  // },
 ];
 
 const UserTable = () => {
-  const { data: users } = useQuery<User[]>({
-    queryKey: ["users"],
-    queryFn: () => {
-      return api.get("/users");
-    },
-    select(data) {
-      return data.map((user) => ({ id: user.id, email: user.email }));
-    },
-  });
-  return <>{users && <TableData data={users} columns={userColumns} />}</>;
+  const { data } = useGetTransformedUsersQuery();
+  console.log("UserTable data:", data);
+  return <>{data && <TableData data={data} columns={columns} />}</>;
 };
 
 export default UserTable;

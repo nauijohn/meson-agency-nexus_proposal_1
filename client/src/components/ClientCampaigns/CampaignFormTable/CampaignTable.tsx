@@ -1,6 +1,6 @@
 import { ArrowUpDown } from "lucide-react";
 
-import TableData from "@/components/ContactsTable";
+import TableData from "@/components/TableData";
 import { Button } from "@/components/ui/button";
 import api from "@/utils/request";
 import { useQuery } from "@tanstack/react-query";

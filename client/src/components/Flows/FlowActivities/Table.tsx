@@ -2,19 +2,15 @@ import { ArrowUpDown } from "lucide-react";
 
 import TableData from "@/components/TableData";
 import { Button } from "@/components/ui/button";
+import {
+  useGetFlowActivitiesQuery,
+} from "@/services/flow-activities/flow-activities.api";
+import type {
+  FlowActivity,
+} from "@/services/flow-activities/flow-activities.type";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { useClientCampaigns } from "../store/ClientCampaignsContextProvider";
-
-export type Client = {
-  id: string;
-  name: string;
-  businessName: string;
-  email: string;
-  status: string;
-};
-
-const clientColumns: ColumnDef<Client>[] = [
+const columns: ColumnDef<FlowActivity>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -30,27 +26,7 @@ const clientColumns: ColumnDef<Client>[] = [
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
   },
-  {
-    accessorKey: "businessName",
-    header: "Business Name",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("businessName")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("email")}</div>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("status")}</div>
-    ),
-  },
+
   // {
   //   id: "actions",
   //   enableHiding: false,
@@ -81,9 +57,9 @@ const clientColumns: ColumnDef<Client>[] = [
   // },
 ];
 
-const ClientsTable = () => {
-  const { clients } = useClientCampaigns();
-  return <>{clients && <TableData data={clients} columns={clientColumns} />}</>;
+const Table = () => {
+  const { data } = useGetFlowActivitiesQuery();
+  return <>{data && <TableData data={data} columns={columns} />}</>;
 };
 
-export default ClientsTable;
+export default Table;

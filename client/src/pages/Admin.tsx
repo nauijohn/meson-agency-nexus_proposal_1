@@ -1,5 +1,6 @@
 import AssignClientToUser from "@/components/AssignClientsToUser";
 import ClientCampaigns from "@/components/ClientCampaigns";
+import Flows from "@/components/Flows";
 import { Separator } from "@/components/ui/separator";
 import UserForm from "@/components/UserForm";
 import UserTable from "@/components/UserTable";
@@ -31,6 +32,10 @@ const Admin = () => {
       </h1>
 
       <AssignClientToUser />
+
+      <Separator className="m-6" />
+
+      <Flows />
     </div>
   );
 };
