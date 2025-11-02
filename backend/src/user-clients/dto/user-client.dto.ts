@@ -11,4 +11,8 @@ export class UserClientDto {
   @Expose()
   @Type(() => ClientDto)
   client: ClientDto;
+
+  @Expose()
+  // @Transform(({ value }) => "test")
+  assignedDate: Date;
 }

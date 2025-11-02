@@ -26,14 +26,12 @@ export class UsersController {
 
   @Post()
   create(@Body() dto: CreateUserDto) {
-    console.log("DTO", dto);
     return this.service.create(dto);
   }
 
   @Get()
   async findAll() {
     const x = await this.service.findAll();
-    console.log("Users:", x[0]);
     return x;
   }
 

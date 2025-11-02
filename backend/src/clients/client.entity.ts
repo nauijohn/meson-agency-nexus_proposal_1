@@ -1,27 +1,13 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 
 import { Campaign } from "../campaigns/campaign.entity";
 import { ClientContact } from "../client-contacts/client-contact.entity";
 import { ClientNumber } from "../client-numbers/client-number.entity";
+import { NamedEntity } from "../common/bases";
 import { UserClient } from "../user-clients/user-client.entity";
 
 @Entity({ name: "clients" })
-export class Client {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
-  @Column({ unique: true })
-  name: string;
-
+export class Client extends NamedEntity {
   @Column({ name: "business_name" })
   businessName: string;
 
@@ -62,19 +48,7 @@ export class Client {
   })
   campaigns: Campaign[];
 
-  // @ManyToMany(() => User, (user) => user.clients, {
-  //   eager: false,
-  //   cascade: false,
-  // })
-  // users: User[];
-
   // client.entity.ts
   @OneToMany(() => UserClient, (uc) => uc.client)
   users: UserClient[];
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
 }

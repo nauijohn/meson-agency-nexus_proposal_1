@@ -1,20 +1,11 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 
 import { CallProvider } from "../call-providers/call-provider.entity";
 import { Call } from "../calls/call.entity";
+import { BaseEntity } from "../common/bases";
 
 @Entity({ name: "call_provider_details" })
-export class CallProviderDetail {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
+export class CallProviderDetail extends BaseEntity {
   @ManyToOne(() => Call)
   call: Call;
 
@@ -43,10 +34,4 @@ export class CallProviderDetail {
 
   @Column({ type: "text", nullable: true })
   providerNotes: string; // optional notes / error messages
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
 }

@@ -1,22 +1,10 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, ManyToMany } from "typeorm";
 
 import { Client } from "../clients/client.entity";
+import { NamedEntity } from "../common/bases";
 
 @Entity({ name: "client_contacts" })
-export class ClientContact {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
-  @Column({ name: "contact_name" })
-  contactName: string;
-
+export class ClientContact extends NamedEntity {
   @Column({ name: "contact_number" })
   contactNumber: string;
 
@@ -40,22 +28,4 @@ export class ClientContact {
   // Many-to-many: contact ↔ clients
   @ManyToMany(() => Client, (client) => client.contacts)
   clients: Client[];
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
 }
-
-// | Column         | Type                                      | Notes                                                        |
-// | -------------- | ----------------------------------------- | ------------------------------------------------------------ |
-// | id             | UUID (PK)                                 |                                                              |
-// | client_id      | FK → clients.id                           | The client who owns this contact                             |
-// | lead_id        | FK → client_leads.id                      | Optional — link to a lead if this contact has been qualified |
-// | contact_number | string                                    | The phone number                                             |
-// | type           | enum(‘mobile’, ‘home’, ‘work’, ‘other’)   | optional, useful for filtering                               |
-// | status         | enum(‘active’, ‘inactive’, ‘do_not_call’) | optional                                                     |
-// | preferred      | boolean                                   | Indicates the preferred number for contact                   |
-// | created_at     | timestamp                                 |                                                              |
-// | updated_at     | timestamp                                 |                                                              |

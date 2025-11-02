@@ -7,6 +7,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "./auth/auth.module";
 import { CampaignsModule } from "./campaigns/campaigns.module";
 import { ClientsModule } from "./clients/clients.module";
+import { FlowActivitiesModule } from "./flow-activities/flow-activities.module";
+import { FlowStepsModule } from "./flow_steps/flow-steps.module";
+import { FlowsModule } from "./flows/flows.module";
 import { RefreshTokensModule } from "./refresh-tokens/refresh-tokens.module";
 import { TwilioModule } from "./twilio/twilio.mdule";
 import { typeOrmConfigFactory } from "./typeorm.config";
@@ -44,6 +47,13 @@ import { UsersModule } from "./users";
     TwilioModule,
     ClientsModule,
     UserClientsModule,
+    FlowActivitiesModule,
+    FlowsModule,
+    FlowStepsModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  onModuleInit() {
+    console.log("AppModule initialized");
+  }
+}

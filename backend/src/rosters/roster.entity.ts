@@ -1,21 +1,12 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 
 import { Campaign } from "../campaigns/campaign.entity";
 import { Client } from "../clients/client.entity";
+import { BaseEntity } from "../common/bases";
 import { User } from "../users";
 
 @Entity({ name: "rosters" })
-export class Roster {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
+export class Roster extends BaseEntity {
   @ManyToOne(() => Campaign)
   campaign: Campaign;
 
@@ -27,10 +18,4 @@ export class Roster {
 
   @Column({ type: "text", nullable: true })
   notes: string;
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
 }

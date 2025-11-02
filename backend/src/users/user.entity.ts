@@ -1,6 +1,5 @@
 import {
   AfterLoad,
-  BaseEntity,
   Column,
   Entity,
   JoinColumn,
@@ -8,19 +7,16 @@ import {
   ManyToMany,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
 } from "typeorm";
 
 import { Client } from "../clients";
+import { BaseEntity } from "../common/bases";
 import { RefreshToken } from "../refresh-tokens";
 import { Role } from "../roles";
 import { UserClient } from "../user-clients/user-client.entity";
 
 @Entity({ name: "users" })
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
   @Column()
   firstName: string;
 
@@ -63,14 +59,3 @@ export class User extends BaseEntity {
     this.clients = this.userClients?.map((uc) => uc.client) || [];
   }
 }
-
-// @ManyToMany(() => Client, (client) => client.users, {
-//   eager: false,
-//   cascade: false,
-// })
-// @JoinTable({
-//   name: "user_clients", // custom join table name
-//   joinColumn: { name: "user_id", referencedColumnName: "id" },
-//   inverseJoinColumn: { name: "client_id", referencedColumnName: "id" },
-// })
-// clients: Client[];

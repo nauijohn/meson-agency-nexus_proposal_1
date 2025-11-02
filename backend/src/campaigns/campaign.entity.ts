@@ -1,23 +1,19 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  OneToMany,
+  RelationId,
 } from "typeorm";
 
+import { CampaignFlowStep } from "../campaign-flow-steps/campaign-flow-step.entity";
 import { Client } from "../clients/client.entity";
+import { NamedEntity } from "../common/bases";
+import { Flow } from "../flows/flow.entity";
 
 @Entity({ name: "campaigns" })
-export class Campaign {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
-  @Column()
-  name: string;
-
+export class Campaign extends NamedEntity {
   @Column({ type: "text", nullable: true })
   description: string;
 
@@ -37,24 +33,14 @@ export class Campaign {
   client: Client;
 
   // 👇 Hidden foreign key column (no direct relation exposure)
-  @Column({ name: "client_id", select: false })
+  @RelationId((campaign: Campaign) => campaign.client)
   clientId: string;
 
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
+  @ManyToOne(() => Flow, (flow) => flow.campaigns, { nullable: false })
+  @JoinColumn({ name: "flow_id" })
+  flow: Flow;
 
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
+  // Campaign.ts
+  @OneToMany(() => CampaignFlowStep, (cfs) => cfs.campaign)
+  campaignFlowSteps: CampaignFlowStep[];
 }
-
-// | Column      | Type                                  | Notes                   |
-// | ----------- | ------------------------------------- | ----------------------- |
-// | id          | UUID (PK)                             |                         |
-// | client_id   | FK → clients.id                       |                         |
-// | name        | string                                | e.g. “Renewal Drive Q4” |
-// | description | text                                  |                         |
-// | start_date  | date                                  |                         |
-// | end_date    | date                                  | nullable                |
-// | status      | enum(‘active’, ‘paused’, ‘completed’) |                         |
-// | created_at  | timestamp                             |                         |
-// | updated_at  | timestamp                             |                         |

@@ -19,14 +19,12 @@ export class UserClientsController {
 
   @Post()
   create(@Body() dto: CreateUserClientDto) {
-    console.log("DTO", dto);
     return this.service.create(dto);
   }
 
   @Get()
   async findAll() {
     const x = await this.service.findAll();
-    console.log("User-Clients:", x);
     return x;
   }
 

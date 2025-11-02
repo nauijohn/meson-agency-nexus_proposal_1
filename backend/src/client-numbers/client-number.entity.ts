@@ -1,19 +1,10 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, ManyToMany } from "typeorm";
 
 import { Client } from "../clients/client.entity";
+import { BaseEntity } from "../common/bases";
 
 @Entity({ name: "client_numbers" })
-export class ClientNumber {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
+export class ClientNumber extends BaseEntity {
   @Column({ name: "number" })
   number: string;
 
@@ -32,10 +23,4 @@ export class ClientNumber {
 
   @ManyToMany(() => Client, (client) => client.numbers)
   clients: Client[];
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
 }

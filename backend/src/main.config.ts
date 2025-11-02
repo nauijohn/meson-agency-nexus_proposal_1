@@ -22,7 +22,7 @@ export function config(app: INestApplication<any>): void {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
+      // forbidNonWhitelisted: true,
       transform: true,
     }),
   );

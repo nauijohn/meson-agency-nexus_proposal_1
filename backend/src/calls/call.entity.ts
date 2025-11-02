@@ -1,26 +1,15 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 
 import { CallProvider } from "../call-providers/call-provider.entity";
 import { Campaign } from "../campaigns/campaign.entity";
 import { ClientContact } from "../client-contacts/client-contact.entity";
 import { Client } from "../clients/client.entity";
+import { BaseEntity } from "../common/bases";
 import { Outcome } from "../outcomes/outcome.entity";
 import { User } from "../users/";
 
 @Entity({ name: "calls" })
-export class Call {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
+export class Call extends BaseEntity {
   @ManyToOne(() => User)
   agent: User;
 
@@ -65,10 +54,4 @@ export class Call {
 
   @Column({ type: "text", nullable: true })
   notes: string;
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
 }

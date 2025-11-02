@@ -1,25 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity } from "typeorm";
+
+import { NamedEntity } from "../common/bases";
 
 @Entity({ name: "call_providers" })
-export class CallProvider {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
-  @Column()
-  name: string; // e.g., "Twilio", "Zoom", "Internal PBX"
-
+export class CallProvider extends NamedEntity {
   @Column({ nullable: true })
   description: string;
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
 }

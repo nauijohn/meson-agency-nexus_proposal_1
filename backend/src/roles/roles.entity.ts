@@ -1,15 +1,10 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany } from "typeorm";
 
+import { NamedEntity } from "../common/bases";
 import { User } from "../users";
 
 @Entity({ name: "roles" })
-export class Role {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
-  @Column({ unique: true })
-  name: string; // e.g. "admin", "manager", "agent"
-
+export class Role extends NamedEntity {
   @Column({ nullable: true })
   description?: string;
 

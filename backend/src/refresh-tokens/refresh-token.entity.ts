@@ -1,12 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToOne } from "typeorm";
 
+import { BaseEntity } from "../common/bases";
 import { User } from "../users";
 
 @Entity({ name: "refresh-tokens" })
-export class RefreshToken {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
+export class RefreshToken extends BaseEntity {
   @Column({ name: "token", unique: true, nullable: true })
   token: string;
 
