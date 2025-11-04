@@ -1,6 +1,6 @@
 import { ArrowUpDown } from "lucide-react";
 
-import TableData from "@/components/TableData";
+import TableData from "@/components/app/TableData";
 import { Button } from "@/components/ui/button";
 import {
   useGetFlowActivitiesQuery,

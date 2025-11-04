@@ -1,26 +1,20 @@
 import { ArrowUpDown } from "lucide-react";
 
-import TableData from "@/components/TableData";
+import TableData from "@/components/app/TableData";
 import { Button } from "@/components/ui/button";
-import api from "@/utils/request";
-import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 
-type Campaign = {
+import { useClientCampaigns } from "../store/ClientCampaignsContextProvider";
+
+export type Client = {
   id: string;
   name: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
+  businessName: string;
+  email: string;
   status: string;
-  client: {
-    id: string;
-    name: string;
-  };
-  clientName: string;
 };
 
-const campaignColumns: ColumnDef<Campaign>[] = [
+const clientColumns: ColumnDef<Client>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -37,36 +31,26 @@ const campaignColumns: ColumnDef<Campaign>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "businessName",
+    header: "Business Name",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("description")}</div>
+      <div className="font-medium">{row.getValue("businessName")}</div>
     ),
   },
   {
-    accessorKey: "clientName",
-    header: "Client Name",
-    accessorFn: (row) => row.client?.name ?? "",
-    cell: ({ getValue }) => {
-      const value = getValue() as string;
-      return <div className="font-medium">{value}</div>;
-    },
-  },
-  {
-    accessorKey: "startDate",
-    header: "Start Date",
+    accessorKey: "email",
+    header: "Email",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("startDate")}</div>
+      <div className="font-medium">{row.getValue("email")}</div>
     ),
   },
   {
-    accessorKey: "endDate",
-    header: "End Date",
+    accessorKey: "status",
+    header: "Status",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("endDate")}</div>
+      <div className="font-medium">{row.getValue("status")}</div>
     ),
   },
-
   // {
   //   id: "actions",
   //   enableHiding: false,
@@ -97,28 +81,9 @@ const campaignColumns: ColumnDef<Campaign>[] = [
   // },
 ];
 
-const CampaignTable = () => {
-  const { data: campaigns } = useQuery<Campaign[]>({
-    queryKey: ["campaigns"],
-    queryFn: () => {
-      return api.get("/campaigns");
-    },
-    select(data) {
-      return data.map((campaign) => ({
-        id: campaign.id,
-        name: campaign.name,
-        description: campaign.description,
-        startDate: campaign.startDate,
-        endDate: campaign.endDate,
-        status: campaign.status,
-        client: campaign.client,
-        clientName: campaign.client.name,
-      }));
-    },
-  });
-  return (
-    <>{campaigns && <TableData data={campaigns} columns={campaignColumns} />}</>
-  );
+const ClientsTable = () => {
+  const { clients } = useClientCampaigns();
+  return <>{clients && <TableData data={clients} columns={clientColumns} />}</>;
 };
 
-export default CampaignTable;
+export default ClientsTable;

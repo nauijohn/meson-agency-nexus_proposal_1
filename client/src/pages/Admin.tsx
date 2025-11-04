@@ -1,9 +1,9 @@
-import AssignClientToUser from "@/components/AssignClientsToUser";
-import ClientCampaigns from "@/components/ClientCampaigns";
-import Flows from "@/components/Flows";
+import AssignClientToUser from "@/components/app/AssignClientsToUser";
+import ClientCampaigns from "@/components/app/ClientCampaigns";
+import FlowGroup from "@/components/app/Flows";
+import UserForm from "@/components/app/UserForm";
+import UserTable from "@/components/app/UserTable";
 import { Separator } from "@/components/ui/separator";
-import UserForm from "@/components/UserForm";
-import UserTable from "@/components/UserTable";
 
 const Admin = () => {
   return (
@@ -35,7 +35,7 @@ const Admin = () => {
 
       <Separator className="m-6" />
 
-      <Flows />
+      <FlowGroup />
     </div>
   );
 };

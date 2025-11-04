@@ -1,6 +1,6 @@
 import { ArrowUpDown } from "lucide-react";
 
-import TableData from "@/components/TableData";
+import TableData from "@/components/app/TableData";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useGetTransformedUsersQuery } from "@/services/users/users.api";
@@ -92,7 +92,6 @@ const columns: ColumnDef<TransformedUser>[] = [
 
 const UserTable = () => {
   const { data } = useGetTransformedUsersQuery();
-  console.log("UserTable data:", data);
   return <>{data && <TableData data={data} columns={columns} />}</>;
 };
 

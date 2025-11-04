@@ -13,6 +13,7 @@ export const { useAddFlowActivityMutation, useGetFlowActivitiesQuery } =
   api.injectEndpoints({
     endpoints: (builder) => ({
       addFlowActivity: builder.mutation<FlowActivity, Partial<FlowActivity>>({
+        invalidatesTags: [API_TAGS.FLOW_ACTIVITIES],
         query: (body) => ({
           url: URL(),
           method: HttpMethods.POST,

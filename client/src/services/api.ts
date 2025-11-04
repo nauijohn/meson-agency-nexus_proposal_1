@@ -10,14 +10,9 @@ export const API_TAGS = {
   USER_WITH_UNASSIGNED_CLIENTS: "UserWithUnassignedClients",
   USER_CLIENTS: "UserClients",
   FLOW_ACTIVITIES: "FlowActivities",
+  FLOWS: "Flows",
+  CAMPAIGNS: "Campaigns",
 };
-
-const api = createApi({
-  reducerPath: "api",
-  baseQuery: fetchBaseQuery({ baseUrl: BACKEND_BASE_URL }),
-  tagTypes: Object.values(API_TAGS),
-  endpoints: () => ({}),
-});
 
 export const HttpMethods = {
   GET: "GET",
@@ -26,5 +21,12 @@ export const HttpMethods = {
   DELETE: "DELETE",
   PUT: "PUT",
 };
+
+const api = createApi({
+  reducerPath: "api",
+  baseQuery: fetchBaseQuery({ baseUrl: BACKEND_BASE_URL }),
+  tagTypes: Object.values(API_TAGS),
+  endpoints: () => ({}),
+});
 
 export default api;

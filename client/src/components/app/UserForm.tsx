@@ -4,11 +4,19 @@ import z from "zod";
 import useMutationToast from "@/hooks/useMutationToast";
 import api from "@/utils/request";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
-import { Button } from "./ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./ui/field";
-import { Input } from "./ui/input";
+import { Button } from "../ui/button";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "../ui/field";
+import { Input } from "../ui/input";
 
 const formSchema = z.object({
   email: z.email().min(5, "Email must be at least 5 characters long"),
@@ -26,7 +34,6 @@ const UserForm = () => {
       firstName: string;
       lastName: string;
     }) => {
-      console.log("Creating user with data:", user);
       return api.post("/users", user);
     },
     onSuccess: () => {

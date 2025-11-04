@@ -1,6 +1,12 @@
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
 
-import type { AppDispatch, RootState } from "@/store";
+import type {
+  AppDispatch,
+  RootState,
+} from "@/store";
 import * as usersSlice from "@/store/usersSlice";
 
 import {
@@ -12,7 +18,7 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxTrigger,
-} from "./ui/shadcn-io/combobox";
+} from "../ui/shadcn-io/combobox";
 
 type Props = {
   values: { value: string; label: string }[];
@@ -22,7 +28,7 @@ type Props = {
 const Dropdown = ({ values, dropDownType }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const data = useSelector((state: RootState) => state.users.userId);
+  const data = useSelector((state: RootState) => state.users?.userId);
 
   console.log(dropDownType, data);
 

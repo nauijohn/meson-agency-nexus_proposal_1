@@ -1,6 +1,13 @@
-import { createContext, type FC, type ReactNode, useContext } from "react";
+import {
+  createContext,
+  type FC,
+  type ReactNode,
+  useContext,
+} from "react";
 
-import type { Client } from "@/components/ClientCampaigns/ClientFormTable/ClientsTable";
+import type {
+  Client,
+} from "@/components/app/ClientCampaigns/ClientFormTable/ClientsTable";
 import api from "@/utils/request";
 import { useQuery } from "@tanstack/react-query";
 

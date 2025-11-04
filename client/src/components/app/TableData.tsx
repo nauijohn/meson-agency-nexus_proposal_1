@@ -40,7 +40,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "./ui/pagination";
+} from "../ui/pagination";
 
 export default function TableData<T>({
   data,

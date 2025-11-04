@@ -7,7 +7,7 @@ import {
 
 export const flowActivitySchema = z
   .object({
-    type: z.enum(["email", "sms", "voice"]),
+    type: z.enum(["email", "sms", "voice"]).optional(),
   })
   .extend(namedBaseSchema.shape);
 

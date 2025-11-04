@@ -1,45 +1,53 @@
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useGetTransformedUserClientsQuery } from "@/services/user-clients/user-clients.api";
-import type { TransformedUserClient } from "@/services/user-clients/user-clients.type";
+import { useGetFlowsQuery } from "@/services/flows/flows.api";
+import type { Flow } from "@/services/flows/flows.type";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import TableData from "../TableData";
+import TableData from "../../TableData";
 
-const columns: ColumnDef<TransformedUserClient>[] = [
+const columns: ColumnDef<Flow["steps"][number]>[] = [
   {
-    accessorKey: "clientName",
-    header: "Client Name",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("clientName")}</div>
-    ),
-  },
-  {
-    accessorKey: "userName",
-    header: "Agent Name",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("userName")}</div>
-    ),
-  },
-  {
-    accessorKey: "assignedDate",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Assigned Date
+          Name
           <ArrowUpDown className="ml-2 w-4 h-4" />
         </Button>
       );
     },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+  },
+
+  {
+    accessorKey: "order",
+    header: "Order",
     cell: ({ row }) => (
-      <div className="">
-        {new Date(row.getValue("assignedDate")).toISOString()}
-      </div>
+      <div className="font-medium">{row.getValue("order")}</div>
     ),
+  },
+
+  {
+    accessorKey: "stepActivities",
+    header: "Step Activities",
+    cell: ({ row }) => {
+      const stepActivities = row.getValue("stepActivities") as {
+        activity: {
+          name: string;
+        };
+      }[];
+
+      return (
+        <div className="font-medium">
+          {stepActivities.map((s) => s.activity.name).join(", ")}
+        </div>
+      );
+    },
   },
 
   // {
@@ -73,8 +81,21 @@ const columns: ColumnDef<TransformedUserClient>[] = [
 ];
 
 const Table = () => {
-  const { data } = useGetTransformedUserClientsQuery();
-  return <>{data && <TableData data={data} columns={columns} />}</>;
+  const { data } = useGetFlowsQuery();
+
+  return (
+    <>
+      {data &&
+        data?.map((flow) => (
+          <div key={flow.id}>
+            {flow.steps &&
+              flow.steps.map((step) => (
+                <TableData key={step.id} data={flow.steps} columns={columns} />
+              ))}
+          </div>
+        ))}
+    </>
+  );
 };
 
 export default Table;

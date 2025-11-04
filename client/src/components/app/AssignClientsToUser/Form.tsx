@@ -1,20 +1,32 @@
 import { useEffect } from "react";
 
-import { toast, Toaster } from "sonner";
+import {
+  toast,
+  Toaster,
+} from "sonner";
 import z from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-import { useAddUserClientMutation } from "@/services/user-clients/user-clients.api";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
+import {
+  useAddUserClientMutation,
+} from "@/services/user-clients/user-clients.api";
 import {
   useGetTransformedUsersQuery,
   useGetUserWithUnassignedClientsQuery,
 } from "@/services/users/users.api";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useForm, useStore } from "@tanstack/react-form";
+import {
+  useForm,
+  useStore,
+} from "@tanstack/react-form";
 
-import SelectWithAvatarsDemo from "../shadcn-studio/select/select-31";
-import MultipleSelectDemo from "../shadcn-studio/select/select-32";
+import SelectWithAvatarsDemo from "../../shadcn-studio/select/select-31";
+import MultipleSelectDemo from "../../shadcn-studio/select/select-32";
 
 const formSchema = z.object({
   userId: z.string().min(1, "User is required"),

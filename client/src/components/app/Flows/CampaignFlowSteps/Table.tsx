@@ -1,20 +1,13 @@
 import { ArrowUpDown } from "lucide-react";
 
-import TableData from "@/components/TableData";
 import { Button } from "@/components/ui/button";
+import { useGetFlowsQuery } from "@/services/flows/flows.api";
+import type { Flow } from "@/services/flows/flows.type";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import { useClientCampaigns } from "../store/ClientCampaignsContextProvider";
+import TableData from "../../TableData";
 
-export type Client = {
-  id: string;
-  name: string;
-  businessName: string;
-  email: string;
-  status: string;
-};
-
-const clientColumns: ColumnDef<Client>[] = [
+const columns: ColumnDef<Flow["steps"][number]>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -30,27 +23,33 @@ const clientColumns: ColumnDef<Client>[] = [
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
   },
+
   {
-    accessorKey: "businessName",
-    header: "Business Name",
+    accessorKey: "order",
+    header: "Order",
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("businessName")}</div>
+      <div className="font-medium">{row.getValue("order")}</div>
     ),
   },
+
   {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("email")}</div>
-    ),
+    accessorKey: "stepActivities",
+    header: "Step Activities",
+    cell: ({ row }) => {
+      const stepActivities = row.getValue("stepActivities") as {
+        activity: {
+          name: string;
+        };
+      }[];
+
+      return (
+        <div className="font-medium">
+          {stepActivities.map((s) => s.activity.name).join(", ")}
+        </div>
+      );
+    },
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("status")}</div>
-    ),
-  },
+
   // {
   //   id: "actions",
   //   enableHiding: false,
@@ -81,9 +80,22 @@ const clientColumns: ColumnDef<Client>[] = [
   // },
 ];
 
-const ClientsTable = () => {
-  const { clients } = useClientCampaigns();
-  return <>{clients && <TableData data={clients} columns={clientColumns} />}</>;
+const Table = () => {
+  const { data } = useGetFlowsQuery();
+
+  return (
+    <>
+      {data &&
+        data?.map((flow) => (
+          <div key={flow.id}>
+            {flow.steps &&
+              flow.steps.map((step) => (
+                <TableData key={step.id} data={flow.steps} columns={columns} />
+              ))}
+          </div>
+        ))}
+    </>
+  );
 };
 
-export default ClientsTable;
+export default Table;

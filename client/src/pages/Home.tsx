@@ -1,10 +1,13 @@
 "use client";
 
-import Dropdown from "@/components/Dropdown";
-import TableData from "@/components/TableData";
+import Dropdown from "@/components/app/Dropdown";
+import TableData from "@/components/app/TableData";
 import { Separator } from "@/components/ui/separator";
 import { useGetUsersQuery } from "@/services/users/users.api";
-import { paymentColumns, payments } from "@/utils/dummy";
+import {
+  paymentColumns,
+  payments,
+} from "@/utils/dummy";
 
 const Home = () => {
   const { data: users, isFetching } = useGetUsersQuery();

@@ -31,7 +31,6 @@ export function DialogCallButton() {
     if (open) {
       const deviceInit = async () => {
         try {
-          console.log(`${import.meta.env.VITE_BACKEND_URL}/twilio/token`);
           const res2 = await axios.request({
             baseURL: `${import.meta.env.VITE_BACKEND_URL}/twilio/token`,
             // headers: {
@@ -41,7 +40,6 @@ export function DialogCallButton() {
               Accept: "application/json",
             },
           });
-          console.log("res2: ", res2);
           const res = await fetch(
             `${import.meta.env.VITE_BACKEND_URL}/twilio/token`,
             {
