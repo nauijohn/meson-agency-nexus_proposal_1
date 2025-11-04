@@ -11,63 +11,40 @@ import {
   Post,
 } from "@nestjs/common";
 
-import { FlowActivitiesService } from "../flow-activities/flow-activities.service";
-import { FlowStepActivitiesService } from "../flow-step-activities/flow-step-activities.service";
-import { FlowStepsService } from "../flow_steps/flow-steps.service";
 import { CreateFlowDto } from "./dto/create-flow.dto";
 import { UpdateFlowDto } from "./dto/update-flow.dto";
 import { FlowsService } from "./flows.service";
 
 @Controller("flows")
 export class FlowsController {
-  constructor(
-    private readonly flowsService: FlowsService,
-    private readonly flowStepsService: FlowStepsService,
-    private readonly flowActivitiesService: FlowActivitiesService,
-    private readonly flowStepActivitiesService: FlowStepActivitiesService,
-  ) {}
+  constructor(private readonly service: FlowsService) {}
 
   @Post()
-  async create(@Body() dto: CreateFlowDto) {
-    const steps = await Promise.all(
-      dto.steps
-        ? dto.steps.map(async (step) => {
-            const stepActivities = await Promise.all(
-              step.activities?.map(async (activity) => {
-                return this.flowStepActivitiesService.create({
-                  activity: await this.flowActivitiesService.create({
-                    id: activity,
-                  }),
-                });
-              }),
-            );
-            return this.flowStepsService.create(
-              {
-                name: step.name,
-                order: step.order,
-                stepActivities: stepActivities,
+  async create(@Body() { name, steps }: CreateFlowDto) {
+    return this.service.create({
+      name,
+      steps:
+        steps?.map(({ name, order, activities }) => ({
+          name,
+          order,
+          stepActivities:
+            activities?.map((activityId) => ({
+              activity: {
+                id: activityId,
               },
-              false,
-            );
-          })
-        : [],
-    );
-    console.log(steps);
-
-    return this.flowsService.create({
-      name: dto.name,
-      steps,
+            })) || [],
+        })) || [],
     });
   }
 
   @Get()
   async findAll() {
-    return await this.flowsService.findAll();
+    return await this.service.findAll();
   }
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    const entity = await this.flowsService.findOne(id);
+    const entity = await this.service.findOne(id);
     if (!entity) throw new NotFoundException();
     return entity;
   }
@@ -75,14 +52,13 @@ export class FlowsController {
   @Patch(":id")
   async update(@Param("id") id: string, @Body() dto: UpdateFlowDto) {
     const entity = await this.findOne(id);
-    const updated = Object.assign(entity, dto);
-    return this.flowsService.update(updated);
+    return this.service.update(entity, dto);
   }
 
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param("id") id: string) {
     await this.findOne(id);
-    this.flowsService.delete(id);
+    this.service.delete(id);
   }
 }

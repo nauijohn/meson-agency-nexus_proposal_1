@@ -1,5 +1,7 @@
-import { Transform } from "class-transformer";
-import { IsDate, IsString } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsDate, IsOptional, IsString } from "class-validator";
+
+import { CreateCampaignFlowStepDto } from "../../campaign-flow-steps/dto/create-campaign-flow-step.dto";
 
 export class CreateCampaignDto {
   @IsString()
@@ -20,6 +22,16 @@ export class CreateCampaignDto {
   })
   endDate: Date;
 
+  // Relations
+
   @IsString()
   clientId: string;
+
+  @IsOptional()
+  @IsString()
+  flowId?: string;
+
+  @IsOptional({ each: true })
+  @Type(() => CreateCampaignFlowStepDto)
+  campaignFlowSteps?: CreateCampaignFlowStepDto[];
 }

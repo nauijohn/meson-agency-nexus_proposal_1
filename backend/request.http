@@ -1,20 +1,27 @@
 # @host = https://epiploic-temperance-unwhimperingly.ngrok-free.dev/api
 @host = http://localhost:3000/api
 
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGFkMmZjZi1hODkwLTQ3ZTYtODUyMi0yYmZmY2QyNjFjZjQiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxNTYyMjgyLCJleHAiOjE3NjE1NjIyODd9.66PeomXMrMS9DHGvzGMPdnGcahwe37u0-6snEGJTEXI
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZTAyMDhiYy05YjI3LTQzNjUtYTFkYS0wYjVmODkzZDI0MGMiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYyMjIxNTQzLCJleHAiOjE3NjIyMjE1NDh9.cKRGTlHg_-hzEeYbU_34k9ELNRmFey5OQllUpLkja0M
 
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGFkMmZjZi1hODkwLTQ3ZTYtODUyMi0yYmZmY2QyNjFjZjQiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYxNTYyMjgyLCJleHAiOjE3NjIxNjcwODJ9.FkTU2tZB3AnAWXvl61wktm9CAY1-LMPVNO_4xejfm_s
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2Mjc3OTUyOS1mYWRjLTRkZDEtYWU2OS0zNjkxNmFjNzRiZTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJ0b2tlbklkIjoiZDQ4MzFiMzUtZGIwOC00ZmM4LTgwZTItNzFjNGJiYTc3Y2JjIiwiaWF0IjoxNzYyMjM1MTU0LCJleHAiOjE3NjI4Mzk5NTR9.Gg0cAIty0kmmwPKwi1vr3o_m3ZB9VRjGihQ_ULkg9NY
 
+
+#######################################
+##               Auth               ##
+######################################
+
+###
 POST {{host}}/auth/sign-up
 Content-Type: application/json
 
 {
-	"email": "test2@example.com",
-	"password": "testpass"
+	"email": "test@example.com",
+	"password": "testpass",
+	"firstName": "Test",
+	"lastName": "User"
 }
 
 ###
-
 POST {{host}}/auth/sign-in
 Content-Type: application/json
 
@@ -24,31 +31,78 @@ Content-Type: application/json
 }
 
 ###
-
 POST {{host}}/auth/refresh-token
 Authorization: Bearer {{refreshToken}}
 
 ###
+POST {{host}}/auth/sign-out
+Authorization: Bearer {{refreshToken}}
+
+#######################################
+##              Twilio              ##
+######################################
+
+###
 GET {{host}}/twilio/token
 
-###
+#######################################
+##              Clients              ##
+#######################################
 
-GET {{host}}/campaigns/
 ###
-GET {{host}}/campaigns/1
+POST {{host}}/clients
+Content-Type: application/json
+
+{
+	"name": "New Client3",
+	"email": "client3@test.com",
+	"contactPerson": "Jeff2",
+	"businessName": "Client Business2",
+	"phoneNumber": "+1234567890"
+}
+###
+GET {{host}}/clients
+
+#######################################
+##             Campaigns             ##
+#######################################
+
+###
+GET {{host}}/campaigns/
+
+###
+GET {{host}}/campaigns?unassignedFlow=true
+
+###
+GET {{host}}/campaigns/7452cd4f-7e25-4077-85a8-db8465def1f2
+
 ###
 POST {{host}}/campaigns/
 Content-Type: application/json
 
 {
-	"title": "New Campaign",
-	"description": "Description of the new campaign"
+	"name": "New Campaign",
+	"description": "Description of the new campaign",
+	"startDate": "2024-01-01T00:00:00Z",
+	"endDate": "2024-12-31T23:59:59Z",
+	"clientId": "7749f6e7-5b07-49c2-8890-5d2736776463"
 }
 
 ###
+PATCH {{host}}/campaigns/19395bd8-13db-4f2f-a519-567889e7f4a3
+Content-Type: application/json
 
+{
+	"flowId": "47c0d081-79d7-492b-b39d-d396a2f6f95b"
+}
+
+###
 GET {{host}}/campaigns/
 
+
+#####################################
+##              Users              ##
+#####################################
 
 ###
 GET {{host}}/users
@@ -64,16 +118,19 @@ Content-Type: application/json
 	"clientIds": ["client1", "client2", "client3"]
 }
 
-###
-GET {{host}}/clients
+
+##################################
+##         User Clients         ##
+##################################
 
 ###
 GET {{host}}/user-clients
 
-###
-GET {{host}}/flow-activities/
 
 
+###################################
+##             Flows             ##
+###################################
 ###
 POST {{host}}/flows
 Content-Type: application/json
@@ -85,12 +142,46 @@ Content-Type: application/json
 			"name": "Step 1",
 			"order": 1,
 			"activities": [
-				"2d36c4a9-35ff-4b7f-b333-1fe1a3ecfe56",
-				"c7be29bd-d1a3-416c-8691-1655e614622b"
+				"52daf5f0-46d8-4695-b248-4fb7765e0008",
+				"54eda8d9-5b1c-4186-932b-750d1af48069"
 			]
 		}
 	]
 }
 
 ###
+POST {{host}}/flows
+Content-Type: application/json
+
+{
+	"name": "New Flow",
+	"steps": [
+		{
+			"name": "Step 1",
+			"order": 1
+		}
+	]
+}
+
+###
 GET {{host}}/flows
+
+
+
+#####################
+## Flow Activities ##
+#####################
+
+
+###
+POST {{host}}/flow-activities
+Content-Type: application/json
+
+{
+	"name": "Webhook",
+	"type": "webhook"
+}
+
+###
+GET {{host}}/flow-activities
+#endregion

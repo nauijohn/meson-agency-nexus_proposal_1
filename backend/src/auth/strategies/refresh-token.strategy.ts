@@ -28,7 +28,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   }
 
   validate(payload: JwtRefreshPayload): JwtRefreshUser {
-    console.log("validate RefreshTokenStrategy", payload);
+    console.log("validate RefreshTokenStrategy22", payload);
     if (!payload) throw new UnauthorizedException();
     return { id: payload.sub, email: payload.email, tokenId: payload.tokenId };
   }

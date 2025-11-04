@@ -9,13 +9,11 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from "@nestjs/common";
 
-import { UpdateCreateDto } from "../users/";
 import { ClientsService } from "./clients.service";
+import { UpdateClientDto } from "./dto";
 import { CreateClientDto } from "./dto/create-client.dto";
-import { QueryClientDto } from "./dto/query-client.dto";
 
 @Controller("clients")
 export class ClientsController {
@@ -27,8 +25,8 @@ export class ClientsController {
   }
 
   @Get()
-  findAll(@Query() query?: QueryClientDto) {
-    return this.service.findAll(query);
+  findAll() {
+    return this.service.findAll();
   }
 
   @Get(":id")
@@ -39,10 +37,9 @@ export class ClientsController {
   }
 
   @Patch(":id")
-  async update(@Param("id") id: string, @Body() dto: UpdateCreateDto) {
+  async update(@Param("id") id: string, @Body() dto: UpdateClientDto) {
     const entity = await this.findOne(id);
-    const updated = Object.assign(entity, dto);
-    return this.service.update(updated);
+    return this.service.update(entity, dto);
   }
 
   @Delete(":id")

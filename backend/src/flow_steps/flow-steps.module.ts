@@ -7,6 +7,5 @@ import { FlowStepsService } from "./flow-steps.service";
 @Module({
   imports: [TypeOrmModule.forFeature([FlowStep])],
   providers: [FlowStepsService],
-  exports: [FlowStepsService],
 })
 export class FlowStepsModule {}

@@ -27,7 +27,8 @@ export class Campaign extends NamedEntity {
   status: "active" | "paused" | "completed";
 
   @ManyToOne(() => Client, (client) => client.campaigns, {
-    onDelete: "CASCADE", // optional: delete campaigns if client is deleted
+    nullable: false,
+    onDelete: "NO ACTION", // optional: delete campaigns if client is deleted
   })
   @JoinColumn({ name: "client_id" }) // links this column to the relation
   client: Client;
@@ -36,11 +37,10 @@ export class Campaign extends NamedEntity {
   @RelationId((campaign: Campaign) => campaign.client)
   clientId: string;
 
-  @ManyToOne(() => Flow, (flow) => flow.campaigns, { nullable: false })
+  @ManyToOne(() => Flow, (flow) => flow.campaigns, { nullable: true })
   @JoinColumn({ name: "flow_id" })
-  flow: Flow;
+  flow?: Flow;
 
-  // Campaign.ts
-  @OneToMany(() => CampaignFlowStep, (cfs) => cfs.campaign)
-  campaignFlowSteps: CampaignFlowStep[];
+  @OneToMany(() => CampaignFlowStep, (cfs) => cfs.campaign, { nullable: true })
+  campaignFlowSteps?: CampaignFlowStep[];
 }

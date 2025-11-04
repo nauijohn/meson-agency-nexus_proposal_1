@@ -4,7 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Client } from "./client.entity";
-import { QueryClientDto } from "./dto/query-client.dto";
+import { UpdateClientDto } from "./dto";
 
 @Injectable()
 export class ClientsService {
@@ -18,7 +18,7 @@ export class ClientsService {
     return this.repository.save(entity);
   }
 
-  findAll(query?: QueryClientDto): Promise<Client[]> {
+  findAll(): Promise<Client[]> {
     return this.repository.find();
   }
 
@@ -28,8 +28,8 @@ export class ClientsService {
     });
   }
 
-  async update(dto: Partial<Client>): Promise<Client> {
-    const entity = this.repository.create(dto);
+  async update(entity: Client, dto: UpdateClientDto): Promise<Client> {
+    Object.assign(entity, dto);
     return this.repository.save(entity);
   }
 

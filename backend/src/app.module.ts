@@ -2,9 +2,11 @@ import * as Joi from "joi";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AuthModule } from "./auth/auth.module";
+import { CampaignFlowStepsModule } from "./campaign-flow-steps/campaign-flow-steps.module";
 import { CampaignsModule } from "./campaigns/campaigns.module";
 import { ClientsModule } from "./clients/clients.module";
 import { FlowActivitiesModule } from "./flow-activities/flow-activities.module";
@@ -40,6 +42,7 @@ import { UsersModule } from "./users";
       inject: [ConfigService],
       useFactory: typeOrmConfigFactory,
     }),
+    EventEmitterModule.forRoot(),
     UsersModule,
     AuthModule,
     RefreshTokensModule,
@@ -50,6 +53,7 @@ import { UsersModule } from "./users";
     FlowActivitiesModule,
     FlowsModule,
     FlowStepsModule,
+    CampaignFlowStepsModule,
   ],
 })
 export class AppModule {

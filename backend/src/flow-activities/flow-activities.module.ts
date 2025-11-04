@@ -9,6 +9,5 @@ import { FlowActivity } from "./flow-activity.entity";
   imports: [TypeOrmModule.forFeature([FlowActivity])],
   controllers: [FlowActivitiesController],
   providers: [FlowActivitiesService],
-  exports: [FlowActivitiesService],
 })
 export class FlowActivitiesModule {}

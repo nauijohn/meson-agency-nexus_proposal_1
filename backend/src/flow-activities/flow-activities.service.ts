@@ -3,6 +3,7 @@ import { Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { UpdateFlowActivityDto } from "./dto/update-flow-activity.dto";
 import { FlowActivity } from "./flow-activity.entity";
 
 @Injectable()
@@ -12,12 +13,8 @@ export class FlowActivitiesService {
     private readonly repository: Repository<FlowActivity>,
   ) {}
 
-  async create(
-    dto: Partial<FlowActivity>,
-    save: boolean = true,
-  ): Promise<FlowActivity> {
+  async create(dto: Partial<FlowActivity>): Promise<FlowActivity> {
     const entity = this.repository.create(dto);
-    if (!save) return entity;
     return this.repository.save(entity);
   }
 
@@ -29,8 +26,11 @@ export class FlowActivitiesService {
     return this.repository.findOne({ where: { id } });
   }
 
-  async update(dto: Partial<FlowActivity>): Promise<FlowActivity> {
-    const entity = this.repository.create(dto);
+  async update(
+    entity: FlowActivity,
+    dto: UpdateFlowActivityDto,
+  ): Promise<FlowActivity> {
+    Object.assign(entity, dto);
     return this.repository.save(entity);
   }
 

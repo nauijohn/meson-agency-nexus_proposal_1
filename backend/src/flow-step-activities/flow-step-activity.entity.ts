@@ -12,6 +12,11 @@ export class FlowStepActivity extends BaseEntity {
   @ManyToOne(() => FlowActivity, { eager: true })
   activity: FlowActivity;
 
-  @Column({ type: "timestamp", nullable: true })
+  @Column({
+    name: "completed_at",
+    type: "timestamp",
+    nullable: true,
+    default: null,
+  })
   completedAt: Date | null;
 }

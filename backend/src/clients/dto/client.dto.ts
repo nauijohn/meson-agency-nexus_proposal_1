@@ -1,9 +1,3 @@
-import { Expose } from "class-transformer";
+import { BaseDto } from "../../common/bases/base.dto";
 
-export class ClientDto {
-  @Expose()
-  id: string;
-
-  @Expose()
-  name: string;
-}
+export class ClientDto extends BaseDto {}

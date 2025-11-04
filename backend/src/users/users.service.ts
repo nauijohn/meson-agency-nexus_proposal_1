@@ -1,11 +1,12 @@
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { Client } from "../clients/client.entity";
+import { UpdateUserDto } from "./dto";
 import { QueryUserDto } from "./dto/query-user.dto";
-import { User } from "./user.entity";
+import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {
@@ -14,7 +15,7 @@ export class UsersService {
     private readonly repository: Repository<User>,
   ) {}
 
-  async create(dto: Partial<User>): Promise<User> {
+  async create(dto: DeepPartial<User>): Promise<User> {
     const entity = this.repository.create(dto);
     return this.repository.save(entity);
   }
@@ -29,7 +30,8 @@ export class UsersService {
   async findOne(id: string, query?: QueryUserDto): Promise<User | null> {
     const qb = this.repository
       .createQueryBuilder("user")
-      .where("user.id = :id", { id });
+      .where("user.id = :id", { id })
+      .leftJoinAndSelect("user.refreshToken", "refreshToken");
 
     if (query?.includeClients === true)
       qb.leftJoinAndSelect("user.clients", "client");
@@ -49,8 +51,17 @@ export class UsersService {
     return qb.getOne();
   }
 
-  async update(dto: Partial<User>): Promise<User> {
-    const entity = this.repository.create(dto);
+  update(entity: User, dto: UpdateUserDto): Promise<User> {
+    let refreshToken: { token: string } | undefined = undefined;
+    if (dto.refreshToken) {
+      refreshToken = { ...entity.refreshToken, token: dto.refreshToken };
+    }
+
+    Object.assign(entity, {
+      ...dto,
+      ...(refreshToken && { refreshToken }),
+    });
+
     return this.repository.save(entity);
   }
 

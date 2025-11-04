@@ -9,6 +9,11 @@ services:
       target: development
     ports:
       - 3000:3000
+      - 9229:9229
+    expose:
+      - 3000
+      - 9229
+    command: pnpm start:debug-docker
     environment:
       - PORT=3000
       - NODE_ENV=development

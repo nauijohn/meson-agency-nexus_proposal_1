@@ -24,7 +24,6 @@ export class FlowActivitiesController {
 
   @Post()
   create(@Body() dto: CreateFlowActivityDto) {
-    console.log("DTO", dto);
     return this.service.create(dto);
   }
 
@@ -43,8 +42,7 @@ export class FlowActivitiesController {
   @Patch(":id")
   async update(@Param("id") id: string, @Body() dto: UpdateFlowActivityDto) {
     const entity = await this.findOne(id);
-    const updated = Object.assign(entity, dto);
-    return this.service.update(updated);
+    return this.service.update(entity, dto);
   }
 
   @Delete(":id")

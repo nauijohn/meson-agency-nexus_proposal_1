@@ -15,7 +15,7 @@ import {
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { QueryUserDto } from "./dto/query-user.dto";
-import { UpdateCreateDto } from "./dto/update-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserDto } from "./dto/user.dto";
 import { UsersService } from "./users.service";
 
@@ -26,13 +26,18 @@ export class UsersController {
 
   @Post()
   create(@Body() dto: CreateUserDto) {
-    return this.service.create(dto);
+    return this.service.create({
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      password: dto.password,
+      ...(dto.refreshToken && { refreshToken: { token: dto.refreshToken } }),
+    });
   }
 
   @Get()
   async findAll() {
-    const x = await this.service.findAll();
-    return x;
+    return await this.service.findAll();
   }
 
   @Get(":id")
@@ -43,10 +48,9 @@ export class UsersController {
   }
 
   @Patch(":id")
-  async update(@Param("id") id: string, @Body() dto: UpdateCreateDto) {
+  async update(@Param("id") id: string, @Body() dto: UpdateUserDto) {
     const entity = await this.findOne(id);
-    const updated = Object.assign(entity, dto);
-    return this.service.update(updated);
+    return this.service.update(entity, dto);
   }
 
   @Delete(":id")

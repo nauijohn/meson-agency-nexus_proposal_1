@@ -17,7 +17,6 @@ import { ReqUser } from "./decorators/req-user.decorator";
 import { SignUpDto } from "./dto";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { RefreshTokenGuard } from "./guards/refresh-token.guard";
-import { hash } from "./utils/security";
 
 import type { JwtRefreshUser } from "./strategies/refresh-token.strategy";
 @Controller("auth")
@@ -33,21 +32,14 @@ export class AuthController {
     let user = await this.usersService.findByEmail(request.email);
     if (user) throw new UnprocessableEntityException("User already exists");
 
-    const hashedPassword = await hash(request.password);
-
-    user = await this.usersService.create({
-      ...request,
-      password: hashedPassword,
-    });
+    user = await this.usersService.create(request);
     if (!user) throw new InternalServerErrorException("Error creating user");
 
     const tokens = this.authService.createTokens(user);
 
-    const hashedRefreshToken = await hash(tokens.refreshToken);
-
     const refreshToken = await this.refreshTokensService.create({
       user,
-      token: hashedRefreshToken,
+      token: tokens.refreshToken,
     });
     if (!refreshToken)
       throw new InternalServerErrorException("Error creating refreshToken");
@@ -62,17 +54,16 @@ export class AuthController {
     let { refreshToken } = user;
     const tokens = this.authService.createTokens(user);
 
-    const hashedRefreshToken = await hash(tokens.refreshToken);
+    // const hashedRefreshToken = await hash(tokens.refreshToken);
 
     if (!refreshToken) {
       refreshToken = await this.refreshTokensService.create({
-        token: hashedRefreshToken,
+        token: tokens.refreshToken,
         user,
       });
     } else {
-      refreshToken = await this.refreshTokensService.update({
-        id: refreshToken.id,
-        token: hashedRefreshToken,
+      refreshToken = await this.refreshTokensService.update(refreshToken, {
+        token: tokens.refreshToken,
       });
     }
 
@@ -84,9 +75,8 @@ export class AuthController {
   @Post("sign-out")
   @UseGuards(RefreshTokenGuard)
   async signOut(@ReqUser() user: JwtRefreshUser) {
-    if (user.tokenId) {
-      await this.refreshTokensService.delete(user.tokenId);
-    }
+    if (!user?.tokenId) throw new InternalServerErrorException();
+    await this.refreshTokensService.delete(user.tokenId);
   }
 
   @Post("refresh-token")

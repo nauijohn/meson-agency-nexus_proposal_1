@@ -18,7 +18,7 @@ RUN pnpm install
 COPY . .
 
 # Default command for dev
-CMD ["pnpm", "start:dev"]
+CMD ["pnpm", "start:debug-docker"]
 
 # ----------------------
 # Stage 2: Dependencies

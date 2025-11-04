@@ -9,18 +9,18 @@ import {
   OneToOne,
 } from "typeorm";
 
-import { Client } from "../clients";
-import { BaseEntity } from "../common/bases";
-import { RefreshToken } from "../refresh-tokens";
-import { Role } from "../roles";
-import { UserClient } from "../user-clients/user-client.entity";
+import { Client } from "../../clients";
+import { BaseEntity } from "../../common/bases";
+import { RefreshToken } from "../../refresh-tokens";
+import { Role } from "../../roles";
+import { UserClient } from "../../user-clients/user-client.entity";
 
 @Entity({ name: "users" })
 export class User extends BaseEntity {
-  @Column()
+  @Column({ name: "first_name" })
   firstName: string;
 
-  @Column()
+  @Column({ name: "last_name" })
   lastName: string;
 
   @Column({ unique: true })
@@ -37,7 +37,11 @@ export class User extends BaseEntity {
     eager: true,
     onDelete: "SET NULL",
   })
-  @JoinColumn()
+  @JoinColumn({
+    name: "refresh_token_id",
+    foreignKeyConstraintName: "fk_user_refresh_token",
+    referencedColumnName: "id",
+  })
   refreshToken?: RefreshToken;
 
   // ✅ Many-to-many relationship between User and Role

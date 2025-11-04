@@ -18,6 +18,12 @@ export class CampaignFlowStep extends BaseIdEntity {
   @JoinColumn({ name: "flow_step_id" })
   flowStep: FlowStep;
 
-  @Column({ type: "timestamp", nullable: true })
+  @Column({ name: "completed_at", type: "timestamp", nullable: true })
   completedAt?: Date;
+
+  @Column({ name: "scheduled_at", type: "timestamp", nullable: true })
+  scheduledAt?: Date;
+
+  @Column({ name: "due_at", type: "timestamp", nullable: true })
+  dueAt?: Date;
 }

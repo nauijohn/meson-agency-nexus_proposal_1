@@ -1,9 +1,3 @@
-import { Expose } from "class-transformer";
+import { BaseDto } from "../../common/bases/base.dto";
 
-export class FlowActivityDto {
-  @Expose()
-  id: string;
-
-  @Expose()
-  name: string;
-}
+export class FlowActivityDto extends BaseDto {}

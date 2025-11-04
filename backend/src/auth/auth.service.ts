@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 
 import { User, UsersService } from "../users/";
-import { compare, hash } from "./utils/security";
+import { compare } from "./utils/security";
 
 type TokenPayload = {
   sub: string;
@@ -59,14 +59,8 @@ export class AuthService {
 
     const tokens = this.createTokens(user);
 
-    const hashedRefreshToken = await hash(tokens.refreshToken);
-
-    user = await this.usersService.update({
-      ...user,
-      refreshToken: {
-        ...user.refreshToken,
-        token: hashedRefreshToken,
-      },
+    user = await this.usersService.update(user, {
+      refreshToken: tokens.refreshToken,
     });
     if (!user) return;
 

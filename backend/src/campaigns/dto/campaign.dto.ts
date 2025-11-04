@@ -1,17 +1,10 @@
 import { Expose, Type } from "class-transformer";
 
 import { ClientDto } from "../../clients/dto/client.dto";
+import { BaseDto } from "../../common/bases/base.dto";
+import { FlowDto } from "../../flows/dto/flow.dto";
 
-export class CampaignDto {
-  @Expose()
-  id: string;
-
-  @Expose()
-  name: string;
-
-  @Expose()
-  description: string;
-
+export class CampaignDto extends BaseDto {
   @Expose()
   startDate: Date;
 
@@ -26,8 +19,6 @@ export class CampaignDto {
   client: ClientDto;
 
   @Expose()
-  createdAt: Date;
-
-  @Expose()
-  updatedAt: Date;
+  @Type(() => FlowDto)
+  flow: FlowDto;
 }

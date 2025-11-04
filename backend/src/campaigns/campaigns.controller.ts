@@ -5,46 +5,51 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CampaignsService } from "./campaigns.service";
 import { CampaignDto } from "./dto/campaign.dto";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
+import { QueryCampaignDto } from "./dto/query-campaign.dto";
 import { UpdateCampaignDto } from "./dto/update-campaign.dto";
 
 @Serialize(CampaignDto)
 @Controller("campaigns")
 export class CampaignsController {
-  constructor(private readonly service: CampaignsService) {}
+  constructor(
+    private readonly service: CampaignsService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   @Post()
-  create(@Body() dto: CreateCampaignDto) {
-    console.log("Creating campaign with DTO:", dto);
-    return this.service.create(dto);
+  async create(@Body() dto: CreateCampaignDto) {
+    return this.service.create({
+      ...dto,
+      client: { id: dto.clientId },
+    });
   }
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() query: QueryCampaignDto) {
+    return this.service.findAll(query);
   }
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    const entity = await this.service.findOne(id);
-    if (!entity) throw new NotFoundException();
-    return entity;
+    return this.service.findOne(id);
   }
 
   @Patch(":id")
   async update(@Param("id") id: string, @Body() dto: UpdateCampaignDto) {
-    const entity = await this.findOne(id);
-    const updated = Object.assign(entity, dto);
-    return this.service.update(updated);
+    console.log("Updating campaign with ID:", id, "with data:", dto);
+    const entity = await this.service.findOne(id);
+    return this.service.update(entity, dto);
   }
 
   @Delete(":id")

@@ -7,6 +7,5 @@ import { FlowStepActivity } from "./flow-step-activity.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([FlowStepActivity])],
   providers: [FlowStepActivitiesService],
-  exports: [FlowStepActivitiesService],
 })
 export class FlowStepActivitiesModule {}

@@ -7,4 +7,10 @@ export class SignUpDto {
 
   @IsNotEmpty()
   password: string;
+
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsNotEmpty()
+  lastName: string;
 }

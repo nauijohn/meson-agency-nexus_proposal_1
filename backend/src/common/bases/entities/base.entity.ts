@@ -3,9 +3,9 @@ import { CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { BaseIdEntity } from "./base-id.entity";
 
 export abstract class BaseEntity extends BaseIdEntity {
-  @CreateDateColumn()
+  @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
   updatedAt: Date;
 }
