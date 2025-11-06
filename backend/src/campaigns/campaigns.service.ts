@@ -4,7 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { CampaignAssignedToFlowEvent } from "../common/events/campaign.events";
+import { CampaignAssignedAFlowEvent } from "../common/events/campaign.events";
 import { Campaign } from "./campaign.entity";
 import { QueryCampaignDto } from "./dto/query-campaign.dto";
 import { UpdateCampaignDto } from "./dto/update-campaign.dto";
@@ -69,11 +69,18 @@ export class CampaignsService {
 
     console.log("Updated campaign:", updated);
 
-    if (flow)
+    if (flow) {
       this.eventEmitter.emit(
-        CampaignAssignedToFlowEvent.eventName,
-        new CampaignAssignedToFlowEvent(updated.id, updated.flow?.id || ""),
+        CampaignAssignedAFlowEvent.eventName,
+        new CampaignAssignedAFlowEvent({
+          campaignId: updated.id,
+          flow: {
+            id: updated.flow?.id || "",
+            flowSteps: dto.campaignFlowSteps,
+          },
+        }),
       );
+    }
 
     return updated;
   }

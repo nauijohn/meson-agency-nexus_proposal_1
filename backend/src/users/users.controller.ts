@@ -43,6 +43,7 @@ export class UsersController {
   @Get(":id")
   async findOne(@Param("id") id: string, @Query() query?: QueryUserDto) {
     const entity = await this.service.findOne(id, query);
+    console.log("Fetched user entity:", entity);
     if (!entity) throw new NotFoundException();
     return entity;
   }

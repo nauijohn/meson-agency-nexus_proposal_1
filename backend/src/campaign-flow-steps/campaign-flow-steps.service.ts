@@ -3,7 +3,8 @@ import { DeepPartial, Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { CampaignFlowStep } from "./campaign-flow-step.entity";
+import { UpdateCampaignFlowStepDto } from "./dto/update-campaign-flow-step.dto";
+import { CampaignFlowStep } from "./entities/campaign-flow-step.entity";
 
 @Injectable()
 export class CampaignFlowStepsService {
@@ -13,20 +14,38 @@ export class CampaignFlowStepsService {
   ) {}
 
   async create(dto: DeepPartial<CampaignFlowStep>): Promise<CampaignFlowStep> {
-    console.log("Creating campaign flow step with dto:", dto);
     const entity = this.repository.create(dto);
-    console.log("Creating campaign flow step:", entity);
     return this.repository.save(entity);
   }
 
   findAll(): Promise<CampaignFlowStep[]> {
-    return this.repository.find();
+    return this.repository.find({
+      relations: {
+        campaign: {
+          client: {
+            campaigns: false,
+          },
+        },
+        flowStep: true,
+      },
+    });
   }
 
   async findOne(id: string): Promise<CampaignFlowStep> {
     return await this.repository.findOneOrFail({
       where: { id },
     });
+  }
+
+  async update(
+    entity: CampaignFlowStep,
+    dto: UpdateCampaignFlowStepDto,
+  ): Promise<CampaignFlowStep> {
+    Object.assign(entity, dto);
+
+    const updated = await this.repository.save(entity);
+
+    return updated;
   }
 
   delete(id: string) {

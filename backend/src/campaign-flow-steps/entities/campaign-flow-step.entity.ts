@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 
-import { Campaign } from "../campaigns/campaign.entity";
-import { BaseIdEntity } from "../common/bases";
-import { FlowStep } from "../flow_steps/flow-step.entity";
+import { Campaign } from "../../campaigns/campaign.entity";
+import { BaseIdEntity } from "../../common/bases";
+import { FlowStep } from "../../flow_steps/flow-step.entity";
 
 @Entity({ name: "campaign_flow_steps" })
 export class CampaignFlowStep extends BaseIdEntity {

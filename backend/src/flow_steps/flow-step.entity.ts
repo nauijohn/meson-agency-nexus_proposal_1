@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 
-import { CampaignFlowStep } from "../campaign-flow-steps/campaign-flow-step.entity";
+import { CampaignFlowStep } from "../campaign-flow-steps/entities/campaign-flow-step.entity";
 import { NamedEntity } from "../common/bases";
 import { FlowStepActivity } from "../flow-step-activities/flow-step-activity.entity";
 import { Flow } from "../flows/flow.entity";

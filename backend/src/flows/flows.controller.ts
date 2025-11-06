@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -44,14 +43,12 @@ export class FlowsController {
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    const entity = await this.service.findOne(id);
-    if (!entity) throw new NotFoundException();
-    return entity;
+    return await this.service.findOne(id);
   }
 
   @Patch(":id")
   async update(@Param("id") id: string, @Body() dto: UpdateFlowDto) {
-    const entity = await this.findOne(id);
+    const entity = await this.service.findOne(id);
     return this.service.update(entity, dto);
   }
 

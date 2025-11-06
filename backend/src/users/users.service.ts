@@ -3,7 +3,6 @@ import { DeepPartial, Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { Client } from "../clients/client.entity";
 import { UpdateUserDto } from "./dto";
 import { QueryUserDto } from "./dto/query-user.dto";
 import { User } from "./entities/user.entity";
@@ -23,7 +22,10 @@ export class UsersService {
   findAll(): Promise<User[]> {
     return this.repository.find({
       // relations: { clients: true },
-      relations: ["userClients", "userClients.client"],
+      relations: {
+        userClients: { client: true },
+      },
+      // relations: ["userClients", "userClients.client"],
     });
   }
 
@@ -31,20 +33,19 @@ export class UsersService {
     const qb = this.repository
       .createQueryBuilder("user")
       .where("user.id = :id", { id })
-      .leftJoinAndSelect("user.refreshToken", "refreshToken");
+      .leftJoinAndSelect("user.refreshToken", "refreshToken")
+      .leftJoinAndSelect("user.userClients", "userClients")
+      .leftJoinAndSelect("userClients.client", "client");
 
-    if (query?.includeClients === true)
-      qb.leftJoinAndSelect("user.clients", "client");
-
-    if (query?.includeUnassignedClients === true) {
+    if (query?.includeUnassignedClients) {
       qb.leftJoinAndMapMany(
-        "user.unassignedClients", // property to map on User
-        Client,
+        "user.unassignedClients",
+        "Client",
         "unassignedClient",
         `unassignedClient.id NOT IN (
-          SELECT client_id FROM user_clients WHERE user_id = :id
+          SELECT uc.client_id FROM user_clients uc WHERE uc.user_id = :id
         )`,
-        { id }, // parameter for subquery
+        { id },
       );
     }
 

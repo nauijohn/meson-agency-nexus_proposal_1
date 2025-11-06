@@ -10,7 +10,6 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CampaignsService } from "./campaigns.service";
@@ -22,10 +21,7 @@ import { UpdateCampaignDto } from "./dto/update-campaign.dto";
 @Serialize(CampaignDto)
 @Controller("campaigns")
 export class CampaignsController {
-  constructor(
-    private readonly service: CampaignsService,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly service: CampaignsService) {}
 
   @Post()
   async create(@Body() dto: CreateCampaignDto) {

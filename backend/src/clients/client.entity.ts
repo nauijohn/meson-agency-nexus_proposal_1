@@ -43,7 +43,7 @@ export class Client extends NamedEntity {
   numbers: ClientNumber[];
 
   @OneToMany(() => Campaign, (campaign) => campaign.client, {
-    eager: true,
+    eager: false,
     cascade: false,
   })
   campaigns: Campaign[];

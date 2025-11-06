@@ -28,8 +28,8 @@ export class FlowsService {
     });
   }
 
-  async findOne(id: string): Promise<Flow | null> {
-    return this.repository.findOne({
+  async findOne(id: string): Promise<Flow> {
+    return this.repository.findOneOrFail({
       where: { id },
       relations: { steps: true },
     });

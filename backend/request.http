@@ -74,7 +74,7 @@ GET {{host}}/campaigns/
 GET {{host}}/campaigns?unassignedFlow=true
 
 ###
-GET {{host}}/campaigns/7452cd4f-7e25-4077-85a8-db8465def1f2
+GET {{host}}/campaigns/54532867-247a-4145-8006-1dffe7ec5f8c
 
 ###
 POST {{host}}/campaigns/
@@ -108,7 +108,10 @@ GET {{host}}/campaigns/
 GET {{host}}/users
 
 ###
-GET {{host}}/users/9ddab346-07b9-4b0e-a39d-368aa2369762?includeUnassignedClients=true
+GET {{host}}/users/b8a9171a-4ec6-4920-ad8e-d928fa42b7a2?includeUnassignedClients=true
+
+###
+GET {{host}}/users/b8a9171a-4ec6-4920-ad8e-d928fa42b7a2?includeClients=true
 
 ###
 PATCH {{host}}/users/15f7650d-8c01-45c5-bbd4-27480d720504
@@ -131,6 +134,7 @@ GET {{host}}/user-clients
 ###################################
 ##             Flows             ##
 ###################################
+
 ###
 POST {{host}}/flows
 Content-Type: application/json
@@ -185,3 +189,10 @@ Content-Type: application/json
 ###
 GET {{host}}/flow-activities
 #endregion
+
+#################################################
+##             Campaign Flow Steps             ##
+#################################################
+
+###
+GET {{host}}/campaign-flow-steps

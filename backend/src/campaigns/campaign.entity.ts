@@ -7,7 +7,7 @@ import {
   RelationId,
 } from "typeorm";
 
-import { CampaignFlowStep } from "../campaign-flow-steps/campaign-flow-step.entity";
+import { CampaignFlowStep } from "../campaign-flow-steps/entities/campaign-flow-step.entity";
 import { Client } from "../clients/client.entity";
 import { NamedEntity } from "../common/bases";
 import { Flow } from "../flows/flow.entity";

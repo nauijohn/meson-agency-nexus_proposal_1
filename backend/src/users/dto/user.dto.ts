@@ -2,7 +2,7 @@ import { Expose, Type } from "class-transformer";
 
 import { ClientDto } from "../../clients";
 import { BaseDto } from "../../common/bases/base.dto";
-import { RefreshToken } from "../../refresh-tokens";
+import { RefreshTokenDto } from "../../refresh-tokens/dto/refresh-token.dto";
 import { Role } from "../../roles";
 
 export class UserDto extends BaseDto {
@@ -24,7 +24,8 @@ export class UserDto extends BaseDto {
   unassignedClients: ClientDto[];
 
   @Expose()
-  refreshToken?: RefreshToken;
+  @Type(() => RefreshTokenDto)
+  refreshToken?: RefreshTokenDto;
 
   roles: Role[];
 }
