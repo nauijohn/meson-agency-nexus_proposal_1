@@ -1,3 +1,4 @@
+import { AutoMap } from "automapper-classes";
 import { Transform, Type } from "class-transformer";
 import { IsDate, IsOptional, IsString } from "class-validator";
 
@@ -5,22 +6,23 @@ import { CreateCampaignFlowStepDto } from "../../campaign-flow-steps/dto/create-
 
 export class CreateCampaignDto {
   @IsString()
+  @AutoMap()
   name: string;
 
   @IsString()
+  @AutoMap()
   description: string;
 
   @IsDate()
-  @Transform((e) => {
-    return new Date(e.value as string);
-  })
+  @Transform(({ value }) => new Date(String(value)))
+  @AutoMap()
   startDate: Date;
 
+  @IsOptional()
   @IsDate()
-  @Transform((e) => {
-    return new Date(e.value as string);
-  })
-  endDate: Date;
+  @Transform(({ value }) => new Date(String(value)))
+  @AutoMap(() => Date)
+  endDate: Date | null;
 
   // Relations
 

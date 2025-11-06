@@ -3,7 +3,7 @@
 
 @accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZTAyMDhiYy05YjI3LTQzNjUtYTFkYS0wYjVmODkzZDI0MGMiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYyMjIxNTQzLCJleHAiOjE3NjIyMjE1NDh9.cKRGTlHg_-hzEeYbU_34k9ELNRmFey5OQllUpLkja0M
 
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2Mjc3OTUyOS1mYWRjLTRkZDEtYWU2OS0zNjkxNmFjNzRiZTciLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJ0b2tlbklkIjoiZDQ4MzFiMzUtZGIwOC00ZmM4LTgwZTItNzFjNGJiYTc3Y2JjIiwiaWF0IjoxNzYyMjM1MTU0LCJleHAiOjE3NjI4Mzk5NTR9.Gg0cAIty0kmmwPKwi1vr3o_m3ZB9VRjGihQ_ULkg9NY
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNDEwMWRiZS04NzliLTQ0YjItYjlmNS0zMGI2NDU3NTg5N2QiLCJlbWFpbCI6InRlc3QzM0BleGFtcGxlLmNvbSIsInRva2VuSWQiOiIyNjQ1YjAwNS0yNmU0LTQ2YjktOTFmNC0zYTU0ZTMxODY0YTIiLCJpYXQiOjE3NjI0MjgzODksImV4cCI6MTc2MzAzMzE4OX0.MlnfaE26c4oTDy-07OVtzjIrt7uDK53xF8XIggsAwn0
 
 
 #######################################
@@ -15,7 +15,7 @@ POST {{host}}/auth/sign-up
 Content-Type: application/json
 
 {
-	"email": "test@example.com",
+	"email": "test33@example.com",
 	"password": "testpass",
 	"firstName": "Test",
 	"lastName": "User"
@@ -26,7 +26,7 @@ POST {{host}}/auth/sign-in
 Content-Type: application/json
 
 {
-	"email": "test@example.com",
+	"email": "test33@example.com",
 	"password": "testpass"
 }
 
@@ -106,6 +106,25 @@ GET {{host}}/campaigns/
 
 ###
 GET {{host}}/users
+
+###
+POST {{host}}/users
+Content-Type: application/json
+
+{
+	"firstName": "John",
+	"lastName": "Doe",
+	"email": "john.doe@example.com",
+	"password": "securePassword123"
+}
+
+###
+PATCH {{host}}/users/b2f610a3-8731-45fc-835e-55b00f581599
+Content-Type: application/json
+
+{
+	"firstName": "WEEEEE"
+}
 
 ###
 GET {{host}}/users/b8a9171a-4ec6-4920-ad8e-d928fa42b7a2?includeUnassignedClients=true

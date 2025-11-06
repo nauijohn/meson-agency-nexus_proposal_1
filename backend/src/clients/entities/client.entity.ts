@@ -1,26 +1,32 @@
+import { AutoMap } from "automapper-classes";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 
-import { Campaign } from "../campaigns/campaign.entity";
-import { ClientContact } from "../client-contacts/client-contact.entity";
-import { ClientNumber } from "../client-numbers/client-number.entity";
-import { NamedEntity } from "../common/bases";
-import { UserClient } from "../user-clients/user-client.entity";
+import { Campaign } from "../../campaigns/entities/campaign.entity";
+import { ClientContact } from "../../client-contacts/client-contact.entity";
+import { ClientNumber } from "../../client-numbers/client-number.entity";
+import { NamedEntity } from "../../common/bases";
+import { UserClient } from "../../user-clients/entities/user-client.entity";
 
 @Entity({ name: "clients" })
 export class Client extends NamedEntity {
   @Column({ name: "business_name" })
+  @AutoMap()
   businessName: string;
 
   @Column({ unique: true })
+  @AutoMap()
   email: string;
 
   @Column({ name: "contact_person" })
+  @AutoMap()
   contactPerson: string;
 
   @Column({ name: "phone_number" })
+  @AutoMap()
   phoneNumber: string;
 
   @Column({ default: "active" })
+  @AutoMap()
   status: "active" | "inactive";
 
   @ManyToMany(() => ClientContact, (contact) => contact.clients)

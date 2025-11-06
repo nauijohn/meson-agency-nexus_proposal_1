@@ -1,3 +1,6 @@
+import { classes } from "automapper-classes";
+import { CamelCaseNamingConvention } from "automapper-core";
+import { AutomapperModule } from "automapper-nestjs";
 import * as Joi from "joi";
 
 import { Module } from "@nestjs/common";
@@ -43,6 +46,10 @@ import { UsersModule } from "./users";
       useFactory: typeOrmConfigFactory,
     }),
     EventEmitterModule.forRoot(),
+    AutomapperModule.forRoot({
+      strategyInitializer: classes(),
+      namingConventions: new CamelCaseNamingConvention(),
+    }),
     UsersModule,
     AuthModule,
     RefreshTokensModule,

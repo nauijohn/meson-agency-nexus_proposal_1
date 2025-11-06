@@ -1,9 +1,9 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 
 import { CallProvider } from "../call-providers/call-provider.entity";
-import { Campaign } from "../campaigns/campaign.entity";
+import { Campaign } from "../campaigns/entities/campaign.entity";
 import { ClientContact } from "../client-contacts/client-contact.entity";
-import { Client } from "../clients/client.entity";
+import { Client } from "../clients/entities/client.entity";
 import { BaseEntity } from "../common/bases";
 import { Outcome } from "../outcomes/outcome.entity";
 import { User } from "../users/";

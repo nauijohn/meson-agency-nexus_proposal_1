@@ -1,6 +1,7 @@
+import { AutoMap } from "automapper-classes";
 import { Column, Entity } from "typeorm";
 
-import { NamedEntity } from "../common/bases";
+import { NamedEntity } from "../../common/bases";
 
 export enum ActivityType {
   email = "email",
@@ -13,5 +14,6 @@ export enum ActivityType {
 @Entity({ name: "flow_activities" })
 export class FlowActivity extends NamedEntity {
   @Column({ type: "enum", enum: ActivityType, unique: true })
+  @AutoMap()
   type: ActivityType;
 }

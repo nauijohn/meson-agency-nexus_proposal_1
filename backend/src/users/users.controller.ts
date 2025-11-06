@@ -26,13 +26,7 @@ export class UsersController {
 
   @Post()
   create(@Body() dto: CreateUserDto) {
-    return this.service.create({
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      email: dto.email,
-      password: dto.password,
-      ...(dto.refreshToken && { refreshToken: { token: dto.refreshToken } }),
-    });
+    return this.service.create(dto);
   }
 
   @Get()

@@ -24,8 +24,7 @@ export class UserClientsController {
 
   @Get()
   async findAll() {
-    const x = await this.service.findAll();
-    return x;
+    return await this.service.findAll();
   }
 
   @Get(":userId/:clientId")

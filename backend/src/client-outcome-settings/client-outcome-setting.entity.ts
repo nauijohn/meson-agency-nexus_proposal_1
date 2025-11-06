@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 
-import { Client } from "../clients/client.entity";
+import { Client } from "../clients/entities/client.entity";
 import { BaseEntity } from "../common/bases";
 import { Outcome } from "../outcomes/outcome.entity";
 

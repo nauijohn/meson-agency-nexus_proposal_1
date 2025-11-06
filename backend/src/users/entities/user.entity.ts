@@ -1,3 +1,4 @@
+import { AutoMap } from "automapper-classes";
 import {
   AfterLoad,
   Column,
@@ -13,20 +14,24 @@ import { Client } from "../../clients";
 import { BaseEntity } from "../../common/bases";
 import { RefreshToken } from "../../refresh-tokens";
 import { Role } from "../../roles";
-import { UserClient } from "../../user-clients/user-client.entity";
+import { UserClient } from "../../user-clients/entities/user-client.entity";
 
 @Entity({ name: "users" })
 export class User extends BaseEntity {
   @Column({ name: "first_name" })
+  @AutoMap()
   firstName: string;
 
   @Column({ name: "last_name" })
+  @AutoMap()
   lastName: string;
 
   @Column({ unique: true })
+  @AutoMap()
   email: string;
 
   @Column()
+  @AutoMap()
   password: string;
 
   @OneToMany(() => UserClient, (uc) => uc.user)

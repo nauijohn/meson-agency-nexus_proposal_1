@@ -1,3 +1,4 @@
+import { AutoMap } from "automapper-classes";
 import {
   IsArray,
   IsNotEmpty,
@@ -9,10 +10,12 @@ import {
 export class CreateFlowStepDto {
   @IsNotEmpty()
   @IsString()
+  @AutoMap()
   name: string;
 
   @IsNotEmpty()
   @IsNumber()
+  @AutoMap()
   order: number;
 
   @IsArray()

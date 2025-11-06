@@ -1,20 +1,28 @@
+import type { Mapper } from "automapper-core";
+import { InjectMapper } from "automapper-nestjs";
 import { Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { CreateFlowStepActivityDto } from "./dto/create-flow-step-activity.dto";
 import { UpdateFlowStepActivityDto } from "./dto/update-flow-step-activity.dto";
-import { FlowStepActivity } from "./flow-step-activity.entity";
+import { FlowStepActivity } from "./entities/flow-step-activity.entity";
 
 @Injectable()
 export class FlowStepActivitiesService {
   constructor(
     @InjectRepository(FlowStepActivity)
     private readonly repository: Repository<FlowStepActivity>,
+    @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
-  async create(dto: Partial<FlowStepActivity>): Promise<FlowStepActivity> {
-    const entity = this.repository.create(dto);
+  async create(dto: CreateFlowStepActivityDto): Promise<FlowStepActivity> {
+    const entity = this.mapper.map(
+      dto,
+      CreateFlowStepActivityDto,
+      FlowStepActivity,
+    );
     return this.repository.save(entity);
   }
 
@@ -30,7 +38,12 @@ export class FlowStepActivitiesService {
     entity: FlowStepActivity,
     dto: UpdateFlowStepActivityDto,
   ): Promise<FlowStepActivity> {
-    Object.assign(entity, dto);
+    this.mapper.mutate(
+      dto,
+      entity,
+      UpdateFlowStepActivityDto,
+      FlowStepActivity,
+    );
     return this.repository.save(entity);
   }
 

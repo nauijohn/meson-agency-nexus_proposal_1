@@ -17,8 +17,8 @@ import { ReqUser } from "./decorators/req-user.decorator";
 import { SignUpDto } from "./dto";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { RefreshTokenGuard } from "./guards/refresh-token.guard";
-
 import type { JwtRefreshUser } from "./strategies/refresh-token.strategy";
+
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -53,8 +53,6 @@ export class AuthController {
   async signIn(@ReqUser() user: User) {
     let { refreshToken } = user;
     const tokens = this.authService.createTokens(user);
-
-    // const hashedRefreshToken = await hash(tokens.refreshToken);
 
     if (!refreshToken) {
       refreshToken = await this.refreshTokensService.create({

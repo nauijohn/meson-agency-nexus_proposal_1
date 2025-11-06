@@ -19,21 +19,8 @@ export class FlowsController {
   constructor(private readonly service: FlowsService) {}
 
   @Post()
-  async create(@Body() { name, steps }: CreateFlowDto) {
-    return this.service.create({
-      name,
-      steps:
-        steps?.map(({ name, order, activities }) => ({
-          name,
-          order,
-          stepActivities:
-            activities?.map((activityId) => ({
-              activity: {
-                id: activityId,
-              },
-            })) || [],
-        })) || [],
-    });
+  async create(@Body() dto: CreateFlowDto) {
+    return this.service.create(dto);
   }
 
   @Get()

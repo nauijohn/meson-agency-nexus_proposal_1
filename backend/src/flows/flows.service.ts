@@ -1,20 +1,24 @@
-import { DeepPartial, Repository } from "typeorm";
+import type { Mapper } from "automapper-core";
+import { InjectMapper } from "automapper-nestjs";
+import { Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { CreateFlowDto } from "./dto/create-flow.dto";
 import { UpdateFlowDto } from "./dto/update-flow.dto";
-import { Flow } from "./flow.entity";
+import { Flow } from "./entities/flow.entity";
 
 @Injectable()
 export class FlowsService {
   constructor(
     @InjectRepository(Flow)
     private readonly repository: Repository<Flow>,
+    @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
-  async create(dto: DeepPartial<Flow>): Promise<Flow> {
-    const entity = this.repository.create(dto);
+  async create(dto: CreateFlowDto): Promise<Flow> {
+    const entity = this.mapper.map(dto, CreateFlowDto, Flow);
     return this.repository.save(entity);
   }
 
@@ -36,7 +40,7 @@ export class FlowsService {
   }
 
   async update(entity: Flow, dto: UpdateFlowDto): Promise<Flow> {
-    Object.assign(entity, dto);
+    this.mapper.mutate(dto, entity, UpdateFlowDto, Flow);
     return this.repository.save(entity);
   }
 

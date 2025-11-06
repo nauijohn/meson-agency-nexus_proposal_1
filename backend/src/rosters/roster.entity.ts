@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 
-import { Campaign } from "../campaigns/campaign.entity";
-import { Client } from "../clients/client.entity";
+import { Campaign } from "../campaigns/entities/campaign.entity";
+import { Client } from "../clients/entities/client.entity";
 import { BaseEntity } from "../common/bases";
 import { User } from "../users";
 

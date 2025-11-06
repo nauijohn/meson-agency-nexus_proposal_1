@@ -6,7 +6,7 @@ import {
 } from "typeorm";
 
 import { hash } from "../../auth/utils/security";
-import { RefreshToken } from "../refresh-token.entity";
+import { RefreshToken } from "../entities/refresh-token.entity";
 
 @EventSubscriber()
 export class RefreshTokensSubscriber

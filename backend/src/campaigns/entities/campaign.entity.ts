@@ -1,3 +1,4 @@
+import { AutoMap } from "automapper-classes";
 import {
   Column,
   Entity,
@@ -7,23 +8,27 @@ import {
   RelationId,
 } from "typeorm";
 
-import { CampaignFlowStep } from "../campaign-flow-steps/entities/campaign-flow-step.entity";
-import { Client } from "../clients/client.entity";
-import { NamedEntity } from "../common/bases";
-import { Flow } from "../flows/flow.entity";
+import { CampaignFlowStep } from "../../campaign-flow-steps/entities/campaign-flow-step.entity";
+import { Client } from "../../clients/entities/client.entity";
+import { NamedEntity } from "../../common/bases";
+import { Flow } from "../../flows/entities/flow.entity";
 
 @Entity({ name: "campaigns" })
 export class Campaign extends NamedEntity {
   @Column({ type: "text", nullable: true })
+  @AutoMap()
   description: string;
 
   @Column({ name: "start_date", type: "date" })
+  @AutoMap()
   startDate: Date;
 
   @Column({ name: "end_date", type: "date", nullable: true })
+  @AutoMap(() => Date)
   endDate: Date | null;
 
   @Column({ default: "active" })
+  @AutoMap()
   status: "active" | "paused" | "completed";
 
   @ManyToOne(() => Client, (client) => client.campaigns, {

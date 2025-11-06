@@ -1,9 +1,11 @@
-import { DeepPartial, Repository } from "typeorm";
+import type { Mapper } from "automapper-core";
+import { InjectMapper } from "automapper-nestjs";
+import { Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { UpdateUserDto } from "./dto";
+import { CreateUserDto, UpdateUserDto } from "./dto";
 import { QueryUserDto } from "./dto/query-user.dto";
 import { User } from "./entities/user.entity";
 
@@ -12,10 +14,12 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
+    @InjectMapper()
+    private readonly mapper: Mapper,
   ) {}
 
-  async create(dto: DeepPartial<User>): Promise<User> {
-    const entity = this.repository.create(dto);
+  async create(dto: CreateUserDto): Promise<User> {
+    const entity = this.mapper.map(dto, CreateUserDto, User);
     return this.repository.save(entity);
   }
 
@@ -52,16 +56,12 @@ export class UsersService {
     return qb.getOne();
   }
 
-  update(entity: User, dto: UpdateUserDto): Promise<User> {
-    let refreshToken: { token: string } | undefined = undefined;
-    if (dto.refreshToken) {
-      refreshToken = { ...entity.refreshToken, token: dto.refreshToken };
-    }
+  async update(entity: User, dto: UpdateUserDto): Promise<User> {
+    this.mapper.mutate(dto, entity, UpdateUserDto, User);
 
-    Object.assign(entity, {
-      ...dto,
-      ...(refreshToken && { refreshToken }),
-    });
+    if (dto.refreshToken && entity.refreshToken) {
+      entity.refreshToken.token = dto.refreshToken;
+    }
 
     return this.repository.save(entity);
   }

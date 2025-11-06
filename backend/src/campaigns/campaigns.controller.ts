@@ -25,10 +25,7 @@ export class CampaignsController {
 
   @Post()
   async create(@Body() dto: CreateCampaignDto) {
-    return this.service.create({
-      ...dto,
-      client: { id: dto.clientId },
-    });
+    return this.service.create(dto);
   }
 
   @Get()

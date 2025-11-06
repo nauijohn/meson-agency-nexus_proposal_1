@@ -3,8 +3,8 @@ import { Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { FlowStep } from "../flow_steps/flow-step.entity";
 import { UpdateFlowStepDto } from "./dto/update-flow-step.dto";
+import { FlowStep } from "./entities/flow-step.entity";
 
 @Injectable()
 export class FlowStepsService {

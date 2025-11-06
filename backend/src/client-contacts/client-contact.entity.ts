@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany } from "typeorm";
 
-import { Client } from "../clients/client.entity";
+import { Client } from "../clients/entities/client.entity";
 import { NamedEntity } from "../common/bases";
 
 @Entity({ name: "client_contacts" })
