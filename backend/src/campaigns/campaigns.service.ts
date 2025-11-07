@@ -7,7 +7,6 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { CampaignAssignedAFlowEvent } from "../common/events/campaign.events";
-import { Flow } from "../flows/entities/flow.entity";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
 import { QueryCampaignDto } from "./dto/query-campaign.dto";
 import { UpdateCampaignDto } from "./dto/update-campaign.dto";
@@ -28,12 +27,6 @@ export class CampaignsService {
   }
 
   findAll(query?: QueryCampaignDto): Promise<Campaign[]> {
-    // return this.repository.find({
-    //   relations: {
-    //     client: true,
-    //     flow: true,
-    //   },
-    // });
     const qb = this.repository
       .createQueryBuilder("campaign")
       .leftJoinAndSelect("campaign.client", "client")
@@ -61,27 +54,11 @@ export class CampaignsService {
   }
 
   async update(entity: Campaign, dto: UpdateCampaignDto): Promise<Campaign> {
-    // Object.assign(entity, dto);
-
-    // let flow: { id: string } | undefined = undefined;
-    // if (dto.flowId) flow = { id: dto.flowId };
-
-    console.log("BEFORE:", entity);
-    // this.mapper.map(dto, UpdateCampaignDto, Campaign, entity);
     this.mapper.mutate(dto, entity, UpdateCampaignDto, Campaign);
-    // entity?.flow?.id = dto.flowId;
-
-    this.mapper.mutate(dto.flowId, entity.flow, String, Flow);
-    console.log("AFTER:", entity);
-
-    // const updated = await this.repository.save({
-    //   ...entity,
-    //   ...(flow && { flow: { id: dto.flowId } }),
-    // });
-
-    // console.log("Updated campaign:", updated);
 
     const updated = await this.repository.save(entity);
+
+    console.log("Updated campaign:", updated);
 
     if (dto.flowId && updated.flow) {
       this.eventEmitter.emit(

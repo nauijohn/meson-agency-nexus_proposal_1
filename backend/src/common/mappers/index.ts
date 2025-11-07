@@ -1,6 +1,7 @@
 import { Converter } from "automapper-core";
 
 import { Client } from "../../clients/entities/client.entity";
+import { Flow } from "../../flows/entities/flow.entity";
 
 /**
  * Creates a lightweight reference of an entity with only its `id` set.
@@ -63,6 +64,7 @@ function createStringIdToRefConverter<T extends { id?: string }>(
 }
 
 export const clientRefConverter = createStringIdToRefConverter(Client);
+export const flowRefConverter = createStringIdToRefConverter(Flow);
 
 export function createStringIdsToRefsConverter<T extends { id?: string }>(
   EntityClass: new () => T,
@@ -80,3 +82,17 @@ export function createStringIdsToRefsConverter<T extends { id?: string }>(
     },
   };
 }
+
+export const idToRefConverter: Converter<string, any> = {
+  convert(source: string) {
+    console.log("Converting id to ref:", source);
+    if (!source) return null;
+    return { id: source };
+  },
+};
+
+export const idRefMapper = (id: string | null | undefined) => {
+  if (id === null) return null;
+  if (id) return { id };
+  if (id === undefined) return;
+};

@@ -74,7 +74,7 @@ GET {{host}}/campaigns/
 GET {{host}}/campaigns?unassignedFlow=true
 
 ###
-GET {{host}}/campaigns/54532867-247a-4145-8006-1dffe7ec5f8c
+GET {{host}}/campaigns/19395bd8-13db-4f2f-a519-567889e7f4a3
 
 ###
 POST {{host}}/campaigns/
@@ -93,6 +93,7 @@ PATCH {{host}}/campaigns/19395bd8-13db-4f2f-a519-567889e7f4a3
 Content-Type: application/json
 
 {
+	# "clientId": undefined
 	"flowId": "47c0d081-79d7-492b-b39d-d396a2f6f95b"
 }
 
