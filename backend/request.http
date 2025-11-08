@@ -1,12 +1,10 @@
 # @host = https://epiploic-temperance-unwhimperingly.ngrok-free.dev/api
 @host = http://localhost:3000/api
-
 @accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZTAyMDhiYy05YjI3LTQzNjUtYTFkYS0wYjVmODkzZDI0MGMiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYyMjIxNTQzLCJleHAiOjE3NjIyMjE1NDh9.cKRGTlHg_-hzEeYbU_34k9ELNRmFey5OQllUpLkja0M
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYWEyMDcyMy1hOGVhLTRmNzEtODkwNC0xMWY5MTg3NjQxNGIiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJ0b2tlbklkIjoiOGNmNTBmYTMtNmUzYy00Mjc1LWFlYWUtM2VhMDkyYjI1YjE4IiwiaWF0IjoxNzYyNTg3NjY2LCJleHAiOjE3NjMxOTI0NjZ9.vzqlsDXfmKj0Tea3d8UX_opESgWk2hD4NJiXUviA2Xs
 
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNDEwMWRiZS04NzliLTQ0YjItYjlmNS0zMGI2NDU3NTg5N2QiLCJlbWFpbCI6InRlc3QzM0BleGFtcGxlLmNvbSIsInRva2VuSWQiOiIyNjQ1YjAwNS0yNmU0LTQ2YjktOTFmNC0zYTU0ZTMxODY0YTIiLCJpYXQiOjE3NjI0MjgzODksImV4cCI6MTc2MzAzMzE4OX0.MlnfaE26c4oTDy-07OVtzjIrt7uDK53xF8XIggsAwn0
 
-
-#######################################
+######################################
 ##               Auth               ##
 ######################################
 
@@ -15,7 +13,7 @@ POST {{host}}/auth/sign-up
 Content-Type: application/json
 
 {
-	"email": "test33@example.com",
+	"email": "test@example.com",
 	"password": "testpass",
 	"firstName": "Test",
 	"lastName": "User"
@@ -26,7 +24,7 @@ POST {{host}}/auth/sign-in
 Content-Type: application/json
 
 {
-	"email": "test33@example.com",
+	"email": "test@example.com",
 	"password": "testpass"
 }
 
@@ -85,16 +83,18 @@ Content-Type: application/json
 	"description": "Description of the new campaign",
 	"startDate": "2024-01-01T00:00:00Z",
 	"endDate": "2024-12-31T23:59:59Z",
-	"clientId": "7749f6e7-5b07-49c2-8890-5d2736776463"
+	"clientId": "55d76013-32d4-4c5c-8c0d-c0467401291a"
 }
 
 ###
-PATCH {{host}}/campaigns/19395bd8-13db-4f2f-a519-567889e7f4a3
+PATCH {{host}}/campaigns/64c98261-7d1e-4f69-a202-0b0d2783ea23
 Content-Type: application/json
 
 {
 	# "clientId": undefined
-	"flowId": "47c0d081-79d7-492b-b39d-d396a2f6f95b"
+	"flowId": "84cb5be1-3e70-489f-a7a8-88c360db34c5"
+	# "flowId": null
+
 }
 
 ###
@@ -216,3 +216,25 @@ GET {{host}}/flow-activities
 
 ###
 GET {{host}}/campaign-flow-steps
+
+
+#############################################
+##             Client Contacts             ##
+#############################################
+
+###
+GET {{host}}/client-contacts
+
+###
+GET {{host}}/clients
+
+###
+POST {{host}}/client-contacts
+Content-Type: application/json
+
+{
+	"name": "Anthony Naui",
+	"contactNumber": "+61493233059",
+	"type": "mobile",	
+	"clientIds": ["55d76013-32d4-4c5c-8c0d-c0467401291a"]
+}

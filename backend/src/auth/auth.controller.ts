@@ -30,19 +30,24 @@ export class AuthController {
   @Post("sign-up")
   async signUp(@Body() request: SignUpDto) {
     let user = await this.usersService.findByEmail(request.email);
-    if (user) throw new UnprocessableEntityException("User already exists");
+    if (user) {
+      throw new UnprocessableEntityException("User already exists");
+    }
 
     user = await this.usersService.create(request);
-    if (!user) throw new InternalServerErrorException("Error creating user");
+    if (!user) {
+      throw new InternalServerErrorException("Error creating user");
+    }
 
     const tokens = this.authService.createTokens(user);
 
     const refreshToken = await this.refreshTokensService.create({
-      user,
+      userId: user.id,
       token: tokens.refreshToken,
     });
-    if (!refreshToken)
+    if (!refreshToken) {
       throw new InternalServerErrorException("Error creating refreshToken");
+    }
 
     return tokens;
   }
@@ -57,7 +62,7 @@ export class AuthController {
     if (!refreshToken) {
       refreshToken = await this.refreshTokensService.create({
         token: tokens.refreshToken,
-        user,
+        userId: user.id,
       });
     } else {
       refreshToken = await this.refreshTokensService.update(refreshToken, {
@@ -65,7 +70,9 @@ export class AuthController {
       });
     }
 
-    if (!refreshToken) throw new InternalServerErrorException();
+    if (!refreshToken) {
+      throw new InternalServerErrorException();
+    }
 
     return tokens;
   }
@@ -73,7 +80,9 @@ export class AuthController {
   @Post("sign-out")
   @UseGuards(RefreshTokenGuard)
   async signOut(@ReqUser() user: JwtRefreshUser) {
-    if (!user?.tokenId) throw new InternalServerErrorException();
+    if (!user?.tokenId) {
+      throw new InternalServerErrorException();
+    }
     await this.refreshTokensService.delete(user.tokenId);
   }
 
@@ -88,7 +97,9 @@ export class AuthController {
       reqUser.id,
       bearerToken,
     );
-    if (!tokens) throw new InternalServerErrorException("Invalid Token");
+    if (!tokens) {
+      throw new InternalServerErrorException("Invalid Token");
+    }
 
     return tokens;
   }

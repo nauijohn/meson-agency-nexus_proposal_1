@@ -1,4 +1,5 @@
 import {
+  DataSource,
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
@@ -12,15 +13,15 @@ import { RefreshToken } from "../entities/refresh-token.entity";
 export class RefreshTokensSubscriber
   implements EntitySubscriberInterface<RefreshToken>
 {
-  constructor() {}
+  constructor(dataSource: DataSource) {
+    dataSource.subscribers.push(this);
+  }
 
   listenTo() {
     return RefreshToken;
   }
 
   async beforeInsert(event: InsertEvent<RefreshToken>): Promise<void> {
-    console.log("Event log: beforeInsert RefreshToken...");
-
     if (event.entity?.token) {
       event.entity.token = await hash(event.entity.token);
     }

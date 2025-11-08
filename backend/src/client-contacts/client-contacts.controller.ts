@@ -1,0 +1,49 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from "@nestjs/common";
+
+import { ClientContactsService } from "./client-contacts.service";
+import { CreateClientContactDto } from "./dto/create-client-contact.dto";
+import { UpdateClientContactDto } from "./dto/update-client-contact.dto";
+
+@Controller("client-contacts")
+export class ClientContactsController {
+  constructor(private readonly service: ClientContactsService) {}
+
+  @Post()
+  create(@Body() dto: CreateClientContactDto) {
+    console.log("DTO", dto);
+    return this.service.create(dto);
+  }
+
+  @Get()
+  findAll() {
+    return this.service.findAll();
+  }
+
+  @Get(":id")
+  findOne(@Param("id") id: string) {
+    return this.service.findOne(id);
+  }
+
+  @Patch(":id")
+  async update(@Param("id") id: string, @Body() dto: UpdateClientContactDto) {
+    const entity = await this.findOne(id);
+    return this.service.update(entity, dto);
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param("id") id: string) {
+    await this.findOne(id);
+    this.service.delete(id);
+  }
+}

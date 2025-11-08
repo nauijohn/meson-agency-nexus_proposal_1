@@ -11,7 +11,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "./auth/auth.module";
 import { CampaignFlowStepsModule } from "./campaign-flow-steps/campaign-flow-steps.module";
 import { CampaignsModule } from "./campaigns/campaigns.module";
+import { ClientContactsModule } from "./client-contacts/client-contacts.module";
 import { ClientsModule } from "./clients/clients.module";
+import { EventListenersModule } from "./event-listeners/event-listeners.module";
 import { FlowActivitiesModule } from "./flow-activities/flow-activities.module";
 import { FlowStepsModule } from "./flow_steps/flow-steps.module";
 import { FlowsModule } from "./flows/flows.module";
@@ -50,6 +52,7 @@ import { UsersModule } from "./users";
       strategyInitializer: classes(),
       namingConventions: new CamelCaseNamingConvention(),
     }),
+    EventListenersModule,
     UsersModule,
     AuthModule,
     RefreshTokensModule,
@@ -61,6 +64,7 @@ import { UsersModule } from "./users";
     FlowsModule,
     FlowStepsModule,
     CampaignFlowStepsModule,
+    ClientContactsModule,
   ],
 })
 export class AppModule {

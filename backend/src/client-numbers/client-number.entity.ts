@@ -5,7 +5,7 @@ import { BaseEntity } from "../common/bases";
 
 @Entity({ name: "client_numbers" })
 export class ClientNumber extends BaseEntity {
-  @Column({ name: "number" })
+  @Column()
   number: string;
 
   @Column({

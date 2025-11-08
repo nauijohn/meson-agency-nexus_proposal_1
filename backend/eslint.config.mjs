@@ -1,8 +1,9 @@
-// @ts-check
-import eslint from "@eslint/js";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+
+// @ts-check
+import eslint from "@eslint/js";
 
 export default tseslint.config(
   {
@@ -44,4 +45,13 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-return": "off",
     },
   },
+  // {
+  //   files: ["src/common/events/**/*.decorator.ts"], // decorators for events
+  //   rules: {
+  //     // "@typescript-eslint/no-unsafe-call": "off",
+  //     // "@typescript-eslint/no-unsafe-assignment": "off",
+  //     // "@typescript-eslint/no-unsafe-member-access": "off",
+  //     // "@typescript-eslint/no-unsafe-return": "off",
+  //   },
+  // },
 );

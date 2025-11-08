@@ -12,5 +12,5 @@ export class CreateRefreshTokenDto {
 
   @IsOptional()
   @Type(() => User)
-  user?: User;
+  userId: string;
 }

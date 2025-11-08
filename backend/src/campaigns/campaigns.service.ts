@@ -3,10 +3,9 @@ import { InjectMapper } from "automapper-nestjs";
 import { Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { CampaignAssignedAFlowEvent } from "../common/events/campaign.events";
+import { CampaignEvents } from "../common/events/campaign.events";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
 import { QueryCampaignDto } from "./dto/query-campaign.dto";
 import { UpdateCampaignDto } from "./dto/update-campaign.dto";
@@ -14,16 +13,25 @@ import { Campaign } from "./entities/campaign.entity";
 
 @Injectable()
 export class CampaignsService {
+  private readonly events: { event: CampaignEvents; eventPayload?: unknown }[] =
+    [];
+
   constructor(
     @InjectRepository(Campaign)
     private readonly repository: Repository<Campaign>,
-    private readonly eventEmitter: EventEmitter2,
-    @InjectMapper() private readonly mapper: Mapper,
+    @InjectMapper()
+    private readonly mapper: Mapper,
   ) {}
 
   async create(dto: CreateCampaignDto): Promise<Campaign> {
     const entity = this.mapper.map(dto, CreateCampaignDto, Campaign);
-    return this.repository.save(entity);
+    const savedEntity = await this.repository.save(entity);
+
+    this.events.push({
+      event: CampaignEvents.Created,
+      eventPayload: { campaign: savedEntity },
+    });
+    return savedEntity;
   }
 
   findAll(query?: QueryCampaignDto): Promise<Campaign[]> {
@@ -45,7 +53,9 @@ export class CampaignsService {
     return await this.repository.findOneOrFail({
       where: { id },
       relations: {
-        client: true,
+        client: {
+          contacts: true,
+        },
         flow: {
           steps: true,
         },
@@ -53,27 +63,13 @@ export class CampaignsService {
     });
   }
 
+  // @AfterAction((result, args) => {
+  //   console.log("AfterAction - CampaignsService.update called");
+  // })
   async update(entity: Campaign, dto: UpdateCampaignDto): Promise<Campaign> {
     this.mapper.mutate(dto, entity, UpdateCampaignDto, Campaign);
 
-    const updated = await this.repository.save(entity);
-
-    console.log("Updated campaign:", updated);
-
-    if (dto.flowId && updated.flow) {
-      this.eventEmitter.emit(
-        CampaignAssignedAFlowEvent.eventName,
-        new CampaignAssignedAFlowEvent({
-          campaignId: updated.id,
-          flow: {
-            id: updated.flow.id,
-            flowSteps: dto.campaignFlowSteps,
-          },
-        }),
-      );
-    }
-
-    return updated;
+    return await this.repository.save(entity, { data: { dto } });
   }
 
   delete(id: string) {

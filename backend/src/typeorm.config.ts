@@ -1,4 +1,5 @@
 import { join } from "path";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
@@ -16,7 +17,8 @@ export const typeOrmConfigFactory = (
     password: configService.get("DB_PASSWORD"),
     database: configService.get("DB_DATABASE"),
     entities: [join(__dirname, "**", "*.entity.{ts,js}")],
-    subscribers: [__dirname + "/**/*.subscriber{.ts,.js}"],
+    namingStrategy: new SnakeNamingStrategy(),
+    // subscribers: [__dirname + "/**/*.subscriber{.ts,.js}"],
     synchronize: isDev,
     autoLoadEntities: isDev,
     dropSchema: false,

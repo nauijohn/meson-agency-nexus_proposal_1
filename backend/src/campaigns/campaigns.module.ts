@@ -12,5 +12,6 @@ import { CampaignProfile } from "./mappers/campaign.mapper.profile";
   imports: [TypeOrmModule.forFeature([Campaign]), ClientsModule],
   controllers: [CampaignsController],
   providers: [CampaignsService, CampaignSubscriber, CampaignProfile],
+  exports: [CampaignsService],
 })
 export class CampaignsModule {}

@@ -33,8 +33,7 @@ export abstract class DomainEventsService<TEvents extends string> {
   /**
    * Subclasses must provide a mapping of event names → handler functions
    */
-  protected abstract get eventHandlers(): Record<
-    TEvents,
-    (payload?: unknown) => void
+  protected abstract get eventHandlers(): Partial<
+    Record<TEvents, (payload?: unknown) => void>
   >;
 }

@@ -37,6 +37,6 @@ export class UserClient {
   @JoinColumn({ name: "client_id" })
   client: Client;
 
-  @CreateDateColumn({ name: "assigned_date" })
+  @CreateDateColumn()
   assignedDate: Date;
 }

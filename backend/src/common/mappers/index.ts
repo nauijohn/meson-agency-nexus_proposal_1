@@ -91,7 +91,14 @@ export const idToRefConverter: Converter<string, any> = {
   },
 };
 
-export const idRefMapper = (id: string | null | undefined) => {
+export const idRefMapper = (id: string | string[] | null | undefined) => {
+  if (Array.isArray(id)) {
+    return id
+      .map((singleId) => {
+        if (singleId) return { id: singleId };
+      })
+      .filter(Boolean);
+  }
   if (id === null) return null;
   if (id) return { id };
   if (id === undefined) return;

@@ -7,6 +7,7 @@ import {
   JsonWebTokenExceptionFilter,
   TokenExpiredExceptionFilter,
 } from "./common/filters";
+import { TypeORMErrorExceptionFilter } from "./common/filters/typeorm-error-exception.filter";
 
 export function config(app: INestApplication<any>): void {
   const httpAdapter = app.get(HttpAdapterHost);
@@ -30,6 +31,7 @@ export function config(app: INestApplication<any>): void {
   app.useGlobalFilters(
     new TokenExpiredExceptionFilter(httpAdapter),
     new JsonWebTokenExceptionFilter(httpAdapter),
+    new TypeORMErrorExceptionFilter(httpAdapter),
   );
 
   app.use(passport.initialize());

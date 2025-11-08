@@ -25,7 +25,10 @@ export class FlowsController {
 
   @Get()
   async findAll() {
-    return await this.service.findAll();
+    console.log("FlowsController.findAll called");
+    const x = await this.service.findAll();
+    console.log("FlowsController.findAll result:", x);
+    return x;
   }
 
   @Get(":id")

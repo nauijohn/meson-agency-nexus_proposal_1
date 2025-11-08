@@ -6,7 +6,7 @@ import { User } from "../../users";
 
 @Entity({ name: "refresh_tokens" })
 export class RefreshToken extends BaseEntity {
-  @Column({ name: "token", unique: true, nullable: true })
+  @Column({ unique: true, nullable: true })
   @AutoMap()
   token: string;
 

@@ -1,51 +1,48 @@
 import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
+import {
+  CampaignEvents,
+  CampaignFlowAssignedEvent,
+} from "../../common/events/campaign.events";
 import { DomainEventsService } from "../../common/events/domain-events.service";
 
-export enum CampaignEvents {
-  // Created = "campaign.created",
-  // Updated = "campaign.updated",
-  AssignedFlow = "campaign.assignedFlow",
-}
-
 @Injectable()
-export class CampaignsEventsService extends DomainEventsService<CampaignEvents> {
+export class CampaignEventsService extends DomainEventsService<CampaignEvents> {
   constructor(eventEmitter: EventEmitter2) {
     super(eventEmitter);
   }
 
   /** Typed helper methods */
-  // created(campaign: any) {
-  //   this.emit(CampaignEvents.Created, { campaign });
-  // }
+  created() {
+    this.emit(CampaignEvents.Created);
+  }
 
   // updated(campaign: any) {
   //   this.emit(CampaignEvents.Updated, { campaign });
   // }
 
-  assignedFlow(campaignId: string, flow: any) {
-    this.emit(CampaignEvents.AssignedFlow, { campaignId, flow });
+  flowAssigned(payload: CampaignFlowAssignedEvent) {
+    this.emit(CampaignEvents.FlowAssigned, payload);
   }
 
   /** Event handlers mapping */
-  protected get eventHandlers(): Record<
-    CampaignEvents,
-    (payload?: unknown) => void
+  protected get eventHandlers(): Partial<
+    Record<Partial<CampaignEvents>, (payload?: unknown) => void>
   > {
     return {
       // [CampaignEvents.Created]: (payload) => {
       //   this.logger.log("Handling campaign.created", payload);
-      //   this.created(payload);
+      //   this.created();
       // },
       // [CampaignEvents.Updated]: (payload) => {
       //   this.logger.log("Handling campaign.updated", payload);
       //   this.updated(payload);
       // },
-      [CampaignEvents.AssignedFlow]: (payload) => {
-        this.logger.log("Handling campaign.assignedFlow", payload);
-        this.assignedFlow(payload?.campaignId, payload?.flow);
-      },
+      // [CampaignEvents.FlowAssigned]: (payload: CampaignFlowAssignedEvent) => {
+      //   this.logger.log("Handling campaign.flowAssigned", payload);
+      //   this.flowAssigned(payload);
+      // },
     };
   }
 }

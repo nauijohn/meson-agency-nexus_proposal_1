@@ -1,4 +1,5 @@
 import {
+  DataSource,
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
@@ -10,7 +11,9 @@ import { User } from "../entities/user.entity";
 
 @EventSubscriber()
 export class UsersSubscriber implements EntitySubscriberInterface<User> {
-  constructor() {}
+  constructor(dataSource: DataSource) {
+    dataSource.subscribers.push(this);
+  }
 
   listenTo() {
     return User;

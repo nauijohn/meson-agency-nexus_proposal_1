@@ -40,7 +40,6 @@ export class CampaignsController {
 
   @Patch(":id")
   async update(@Param("id") id: string, @Body() dto: UpdateCampaignDto) {
-    console.log("Updating campaign with ID:", id, "with data:", dto);
     const entity = await this.service.findOne(id);
     return this.service.update(entity, dto);
   }
