@@ -8,10 +8,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 
+import { PaginationHeaders } from "../common";
 import { CampaignFlowStepsService } from "./campaign-flow-steps.service";
 import { CreateCampaignFlowStepDto } from "./dto/create-campaign-flow-step.dto";
+import { QueryCampaignFlowStepDto } from "./dto/query-campaign-flow-step.dto";
 import { UpdateCampaignFlowStepDto } from "./dto/update-campaign-flow-step.dto";
 
 @Controller("campaign-flow-steps")
@@ -24,8 +27,9 @@ export class CampaignFlowStepsController {
   }
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  @PaginationHeaders()
+  findAll(@Query() query: QueryCampaignFlowStepDto) {
+    return this.service.findAll(query);
   }
 
   @Get(":id")

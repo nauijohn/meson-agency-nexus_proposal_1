@@ -1,10 +1,13 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
+import { ClsService } from "nestjs-cls";
 import { Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { TOTAL_KEY } from "../common/bases";
+import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
 import { CreateUserDto, UpdateUserDto } from "./dto";
 import { QueryUserDto } from "./dto/query-user.dto";
 import { User } from "./entities/user.entity";
@@ -16,6 +19,7 @@ export class UsersService {
     private readonly repository: Repository<User>,
     @InjectMapper()
     private readonly mapper: Mapper,
+    private readonly cls: ClsService,
   ) {}
 
   async create(dto: CreateUserDto): Promise<User> {
@@ -23,14 +27,17 @@ export class UsersService {
     return this.repository.save(entity);
   }
 
-  findAll(): Promise<User[]> {
-    return this.repository.find({
-      // relations: { clients: true },
+  async findAll(query: QueryUserDto): Promise<User[]> {
+    const [entities, total] = await this.repository.findAndCount({
       relations: {
         userClients: { client: true },
       },
-      // relations: ["userClients", "userClients.client"],
+      ...applyPaginationAndSorting(query),
     });
+
+    this.cls.set(TOTAL_KEY, total);
+
+    return entities;
   }
 
   async findOne(id: string, query?: QueryUserDto): Promise<User | null> {

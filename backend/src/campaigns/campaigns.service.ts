@@ -1,11 +1,14 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
+import { ClsService } from "nestjs-cls";
 import { Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { TOTAL_KEY } from "../common/bases";
 import { CampaignEvents } from "../common/events/campaign.events";
+import { applyPaginationAndSorting } from "../common/utils/query-builder.pagination";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
 import { QueryCampaignDto } from "./dto/query-campaign.dto";
 import { UpdateCampaignDto } from "./dto/update-campaign.dto";
@@ -21,6 +24,7 @@ export class CampaignsService {
     private readonly repository: Repository<Campaign>,
     @InjectMapper()
     private readonly mapper: Mapper,
+    private readonly cls: ClsService,
   ) {}
 
   async create(dto: CreateCampaignDto): Promise<Campaign> {
@@ -35,8 +39,7 @@ export class CampaignsService {
   }
 
   async findAll(query: QueryCampaignDto): Promise<Campaign[]> {
-    console.log("QueryCampaignDto in Service: ", query);
-    const qb = this.repository
+    let qb = this.repository
       .createQueryBuilder("campaign")
       .leftJoinAndSelect("campaign.client", "client")
       .leftJoinAndSelect("campaign.flow", "flow")
@@ -47,14 +50,15 @@ export class CampaignsService {
       qb.andWhere("campaign.flow_id IS NULL");
     }
 
-    qb.skip((query.page - 1) * query.limit).take(query.limit);
+    qb = applyPaginationAndSorting(qb, { ...query });
 
+    // Execute query
     const [result, total] = await qb.getManyAndCount();
 
-    console.log(`Total campaigns found: ${total}`);
-    console.log("Campaigns found: ", result);
+    // Store total in CLS for interceptor/decorator to access
+    this.cls.set(TOTAL_KEY, total);
 
-    return qb.getMany();
+    return result;
   }
 
   async findOne(id: string): Promise<Campaign> {

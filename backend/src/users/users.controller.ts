@@ -12,6 +12,7 @@ import {
   Query,
 } from "@nestjs/common";
 
+import { PaginationHeaders } from "../common/decorators";
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { QueryUserDto } from "./dto/query-user.dto";
@@ -30,8 +31,9 @@ export class UsersController {
   }
 
   @Get()
-  async findAll() {
-    return await this.service.findAll();
+  @PaginationHeaders()
+  async findAll(@Query() query: QueryUserDto) {
+    return await this.service.findAll(query);
   }
 
   @Get(":id")

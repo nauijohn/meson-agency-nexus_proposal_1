@@ -1,6 +1,8 @@
 import { IsOptional } from "class-validator";
 
-export class QueryClientDto {
+import { PaginationDto } from "../../common/bases";
+
+export class QueryClientDto extends PaginationDto {
   @IsOptional()
   userId?: string = undefined;
 

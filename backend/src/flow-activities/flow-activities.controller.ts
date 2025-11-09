@@ -9,11 +9,14 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 
+import { PaginationHeaders } from "../common";
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CreateFlowActivityDto } from "./dto/create-flow-activity.dto";
 import { FlowActivityDto } from "./dto/flow-activity.dto";
+import { QueryFlowActivityDto } from "./dto/query-flow-activities.dto";
 import { UpdateFlowActivityDto } from "./dto/update-flow-activity.dto";
 import { FlowActivitiesService } from "./flow-activities.service";
 
@@ -28,8 +31,9 @@ export class FlowActivitiesController {
   }
 
   @Get()
-  async findAll() {
-    return await this.service.findAll();
+  @PaginationHeaders()
+  async findAll(@Query() query: QueryFlowActivityDto) {
+    return await this.service.findAll(query);
   }
 
   @Get(":id")

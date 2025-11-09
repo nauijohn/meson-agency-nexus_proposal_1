@@ -1,11 +1,15 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
+import { ClsService } from "nestjs-cls";
 import { Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { TOTAL_KEY } from "../common/bases";
+import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
 import { CreateCampaignContactFlowStepDto } from "./dto/create-campaign-contact-flow-step.dto";
+import { QueryCampaignContactFlowStepDto } from "./dto/query-campaign-contact-flow-step.dto";
 import { UpdateCampaignContactFlowStepDto } from "./dto/update-campaign-contact-flow-step.dto";
 import { CampaignContactFlowStep } from "./entities/campaign-contact-flow-step.entity";
 
@@ -15,6 +19,7 @@ export class CampaignContactFlowStepsService {
     @InjectRepository(CampaignContactFlowStep)
     private readonly repository: Repository<CampaignContactFlowStep>,
     @InjectMapper() private readonly mapper: Mapper,
+    private readonly cls: ClsService,
   ) {}
 
   create(
@@ -29,8 +34,16 @@ export class CampaignContactFlowStepsService {
     return this.repository.save(entity);
   }
 
-  findAll(): Promise<CampaignContactFlowStep[]> {
-    return this.repository.find();
+  async findAll(
+    query: QueryCampaignContactFlowStepDto,
+  ): Promise<CampaignContactFlowStep[]> {
+    const [entities, total] = await this.repository.findAndCount({
+      ...applyPaginationAndSorting(query),
+    });
+
+    this.cls.set(TOTAL_KEY, total);
+
+    return entities;
   }
 
   async findOne(id: string): Promise<CampaignContactFlowStep> {

@@ -2,6 +2,7 @@ import { classes } from "automapper-classes";
 import { CamelCaseNamingConvention } from "automapper-core";
 import { AutomapperModule } from "automapper-nestjs";
 import * as Joi from "joi";
+import { ClsModule } from "nestjs-cls";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -51,6 +52,28 @@ import { UsersModule } from "./users";
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
       namingConventions: new CamelCaseNamingConvention(),
+    }),
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        saveRes: true,
+        // automatically mount the
+        // ClsMiddleware for all routes
+        mount: true,
+        generateId: true,
+        // idGenerator: (req: Request) => {
+        //   const x = req.headers["X-Request-Id"] || "test";
+        //   console.log("Generating CLS ID from X-Request-Id:", x);
+        //   return "Test";
+        // },
+        // and use the setup method to
+        // provide default store values.
+        setup: () => {
+          // const requestId = req.header("X-Request-Id");
+          // console.log("Setting up CLS context with Request ID:", requestId);
+          console.log("CLS setup...");
+        },
+      },
     }),
     EventListenersModule,
     UsersModule,

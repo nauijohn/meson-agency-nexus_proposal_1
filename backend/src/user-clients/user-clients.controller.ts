@@ -5,10 +5,13 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from "@nestjs/common";
 
+import { PaginationHeaders } from "../common";
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CreateUserClientDto } from "./dto/create-user-client.dto";
+import { QueryUserClientDto } from "./dto/query-user-client.dto";
 import { UserClientDto } from "./dto/user-client.dto";
 import { UserClientsService } from "./user-clients.service";
 
@@ -23,8 +26,9 @@ export class UserClientsController {
   }
 
   @Get()
-  async findAll() {
-    return await this.service.findAll();
+  @PaginationHeaders()
+  async findAll(@Query() query: QueryUserClientDto) {
+    return await this.service.findAll(query);
   }
 
   @Get(":userId/:clientId")

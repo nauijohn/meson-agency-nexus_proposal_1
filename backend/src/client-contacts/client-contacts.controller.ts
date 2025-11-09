@@ -8,10 +8,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 
+import { PaginationHeaders } from "../common";
 import { ClientContactsService } from "./client-contacts.service";
 import { CreateClientContactDto } from "./dto/create-client-contact.dto";
+import { QueryClientContactDto } from "./dto/query-client-contact.dto";
 import { UpdateClientContactDto } from "./dto/update-client-contact.dto";
 
 @Controller("client-contacts")
@@ -25,8 +28,9 @@ export class ClientContactsController {
   }
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  @PaginationHeaders()
+  findAll(@Query() query: QueryClientContactDto) {
+    return this.service.findAll(query);
   }
 
   @Get(":id")

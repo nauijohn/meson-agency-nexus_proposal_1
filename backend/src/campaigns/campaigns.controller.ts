@@ -11,6 +11,7 @@ import {
   Query,
 } from "@nestjs/common";
 
+import { PaginationHeaders } from "../common/decorators/pagination-headers.decorator";
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CampaignsService } from "./campaigns.service";
 import { CampaignDto } from "./dto/campaign.dto";
@@ -29,8 +30,8 @@ export class CampaignsController {
   }
 
   @Get()
+  @PaginationHeaders()
   findAll(@Query() query: QueryCampaignDto) {
-    console.log("QueryCampaignDto: ", query);
     return this.service.findAll(query);
   }
 

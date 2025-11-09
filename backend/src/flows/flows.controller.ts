@@ -8,9 +8,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@nestjs/common";
 
+import { PaginationHeaders } from "../common";
 import { CreateFlowDto } from "./dto/create-flow.dto";
+import { QueryFlowDto } from "./dto/query-flow.dto";
 import { UpdateFlowDto } from "./dto/update-flow.dto";
 import { FlowsService } from "./flows.service";
 
@@ -24,11 +27,9 @@ export class FlowsController {
   }
 
   @Get()
-  async findAll() {
-    console.log("FlowsController.findAll called");
-    const x = await this.service.findAll();
-    console.log("FlowsController.findAll result:", x);
-    return x;
+  @PaginationHeaders()
+  findAll(@Query() query: QueryFlowDto) {
+    return this.service.findAll(query);
   }
 
   @Get(":id")
