@@ -30,6 +30,7 @@ export class CampaignsController {
 
   @Get()
   findAll(@Query() query: QueryCampaignDto) {
+    console.log("QueryCampaignDto: ", query);
     return this.service.findAll(query);
   }
 

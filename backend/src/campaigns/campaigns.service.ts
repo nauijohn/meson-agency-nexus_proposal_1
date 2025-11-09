@@ -34,7 +34,8 @@ export class CampaignsService {
     return savedEntity;
   }
 
-  findAll(query?: QueryCampaignDto): Promise<Campaign[]> {
+  async findAll(query: QueryCampaignDto): Promise<Campaign[]> {
+    console.log("QueryCampaignDto in Service: ", query);
     const qb = this.repository
       .createQueryBuilder("campaign")
       .leftJoinAndSelect("campaign.client", "client")
@@ -45,6 +46,13 @@ export class CampaignsService {
     if (query?.unassignedFlow) {
       qb.andWhere("campaign.flow_id IS NULL");
     }
+
+    qb.skip((query.page - 1) * query.limit).take(query.limit);
+
+    const [result, total] = await qb.getManyAndCount();
+
+    console.log(`Total campaigns found: ${total}`);
+    console.log("Campaigns found: ", result);
 
     return qb.getMany();
   }

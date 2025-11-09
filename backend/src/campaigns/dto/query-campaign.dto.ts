@@ -1,7 +1,9 @@
 import { Transform } from "class-transformer";
 import { IsBoolean, IsOptional } from "class-validator";
 
-export class QueryCampaignDto {
+import { PaginationDto } from "../../common/bases/dto/pagination.dto";
+
+export class QueryCampaignDto extends PaginationDto {
   @IsBoolean()
   @IsOptional()
   @Transform(({ value }) => value === "true")

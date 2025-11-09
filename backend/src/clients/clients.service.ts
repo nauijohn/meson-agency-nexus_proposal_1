@@ -28,6 +28,9 @@ export class ClientsService {
   findOne(id: string): Promise<Client | null> {
     return this.repository.findOne({
       where: { id },
+      relations: {
+        campaigns: true,
+      },
     });
   }
 
