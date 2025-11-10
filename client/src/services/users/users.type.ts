@@ -2,9 +2,7 @@ import z from "zod";
 
 import {
   baseSchema,
-  type BaseType,
   namedBaseSchema,
-  type NamedBaseType,
 } from "../base.type";
 
 const clientSchema = z.object({}).extend(namedBaseSchema.shape);
@@ -36,6 +34,5 @@ export const transformSchema = userSchema.transform((base) => {
   } satisfies TransformedUser;
 });
 
-export type User = z.infer<typeof userSchema> & BaseType;
-export type TransformedUser = z.infer<typeof transformedUserSchema> &
-  NamedBaseType;
+export type User = z.infer<typeof userSchema>;
+export type TransformedUser = z.infer<typeof transformedUserSchema>;

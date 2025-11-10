@@ -21,7 +21,9 @@ const columns: ColumnDef<Flow["steps"][number]>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("name") ?? ""}</div>
+    ),
   },
 
   {
@@ -44,7 +46,7 @@ const columns: ColumnDef<Flow["steps"][number]>[] = [
 
       return (
         <div className="font-medium">
-          {stepActivities.map((s) => s.activity.name).join(", ")}
+          {stepActivities.map((s) => s.activity?.name)?.join(", ")}
         </div>
       );
     },

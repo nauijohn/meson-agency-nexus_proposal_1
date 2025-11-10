@@ -1,9 +1,16 @@
 "use client";
 
+import { useSelector } from "react-redux";
+
 import Dropdown from "@/components/app/Dropdown";
 import TableData from "@/components/app/TableData";
 import { Separator } from "@/components/ui/separator";
+import { useGetCampaignsQuery } from "@/services/campaigns/campaigns.api";
+import {
+  useGetUserClientsQuery,
+} from "@/services/user-clients/user-clients.api";
 import { useGetUsersQuery } from "@/services/users/users.api";
+import type { RootState } from "@/store";
 import {
   paymentColumns,
   payments,
@@ -11,8 +18,37 @@ import {
 
 const Home = () => {
   const { data: users, isFetching } = useGetUsersQuery();
+  const usersOptions = users
+    ? users?.map(({ id, firstName, lastName }) => ({
+        label: `${firstName} ${lastName}`,
+        value: id,
+      }))
+    : [];
 
-  console.log("Users22:", users);
+  const userId = useSelector((state: RootState) => state.users.userId);
+
+  const { data: userClients } = useGetUserClientsQuery(
+    { userId },
+    {
+      skip: !userId,
+    },
+  );
+  const clients = userClients?.map((uc) => uc.client) || [];
+  const clientsOptions = clients
+    ? clients?.map(({ id, name }) => ({
+        label: name,
+        value: id,
+      }))
+    : [];
+
+  const clientId = useSelector((state: RootState) => state.clients.id);
+
+  const { data: campaigns } = useGetCampaignsQuery(
+    { clientId },
+    { skip: !clientId },
+  );
+
+  console.log("campaigns:", campaigns);
 
   if (isFetching) {
     return <div>Loading...</div>;
@@ -27,54 +63,24 @@ const Home = () => {
               Log in as user:
             </h4>
 
-            <Dropdown
-              dropDownType="users"
-              values={
-                users
-                  ? users?.map(({ id, firstName, lastName }) => ({
-                      label: `${firstName} ${lastName}`,
-                      value: id,
-                    }))
-                  : []
-              }
-            />
+            <Dropdown dropDownType="users" values={usersOptions} />
           </div>
 
           <div className="flex gap-5 w-full">
             <div className="flex flex-col w-full">
               <h4 className="font-semibold text-xl tracking-tight scroll-m-20">
-                Campaign
+                Client
               </h4>
 
-              <Dropdown
-                dropDownType="campaigns"
-                values={
-                  users
-                    ? users?.map(({ id, firstName, lastName }) => ({
-                        label: `${firstName} ${lastName}`,
-                        value: id,
-                      }))
-                    : []
-                }
-              />
+              <Dropdown dropDownType="clients" values={clientsOptions} />
             </div>
 
             <div className="flex flex-col w-full">
               <h4 className="font-semibold text-xl tracking-tight scroll-m-20">
-                Client
+                Campaign
               </h4>
 
-              <Dropdown
-                dropDownType="clients"
-                values={
-                  users
-                    ? users?.map(({ id, firstName, lastName }) => ({
-                        label: `${firstName} ${lastName}`,
-                        value: id,
-                      }))
-                    : []
-                }
-              />
+              <Dropdown dropDownType="campaigns" values={usersOptions} />
             </div>
           </div>
         </div>

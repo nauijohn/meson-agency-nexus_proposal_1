@@ -7,7 +7,7 @@ import type {
   AppDispatch,
   RootState,
 } from "@/store";
-import * as usersSlice from "@/store/usersSlice";
+import { setUserId } from "@/store/users.slice";
 
 import {
   Combobox,
@@ -28,14 +28,25 @@ type Props = {
 const Dropdown = ({ values, dropDownType }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const data = useSelector((state: RootState) => state.users?.userId);
+  // state.users?.userId
+  const data = useSelector((state: RootState) => {
+    switch (dropDownType) {
+      case "users":
+        return state.users?.userId;
+      case "campaigns":
+        return state.campaigns?.campaignId;
+      default:
+        break;
+    }
+  });
 
-  console.log(dropDownType, data);
+  // dispatch()
+  // console.log(dropDownType, data);
 
   const setValue = (value: string) => {
     switch (dropDownType) {
       case "users":
-        return usersSlice.setUserId(value);
+        return setUserId(value);
       default:
         break;
     }
@@ -51,7 +62,7 @@ const Dropdown = ({ values, dropDownType }: Props) => {
   return (
     <Combobox
       data={values}
-      onOpenChange={(open) => console.log("Combobox is open?", open)}
+      // onOpenChange={(open) => console.log("Combobox is open?", open)}
       onValueChange={handleValueChange}
       type={dropDownType}
     >

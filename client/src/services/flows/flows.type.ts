@@ -1,8 +1,8 @@
 import z from "zod";
 
 import {
+  baseSchema,
   namedBaseSchema,
-  type NamedBaseType,
 } from "../base.type";
 
 // {
@@ -35,14 +35,14 @@ export const flowSchema = z
     steps: z.array(
       z
         .object({
-          name: z.string(),
           order: z.number(),
           stepActivities: z.array(
-            z.object({
-              activity: z.object({
-                name: z.string(),
-              }),
-            }),
+            z
+              .object({
+                activity: z.any().nullable(),
+                completedAt: z.string().nullable(),
+              })
+              .extend(baseSchema.shape),
           ),
         })
         .extend(namedBaseSchema.shape),
@@ -50,13 +50,5 @@ export const flowSchema = z
   })
   .extend(namedBaseSchema.shape);
 
-// export const transformSchema = flowActivitySchema.transform((base) => {
-//   const { ...rest } = base; // omits
-
-//   return {
-//     ...rest,
-//   } satisfies FlowActivity;
-// });
-
-export type Flow = z.infer<typeof flowSchema> & NamedBaseType;
+export type Flow = z.infer<typeof flowSchema>;
 export type CreateFlow = z.infer<typeof createFlowSchema>;

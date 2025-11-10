@@ -1,9 +1,6 @@
 import z from "zod";
 
-import {
-  namedBaseSchema,
-  type NamedBaseType,
-} from "../base.type";
+import { namedBaseSchema } from "../base.type";
 
 export const flowStepSchema = z
   .object({
@@ -12,4 +9,4 @@ export const flowStepSchema = z
   })
   .extend(namedBaseSchema.shape);
 
-export type FlowStep = z.infer<typeof flowStepSchema> & NamedBaseType;
+export type FlowStep = z.infer<typeof flowStepSchema>;

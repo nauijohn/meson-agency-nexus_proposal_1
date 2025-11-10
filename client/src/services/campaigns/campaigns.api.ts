@@ -7,6 +7,8 @@ import {
   campaignSchema,
   type CreateCampaign,
   createCampaignSchema,
+  type QueryCampaign,
+  queryCampaignSchema,
   type UpdateCampaign,
   updateCampaignSchema,
 } from "./campaigns.type";
@@ -46,9 +48,24 @@ export const {
       },
     }),
 
-    getCampaigns: builder.query<Campaign[], void>({
+    getCampaigns: builder.query<Campaign[], QueryCampaign>({
       providesTags: [API_TAGS.CAMPAIGNS],
-      query: () => URL(),
+      query: (args) => {
+        const queryParams = new URLSearchParams();
+        if (args.clientId) {
+          queryParams.append("clientId", args.clientId);
+        }
+        console.log("Query Params:", queryParams.toString());
+
+        const URL_WITH_QUERY = queryParams.toString()
+          ? `${URL()}?${queryParams.toString()}`
+          : URL();
+        return {
+          url: URL_WITH_QUERY,
+          method: HttpMethods.GET,
+        };
+      },
+      argSchema: queryCampaignSchema,
       responseSchema: campaignSchema.array(),
     }),
 

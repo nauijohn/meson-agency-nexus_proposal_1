@@ -1,20 +1,16 @@
 import z from "zod";
 
-import {
-  baseSchema,
-  namedBaseSchema,
-} from "../base.type";
+import { namedBaseSchema } from "../base.type";
+import { userSchema } from "../users/users.type";
 
 export const userClientSchema = z.object({
   client: z.object({}).extend(namedBaseSchema.shape),
-  user: z
-    .object({
-      firstName: z.string(),
-      lastName: z.string(),
-      email: z.email(),
-    })
-    .extend(baseSchema.shape),
+  user: userSchema,
   assignedDate: z.string(),
+});
+
+export const userClientQuerySchema = z.object({
+  userId: z.string().optional(),
 });
 
 export const transformedUserClientSchema = z.object({
@@ -39,3 +35,4 @@ export const transformSchema = userClientSchema.transform((base) => {
 
 export type UserClient = z.infer<typeof userClientSchema>;
 export type TransformedUserClient = z.infer<typeof transformedUserClientSchema>;
+export type UserClientQuery = z.infer<typeof userClientQuerySchema>;

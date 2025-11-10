@@ -1,9 +1,6 @@
 import z from "zod";
 
-import {
-  namedBaseSchema,
-  type NamedBaseType,
-} from "../base.type";
+import { namedBaseSchema } from "../base.type";
 
 export const createCampaignSchema = z.object({
   name: z.string(),
@@ -13,14 +10,19 @@ export const createCampaignSchema = z.object({
   clientId: z.uuid(),
 });
 
+export const queryCampaignSchema = z.object({
+  clientId: z.string().nullable().optional(),
+});
+
 export const updateCampaignSchema = createCampaignSchema.partial().extend({
   id: z.uuid(),
   flowId: z.uuid(),
   campaignFlowSteps: z
     .array(
       z.object({
-        scheduledAt: z.date(),
-        dueAt: z.date(),
+        flowStepId: z.uuid(),
+        scheduledAt: z.date().optional(),
+        dueAt: z.date().optional(),
       }),
     )
     .optional(),
@@ -32,18 +34,9 @@ export const campaignSchema = z
     startDate: z.string(),
     endDate: z.string(),
     status: z.string(),
-    client: z.object({
-      id: z.uuid(),
-      name: z.string(),
-    }),
+    client: z.object({}).extend(namedBaseSchema.shape),
 
-    flow: z
-      .object({
-        id: z.uuid(),
-        name: z.string(),
-      })
-      .extend(namedBaseSchema.shape)
-      .nullable(),
+    flow: z.object({}).extend(namedBaseSchema.shape).nullable(),
   })
   .extend(namedBaseSchema.shape);
 
@@ -55,6 +48,7 @@ export const campaignSchema = z
 //   } satisfies FlowActivity;
 // });
 
-export type Campaign = z.infer<typeof campaignSchema> & NamedBaseType;
+export type Campaign = z.infer<typeof campaignSchema>;
 export type CreateCampaign = z.infer<typeof createCampaignSchema>;
 export type UpdateCampaign = z.infer<typeof updateCampaignSchema>;
+export type QueryCampaign = z.infer<typeof queryCampaignSchema>;

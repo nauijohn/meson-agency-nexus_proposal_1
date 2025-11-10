@@ -1,9 +1,6 @@
 import z from "zod";
 
-import {
-  namedBaseSchema,
-  type NamedBaseType,
-} from "../base.type";
+import { namedBaseSchema } from "../base.type";
 
 export const flowActivitySchema = z
   .object({
@@ -19,4 +16,4 @@ export const flowActivitySchema = z
 //   } satisfies FlowActivity;
 // });
 
-export type FlowActivity = z.infer<typeof flowActivitySchema> & NamedBaseType;
+export type FlowActivity = z.infer<typeof flowActivitySchema>;

@@ -24,8 +24,9 @@ import DropdownInputForm from "../../DropdownInputForm";
 import FormDatePicker from "../../FormDatePicker";
 
 const campaignFlowStepSchema = z.object({
-  scheduledAt: z.date(),
-  dueAt: z.date(),
+  scheduledAt: z.date().optional(),
+  dueAt: z.date().optional(),
+  flowStepId: z.uuid(),
 });
 
 const formSchema = z.object({
@@ -50,11 +51,6 @@ const Form = () => {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(
-        "Submitting form with value:",
-        updateCampaignSchema.parse(value),
-      );
-      // updateCampaign(updateCampaignSchema.parse(value));
       updateCampaign(updateCampaignSchema.parse(value));
     },
   });
@@ -174,12 +170,9 @@ const Form = () => {
                 {selectedFlowSteps &&
                   selectedFlowSteps.map((_, i) => {
                     return (
-                      <>
+                      <Field key={`campaign-flow-step-div-${i}`}>
                         <FieldLabel>{` ${_.name}`}</FieldLabel>
-                        <FieldGroup
-                          key={`flow-step-field-group-${i}`}
-                          className="flex flex-row justify-evenly gap-5"
-                        >
+                        <FieldGroup className="flex flex-row justify-evenly gap-5">
                           {/** Flow Activity Name */}
 
                           <form.Field
@@ -205,8 +198,14 @@ const Form = () => {
                               );
                             }}
                           />
+
+                          <form.Field
+                            name={`campaignFlowSteps[${i}].flowStepId`}
+                            defaultValue={_.id}
+                            children={() => <></>}
+                          />
                         </FieldGroup>
-                      </>
+                      </Field>
                     );
                   })}
               </>

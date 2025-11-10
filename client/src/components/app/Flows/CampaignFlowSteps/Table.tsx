@@ -1,101 +1,88 @@
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useGetFlowsQuery } from "@/services/flows/flows.api";
-import type { Flow } from "@/services/flows/flows.type";
+import {
+  useGetCampaignFlowStepsQuery,
+} from "@/services/campaign-flow-steps/campaign-flow-steps.api";
+import type {
+  CampaignFlowStep,
+} from "@/services/campaign-flow-steps/campaign-flow-steps.type";
+import type { Campaign } from "@/services/campaigns/campaigns.type";
+import type { FlowStep } from "@/services/flow-steps/flow-steps.type";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import TableData from "../../TableData";
 
-const columns: ColumnDef<Flow["steps"][number]>[] = [
+const columns: ColumnDef<CampaignFlowStep>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "campaign",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Campaign
           <ArrowUpDown className="ml-2 w-4 h-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
-  },
-
-  {
-    accessorKey: "order",
-    header: "Order",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("order")}</div>
-    ),
-  },
-
-  {
-    accessorKey: "stepActivities",
-    header: "Step Activities",
     cell: ({ row }) => {
-      const stepActivities = row.getValue("stepActivities") as {
-        activity: {
-          name: string;
-        };
-      }[];
-
-      return (
-        <div className="font-medium">
-          {stepActivities.map((s) => s.activity.name).join(", ")}
-        </div>
-      );
+      const campaign: Campaign = row.getValue("campaign");
+      return <div className="lowercase">{campaign["name"]}</div>;
     },
   },
 
-  // {
-  //   id: "actions",
-  //   enableHiding: false,
-  //   cell: ({ row }) => {
-  //     const user = row.original;
-  //     return (
-  //       <DropdownMenu>
-  //         <DropdownMenuTrigger asChild>
-  //           <Button variant="ghost" className="p-0 w-8 h-8">
-  //             <span className="sr-only">Open menu</span>
-  //             <MoreHorizontal className="w-4 h-4" />
-  //           </Button>
-  //         </DropdownMenuTrigger>
-  //         <DropdownMenuContent align="end">
-  //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-  //           <DropdownMenuItem
-  //             onClick={() => navigator.clipboard.writeText(user.id)}
-  //           >
-  //             Copy payment ID
-  //           </DropdownMenuItem>
-  //           <DropdownMenuSeparator />
-  //           <DropdownMenuItem>View customer</DropdownMenuItem>
-  //           <DropdownMenuItem>View payment details</DropdownMenuItem>
-  //         </DropdownMenuContent>
-  //       </DropdownMenu>
-  //     );
-  //   },
-  // },
+  {
+    id: "campaignClient",
+    accessorKey: "campaign",
+    header: "Client",
+    cell: ({ row }) => {
+      const campaign: Campaign = row.getValue("campaign");
+      return <div className="font-medium">{campaign.client.name}</div>;
+    },
+  },
+
+  {
+    accessorKey: "flowStep",
+    header: "Flow Step Name",
+    cell: ({ row }) => {
+      const flowStep: FlowStep = row.getValue("flowStep");
+      return <div className="font-medium">{flowStep.name}</div>;
+    },
+  },
+
+  {
+    id: "flowStepOrder",
+    accessorKey: "flowStep",
+    header: "Order",
+    cell: ({ row }) => {
+      const flowStep: FlowStep = row.getValue("flowStep");
+      return <div className="font-medium">{flowStep.order}</div>;
+    },
+  },
+
+  {
+    accessorKey: "scheduledAt",
+    header: "Scheduled At",
+    cell: ({ row }) => {
+      return <div className="font-medium">{row.getValue("scheduledAt")}</div>;
+    },
+  },
+
+  {
+    accessorKey: "dueAt",
+    header: "Due At",
+    cell: ({ row }) => {
+      return <div className="font-medium">{row.getValue("dueAt")}</div>;
+    },
+  },
 ];
 
 const Table = () => {
-  const { data } = useGetFlowsQuery();
+  const { data } = useGetCampaignFlowStepsQuery();
 
-  return (
-    <>
-      {data &&
-        data?.map((flow) => (
-          <div key={flow.id}>
-            {flow.steps &&
-              flow.steps.map((step) => (
-                <TableData key={step.id} data={flow.steps} columns={columns} />
-              ))}
-          </div>
-        ))}
-    </>
-  );
+  return <>{data && <TableData data={data} columns={columns} />}</>;
 };
 
 export default Table;

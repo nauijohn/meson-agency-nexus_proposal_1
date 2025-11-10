@@ -53,7 +53,6 @@ const Form = () => {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Submitting flow activity:", value);
       addFlow(createFlowSchema.parse(value));
     },
   });

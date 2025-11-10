@@ -35,8 +35,6 @@ const Form = () => {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Submitting flow activity:", value);
-
       addFlowActivity(flowActivitySchema.omit({ id: true }).parse(value));
     },
   });

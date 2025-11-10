@@ -12,6 +12,7 @@ export const API_TAGS = {
   FLOW_ACTIVITIES: "FlowActivities",
   FLOWS: "Flows",
   CAMPAIGNS: "Campaigns",
+  CAMPAIGN_FLOW_STEPS: "CampaignFlowSteps",
 };
 
 export const HttpMethods = {

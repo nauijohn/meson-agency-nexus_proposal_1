@@ -43,11 +43,9 @@ const Form = () => {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value: { userId, ...body } }) => {
-      const x = await Promise.all(
+      await Promise.all(
         body.clientIds?.map((clientId) => addUserClient({ userId, clientId })),
       );
-
-      console.log("Add user client results:", x);
     },
   });
 

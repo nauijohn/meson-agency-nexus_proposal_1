@@ -7,6 +7,8 @@ import {
   transformedUserClientSchema,
   transformSchema,
   type UserClient,
+  type UserClientQuery,
+  userClientQuerySchema,
   userClientSchema,
 } from "./user-clients.type";
 
@@ -23,9 +25,24 @@ const userClientsApi = api.injectEndpoints({
       }),
     }),
 
-    getUserClients: query<UserClient[], void>({
+    getUserClients: query<UserClient[], UserClientQuery>({
       providesTags: [API_TAGS.USER_CLIENTS],
-      query: () => URL(),
+      argSchema: userClientQuerySchema,
+      query: (args) => {
+        const queryParams = new URLSearchParams();
+        if (args.userId) {
+          queryParams.append("userId", args.userId);
+        }
+        console.log("Query Params:", queryParams.toString());
+
+        const URL_WITH_QUERY = queryParams.toString()
+          ? `${URL()}?${queryParams.toString()}`
+          : URL();
+        return {
+          url: URL_WITH_QUERY,
+          method: HttpMethods.GET,
+        };
+      },
       responseSchema: userClientSchema.array(),
     }),
 
