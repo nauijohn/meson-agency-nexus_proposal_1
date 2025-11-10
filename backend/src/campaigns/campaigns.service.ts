@@ -7,7 +7,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { TOTAL_KEY } from "../common/bases";
-import { CampaignEvents } from "../common/events/campaign.events";
 import { applyPaginationAndSorting } from "../common/utils/query-builder.pagination";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
 import { QueryCampaignDto } from "./dto/query-campaign.dto";
@@ -16,9 +15,6 @@ import { Campaign } from "./entities/campaign.entity";
 
 @Injectable()
 export class CampaignsService {
-  private readonly events: { event: CampaignEvents; eventPayload?: unknown }[] =
-    [];
-
   constructor(
     @InjectRepository(Campaign)
     private readonly repository: Repository<Campaign>,
@@ -27,27 +23,28 @@ export class CampaignsService {
     private readonly cls: ClsService,
   ) {}
 
-  async create(dto: CreateCampaignDto): Promise<Campaign> {
+  create(dto: CreateCampaignDto): Promise<Campaign> {
     const entity = this.mapper.map(dto, CreateCampaignDto, Campaign);
-    const savedEntity = await this.repository.save(entity);
-
-    this.events.push({
-      event: CampaignEvents.Created,
-      eventPayload: { campaign: savedEntity },
-    });
-    return savedEntity;
+    return this.repository.save(entity);
   }
 
   async findAll(query: QueryCampaignDto): Promise<Campaign[]> {
     let qb = this.repository
       .createQueryBuilder("campaign")
       .leftJoinAndSelect("campaign.client", "client")
+      .leftJoinAndSelect("client.contacts", "contacts")
       .leftJoinAndSelect("campaign.flow", "flow")
       .leftJoinAndSelect("campaign.campaignFlowSteps", "campaignFlowSteps");
 
     // ✅ Filter: only campaigns with no assigned flow
     if (query?.unassignedFlow) {
       qb.andWhere("campaign.flow_id IS NULL");
+    }
+
+    if (query?.clientId) {
+      qb.andWhere("campaign.client_id = :clientId", {
+        clientId: query.clientId,
+      });
     }
 
     qb = applyPaginationAndSorting(qb, { ...query });
@@ -68,16 +65,14 @@ export class CampaignsService {
         client: {
           contacts: true,
         },
-        flow: {
-          steps: true,
+        flow: true,
+        campaignFlowSteps: {
+          flowStep: true,
         },
       },
     });
   }
 
-  // @AfterAction((result, args) => {
-  //   console.log("AfterAction - CampaignsService.update called");
-  // })
   async update(entity: Campaign, dto: UpdateCampaignDto): Promise<Campaign> {
     this.mapper.mutate(dto, entity, UpdateCampaignDto, Campaign);
 

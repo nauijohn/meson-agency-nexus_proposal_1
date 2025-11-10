@@ -3,7 +3,7 @@ import { setSeederFactory } from "typeorm-extension";
 import {
   ActivityType,
   FlowActivity,
-} from "../../../src/flow-activities/entities/flow-activity.entity";
+} from "../../src/flow-activities/entities/flow-activity.entity";
 
 export const FlowActivityFactory = setSeederFactory(FlowActivity, (faker) => {
   const flowActivity = new FlowActivity();

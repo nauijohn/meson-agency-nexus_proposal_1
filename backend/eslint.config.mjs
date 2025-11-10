@@ -45,13 +45,13 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-return": "off",
     },
   },
-  // {
-  //   files: ["src/common/events/**/*.decorator.ts"], // decorators for events
-  //   rules: {
-  //     // "@typescript-eslint/no-unsafe-call": "off",
-  //     // "@typescript-eslint/no-unsafe-assignment": "off",
-  //     // "@typescript-eslint/no-unsafe-member-access": "off",
-  //     // "@typescript-eslint/no-unsafe-return": "off",
-  //   },
-  // },
+  {
+    files: ["src/experiments/proxies/**/*.ts"], // decorators for events
+    rules: {
+      // "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      // "@typescript-eslint/no-unsafe-member-access": "off",
+      // "@typescript-eslint/no-unsafe-return": "off",
+    },
+  },
 );

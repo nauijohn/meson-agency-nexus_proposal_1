@@ -7,11 +7,12 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 
+import { LoggerService } from "../../common/global/logger/logger.service";
 import { User } from "../../users/";
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard("local") {
-  constructor() {
+  constructor(private readonly loggerService: LoggerService) {
     super();
   }
 
@@ -30,6 +31,7 @@ export class LocalAuthGuard extends AuthGuard("local") {
     context: ExecutionContext,
     status?: any,
   ): TUser {
+    this.loggerService.warn("LocalAuthGuard: handleRequest called...");
     console.log("info: ", info);
     console.log("status: ", status);
 

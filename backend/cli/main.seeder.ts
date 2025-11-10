@@ -1,11 +1,11 @@
 import { DataSource } from "typeorm";
 import { Seeder, SeederFactoryManager } from "typeorm-extension";
 
-import { Campaign } from "../../src/campaigns/entities/campaign.entity";
-import { ClientContact } from "../../src/client-contacts/entities/client-contact.entity";
-import { Client } from "../../src/clients/entities/client.entity";
-import { UserClient } from "../../src/user-clients/entities/user-client.entity";
-import { User } from "../../src/users/entities/user.entity";
+import { Campaign } from "../src/campaigns/entities/campaign.entity";
+import { ClientContact } from "../src/client-contacts/entities/client-contact.entity";
+import { Client } from "../src/clients/entities/client.entity";
+import { UserClient } from "../src/user-clients/entities/user-client.entity";
+import { User } from "../src/users/entities/user.entity";
 
 export class MainSeeder implements Seeder {
   public async run(
@@ -41,12 +41,19 @@ export class MainSeeder implements Seeder {
     //   }
     // }
 
+    const NUMBER_OF_USERS = 20;
+    const NUMBER_OF_CLIENTS_PER_USER = 5;
+    const NUMBER_OF_CLIENT_CONTACTS_PER_CLIENT = 20;
+    const NUMBER_OF_CAMPAIGNS_PER_CLIENT = 10;
+
     await Promise.all(
-      Array.from({ length: 1 }).map(async () => {
+      Array.from({ length: NUMBER_OF_USERS }).map(async () => {
         const user = await userFactory.save();
         await Promise.all(
-          Array.from({ length: 2 }).map(async () => {
-            const clientContacts = await clientContactFactory.saveMany(10);
+          Array.from({ length: NUMBER_OF_CLIENTS_PER_USER }).map(async () => {
+            const clientContacts = await clientContactFactory.saveMany(
+              NUMBER_OF_CLIENT_CONTACTS_PER_CLIENT,
+            );
             const client = await clientFactory.save({
               contacts: clientContacts,
             });
@@ -61,7 +68,7 @@ export class MainSeeder implements Seeder {
                 client,
                 user,
               }),
-              campaignFactory.saveMany(3, {
+              campaignFactory.saveMany(NUMBER_OF_CAMPAIGNS_PER_CLIENT, {
                 client,
               }),
             ]);

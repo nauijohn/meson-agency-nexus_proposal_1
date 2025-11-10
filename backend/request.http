@@ -1,6 +1,6 @@
 # @host = https://epiploic-temperance-unwhimperingly.ngrok-free.dev/api
 @host = http://localhost:3000/api
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZTAyMDhiYy05YjI3LTQzNjUtYTFkYS0wYjVmODkzZDI0MGMiLCJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzYyMjIxNTQzLCJleHAiOjE3NjIyMjE1NDh9.cKRGTlHg_-hzEeYbU_34k9ELNRmFey5OQllUpLkja0M
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMzUzZWE0Zi1hZDMxLTQzMDgtYWFhMi0xYmIyZDAyMGExNzMiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NjI3NzAxMTEsImV4cCI6MTc2Mjc3MDE0MX0.-O0x5mL9qOO7Jif30KvKgLL1-TcDtZQh9fvSsMD38zw
 @refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYWEyMDcyMy1hOGVhLTRmNzEtODkwNC0xMWY5MTg3NjQxNGIiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJ0b2tlbklkIjoiOGNmNTBmYTMtNmUzYy00Mjc1LWFlYWUtM2VhMDkyYjI1YjE4IiwiaWF0IjoxNzYyNTg3NjY2LCJleHAiOjE3NjMxOTI0NjZ9.vzqlsDXfmKj0Tea3d8UX_opESgWk2hD4NJiXUviA2Xs
 
 
@@ -36,6 +36,10 @@ Authorization: Bearer {{refreshToken}}
 POST {{host}}/auth/sign-out
 Authorization: Bearer {{refreshToken}}
 
+###
+GET {{host}}/auth
+Authorization: Bearer {{accessToken}}
+
 #######################################
 ##              Twilio              ##
 ######################################
@@ -66,7 +70,7 @@ GET {{host}}/clients
 #######################################
 
 ###
-GET {{host}}/campaigns
+GET {{host}}/campaigns?clientId=1be7a1c0-f58c-40a7-8d8a-0856f2a67178
 
 ###
 GET {{host}}/campaigns?unassignedFlow=true
@@ -87,18 +91,19 @@ Content-Type: application/json
 }
 
 ###
-PATCH {{host}}/campaigns/64c98261-7d1e-4f69-a202-0b0d2783ea23
+PATCH {{host}}/campaigns/af52a19a-a029-4d3c-b7e8-5b7948668156
 Content-Type: application/json
 
 {
-	# "clientId": undefined
-	"flowId": "84cb5be1-3e70-489f-a7a8-88c360db34c5"
-	# "flowId": null
-
+	"flowId": "12cab2de-c5b9-4d7c-a332-d2f0f67fea42"
 }
 
 ###
-GET {{host}}/campaigns/
+GET {{host}}/campaigns/af52a19a-a029-4d3c-b7e8-5b7948668156
+
+
+###
+GET {{host}}/flows
 
 
 #####################################
@@ -147,7 +152,7 @@ Content-Type: application/json
 ##################################
 
 ###
-GET {{host}}/user-clients
+GET {{host}}/user-clients?userId=01ea5f0d-30bd-498f-94f0-cfc62d7103fe
 
 
 
@@ -238,3 +243,10 @@ Content-Type: application/json
 	"type": "mobile",	
 	"clientIds": ["55d76013-32d4-4c5c-8c0d-c0467401291a"]
 }
+
+####################################################
+##             Client Client Contacts             ##
+####################################################
+
+###
+GET {{host}}/client-client-contacts

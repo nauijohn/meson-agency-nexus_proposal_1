@@ -4,13 +4,19 @@ import { ExecutionContext, Injectable } from "@nestjs/common";
 import { JsonWebTokenError, TokenExpiredError } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 
+import { LoggerService } from "../../common/global/logger/logger.service";
 import { JwtUser } from "../strategies";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {
+  constructor(private readonly logger: LoggerService) {
+    super();
+  }
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    this.logger.warn("JWT Auth Guard: canActivate called...");
     return super.canActivate(context);
   }
 

@@ -4,7 +4,7 @@ import { CampaignContactFlowStepsModule } from "../campaign-contact-flow-steps/c
 import { CampaignFlowStepsModule } from "../campaign-flow-steps";
 import { CampaignsModule } from "../campaigns/campaigns.module";
 import { FlowsModule } from "../flows/flows.module";
-import { CampaignsListener } from "./campaigns.listener";
+import { CampaignsListener } from "./listeners/campaigns.listener";
 
 @Module({
   imports: [
@@ -15,4 +15,4 @@ import { CampaignsListener } from "./campaigns.listener";
   ],
   providers: [CampaignsListener],
 })
-export class EventListenersModule {}
+export class EventsModule {}

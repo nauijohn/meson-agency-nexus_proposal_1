@@ -8,4 +8,7 @@ export class QueryCampaignDto extends PaginationDto {
   @IsOptional()
   @Transform(({ value }) => value === "true")
   unassignedFlow?: boolean = false;
+
+  @IsOptional()
+  clientId?: string;
 }

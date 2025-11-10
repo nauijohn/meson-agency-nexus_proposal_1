@@ -4,6 +4,8 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 
+import { LoggerService } from "../../common/global/logger/logger.service";
+
 export type JwtPayload = {
   sub: string;
   email: string;
@@ -18,7 +20,10 @@ export type JwtUser = {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(configService: ConfigService) {
+  constructor(
+    private readonly logger: LoggerService,
+    configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -28,6 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: JwtPayload): JwtUser {
+    this.logger.warn("JwtStrategy: validate called...");
     if (!payload) throw new UnauthorizedException();
     return { id: payload.sub, email: payload.email };
   }

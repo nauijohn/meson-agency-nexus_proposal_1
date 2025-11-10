@@ -33,7 +33,7 @@ export class CampaignFlowStepsService {
         },
         flowStep: true,
       },
-      ...applyPaginationAndSorting(query),
+      ...applyPaginationAndSorting(query, "dueAt"),
     });
 
     this.cls.set(TOTAL_KEY, total);

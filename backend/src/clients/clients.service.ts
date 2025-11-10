@@ -28,6 +28,7 @@ export class ClientsService {
 
   async findAll(query: QueryClientDto): Promise<Client[]> {
     const [entities, total] = await this.repository.findAndCount({
+      relations: { contacts: false },
       ...applyPaginationAndSorting(query),
     });
 

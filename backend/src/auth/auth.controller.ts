@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
@@ -15,6 +16,7 @@ import { AuthService } from "./auth.service";
 import { BearerToken } from "./decorators/bearer-token.decorator";
 import { ReqUser } from "./decorators/req-user.decorator";
 import { SignUpDto } from "./dto";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { RefreshTokenGuard } from "./guards/refresh-token.guard";
 import type { JwtRefreshUser } from "./strategies/refresh-token.strategy";
@@ -102,5 +104,11 @@ export class AuthController {
     }
 
     return tokens;
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  test() {
+    return "Auth works!";
   }
 }

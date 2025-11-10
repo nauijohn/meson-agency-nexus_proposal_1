@@ -5,9 +5,11 @@ import { runSeeders, SeederOptions } from "typeorm-extension";
 import { ConfigService } from "@nestjs/config";
 
 import { typeOrmConfigFactory } from "../src/typeorm.config";
-import { DeleteAllSeeder } from "./delete-all/delete-all.seeder";
-import { initialSeederFactories, initialSeederSeeds } from "./initial-seeder";
-import { seederFactories, seederSeeds } from "./seeder";
+import { DeleteAllSeeder } from "./delete-all.seeder";
+import { seederFactories } from "./factories";
+import { FlowsSeeder } from "./flows.seeder";
+import { InitialSeeder } from "./ininital.seeder";
+import { MainSeeder } from "./main.seeder";
 
 @Command({ name: "seed", description: "a seed command" })
 export class SeedCommand extends CommandRunner {
@@ -16,13 +18,14 @@ export class SeedCommand extends CommandRunner {
   }
 
   async run(
-    passedParams: string[],
-    options?: Record<string, any>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _passedParams: string[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _options?: Record<string, any>,
   ): Promise<void> {
-    console.log("Passed Params:", passedParams);
-    console.log("Options:", options);
     const opts: DataSourceOptions & SeederOptions = {
       ...(typeOrmConfigFactory(this.configService) as DataSourceOptions),
+      factories: seederFactories,
     };
 
     const datasource = new DataSource(opts);
@@ -36,19 +39,19 @@ export class SeedCommand extends CommandRunner {
 
       console.log("Seeding started...");
       await runSeeders(result, {
-        factories: initialSeederFactories,
-        seeds: initialSeederSeeds,
+        seeds: [InitialSeeder, FlowsSeeder],
       });
+
       await runSeeders(result, {
         factories: seederFactories,
-        seeds: seederSeeds,
+        seeds: [MainSeeder],
       });
 
       console.log("Seeding complete...");
-      await datasource.destroy();
+      await result.destroy();
     } catch (error) {
       console.error("Error during seeding:", error);
-      await datasource.destroy();
+      await result.destroy();
       process.exit(1);
     }
   }

@@ -28,6 +28,8 @@ export function config(app: INestApplication<any>): void {
     }),
   );
 
+  // app.useGlobalInterceptors(app.get(RequestContextInterceptor));
+
   app.useGlobalFilters(
     new TokenExpiredExceptionFilter(httpAdapter),
     new JsonWebTokenExceptionFilter(httpAdapter),

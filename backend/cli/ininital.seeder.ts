@@ -4,9 +4,9 @@ import { Seeder } from "typeorm-extension";
 import {
   ActivityType,
   FlowActivity,
-} from "../../../src/flow-activities/entities/flow-activity.entity";
+} from "../src/flow-activities/entities/flow-activity.entity";
 
-export class FlowActivitiesSeeder implements Seeder {
+export class InitialSeeder implements Seeder {
   public async run(dataSource: DataSource): Promise<any> {
     console.log("Running FlowActivitiesSeeder...");
     const flowActivityRepo = dataSource.getRepository(FlowActivity);

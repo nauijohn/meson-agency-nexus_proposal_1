@@ -12,6 +12,7 @@ import {
 } from "@nestjs/common";
 
 import { PaginationHeaders } from "../common/decorators/pagination-headers.decorator";
+import { LoggerService } from "../common/global/logger/logger.service";
 import { Serialize } from "../common/interceptors/serialize.interceptor";
 import { CampaignsService } from "./campaigns.service";
 import { CampaignDto } from "./dto/campaign.dto";
@@ -22,7 +23,10 @@ import { UpdateCampaignDto } from "./dto/update-campaign.dto";
 @Serialize(CampaignDto)
 @Controller("campaigns")
 export class CampaignsController {
-  constructor(private readonly service: CampaignsService) {}
+  constructor(
+    private readonly service: CampaignsService,
+    private readonly logger: LoggerService,
+  ) {}
 
   @Post()
   async create(@Body() dto: CreateCampaignDto) {
@@ -37,7 +41,9 @@ export class CampaignsController {
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    return this.service.findOne(id);
+    const campaign = await this.service.findOne(id);
+    this.logger.debug("Fetched campaign:", campaign);
+    return campaign;
   }
 
   @Patch(":id")

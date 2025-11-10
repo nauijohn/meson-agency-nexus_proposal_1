@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 
+import { LoggerService } from "../../common/global/logger/logger.service";
 import { JwtPayload, JwtUser } from "./jwt.strategy";
 
 export type JwtRefreshUser = JwtUser & {
@@ -19,7 +20,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   "jwt-refresh",
 ) {
-  constructor(configService: ConfigService) {
+  constructor(
+    private readonly logger: LoggerService,
+    configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.getOrThrow("JWT_REFRESH_TOKEN_SECRET"),

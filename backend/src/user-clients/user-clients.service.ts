@@ -1,7 +1,7 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
 import { ClsService } from "nestjs-cls";
-import { Repository } from "typeorm";
+import { FindOptionsWhere, Repository } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -28,7 +28,20 @@ export class UserClientsService {
   }
 
   async findAll(query: QueryUserClientDto): Promise<UserClient[]> {
+    const where:
+      | FindOptionsWhere<UserClient>
+      | FindOptionsWhere<UserClient>[]
+      | undefined = {};
+
+    if (query.userId) {
+      // where.userId = query.userId;
+      where.user = {
+        id: query.userId,
+      };
+    }
+
     const [entities, total] = await this.repository.findAndCount({
+      where,
       ...applyPaginationAndSorting(query, "assignedDate"),
     });
 

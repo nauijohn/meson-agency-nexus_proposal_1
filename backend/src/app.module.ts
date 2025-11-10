@@ -3,9 +3,11 @@ import { CamelCaseNamingConvention } from "automapper-core";
 import { AutomapperModule } from "automapper-nestjs";
 import * as Joi from "joi";
 import { ClsModule } from "nestjs-cls";
+import * as uuid from "uuid";
 
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_INTERCEPTOR } from "@nestjs/core";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -14,7 +16,12 @@ import { CampaignFlowStepsModule } from "./campaign-flow-steps/campaign-flow-ste
 import { CampaignsModule } from "./campaigns/campaigns.module";
 import { ClientContactsModule } from "./client-contacts/client-contacts.module";
 import { ClientsModule } from "./clients/clients.module";
-import { EventListenersModule } from "./event-listeners/event-listeners.module";
+import { LoggerModule } from "./common/global/logger/logger.module";
+import { RequestContextInterceptor } from "./common/interceptors/request-context.interceptor";
+import { LoggerMiddleware } from "./common/middlewares/logger.middleware";
+import { RequestIdMiddleware } from "./common/middlewares/request-id.middleware";
+import { EventsModule } from "./events/events.module";
+import { ExperimentsModule } from "./experiments/experiments.module";
 import { FlowActivitiesModule } from "./flow-activities/flow-activities.module";
 import { FlowStepsModule } from "./flow_steps/flow-steps.module";
 import { FlowsModule } from "./flows/flows.module";
@@ -57,25 +64,22 @@ import { UsersModule } from "./users";
       global: true,
       middleware: {
         saveRes: true,
+        saveReq: true,
         // automatically mount the
         // ClsMiddleware for all routes
         mount: true,
         generateId: true,
-        // idGenerator: (req: Request) => {
-        //   const x = req.headers["X-Request-Id"] || "test";
-        //   console.log("Generating CLS ID from X-Request-Id:", x);
-        //   return "Test";
-        // },
+        idGenerator: () => {
+          return uuid.v4();
+        },
         // and use the setup method to
         // provide default store values.
-        setup: () => {
-          // const requestId = req.header("X-Request-Id");
-          // console.log("Setting up CLS context with Request ID:", requestId);
-          console.log("CLS setup...");
-        },
+        // setup: (cls, req: Request) => {},
       },
     }),
-    EventListenersModule,
+    LoggerModule,
+    EventsModule,
+    ExperimentsModule,
     UsersModule,
     AuthModule,
     RefreshTokensModule,
@@ -89,9 +93,24 @@ import { UsersModule } from "./users";
     CampaignFlowStepsModule,
     ClientContactsModule,
   ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestContextInterceptor,
+    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
+  ],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   onModuleInit() {
     console.log("AppModule initialized");
+  }
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes("*");
+    consumer.apply(LoggerMiddleware).forRoutes("*");
   }
 }
