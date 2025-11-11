@@ -2,7 +2,7 @@
 
 import { useSelector } from "react-redux";
 
-import Dropdown from "@/components/app/Dropdown";
+import Dropdown, { toOptions } from "@/components/app/Dropdown";
 import TableData from "@/components/app/TableData";
 import { Separator } from "@/components/ui/separator";
 import { useGetCampaignsQuery } from "@/services/campaigns/campaigns.api";
@@ -17,42 +17,37 @@ import {
 } from "@/utils/dummy";
 
 const Home = () => {
-  const { data: users, isFetching } = useGetUsersQuery();
-  const usersOptions = users
-    ? users?.map(({ id, firstName, lastName }) => ({
-        label: `${firstName} ${lastName}`,
-        value: id,
-      }))
-    : [];
-
   const userId = useSelector((state: RootState) => state.users.userId);
+  const clientId = useSelector((state: RootState) => state.clients.id);
+
+  const { data: users, isFetching } = useGetUsersQuery();
+  const usersOptions = toOptions(
+    users,
+    (u) => `${u.firstName} ${u.lastName}`,
+    (u) => u.id,
+  );
 
   const { data: userClients } = useGetUserClientsQuery(
     { userId },
-    {
-      skip: !userId,
-    },
+    { skip: !userId },
   );
-  const clients = userClients?.map((uc) => uc.client) || [];
-  const clientsOptions = clients
-    ? clients?.map(({ id, name }) => ({
-        label: name,
-        value: id,
-      }))
-    : [];
-
-  const clientId = useSelector((state: RootState) => state.clients.id);
+  const clientsOptions = toOptions(
+    userClients?.map((uc) => uc.client) || [],
+    (c) => c.name,
+    (c) => c.id,
+  );
 
   const { data: campaigns } = useGetCampaignsQuery(
     { clientId },
     { skip: !clientId },
   );
+  const campaignsOptions = toOptions(
+    campaigns,
+    (c) => c.name,
+    (c) => c.id,
+  );
 
-  console.log("campaigns:", campaigns);
-
-  if (isFetching) {
-    return <div>Loading...</div>;
-  }
+  if (isFetching) return <div>Loading...</div>;
 
   return (
     <div className="my-12">
@@ -80,7 +75,7 @@ const Home = () => {
                 Campaign
               </h4>
 
-              <Dropdown dropDownType="campaigns" values={usersOptions} />
+              <Dropdown dropDownType="campaigns" values={campaignsOptions} />
             </div>
           </div>
         </div>
