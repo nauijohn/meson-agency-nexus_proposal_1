@@ -1,5 +1,5 @@
 import { AutoMap } from "automapper-classes";
-import { Column, Entity, ManyToMany } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 
 import { Client } from "../../clients";
 import { NamedEntity } from "../../common/bases";
@@ -42,9 +42,15 @@ export class ClientContact extends NamedEntity {
   @Column({ type: "boolean", default: false })
   preferred: boolean;
 
-  // Many-to-many: contact ↔ clients
-  @ManyToMany(() => Client, (client) => client.contacts)
-  clients: Client[];
+  // // Many-to-many: contact ↔ clients
+  // @ManyToMany(() => Client, (client) => client.contacts)
+  // clients: Client[];
+
+  @ManyToOne(() => Client, (client) => client.contacts, {
+    nullable: false,
+    onDelete: "CASCADE",
+  })
+  client: Client;
 
   // @OneToMany(() => ClientClientContact, (ccc) => ccc.clientContact)
   // clientClientContacts: ClientClientContact[];

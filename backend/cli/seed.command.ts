@@ -7,9 +7,7 @@ import { ConfigService } from "@nestjs/config";
 import { typeOrmConfigFactory } from "../src/typeorm.config";
 import { DeleteAllSeeder } from "./delete-all.seeder";
 import { seederFactories } from "./factories";
-import { FlowsSeeder } from "./flows.seeder";
 import { InitialSeeder } from "./ininital.seeder";
-import { MainSeeder } from "./main.seeder";
 
 @Command({ name: "seed", description: "a seed command" })
 export class SeedCommand extends CommandRunner {
@@ -39,13 +37,13 @@ export class SeedCommand extends CommandRunner {
 
       console.log("Seeding started...");
       await runSeeders(result, {
-        seeds: [InitialSeeder, FlowsSeeder],
+        seeds: [InitialSeeder],
       });
 
-      await runSeeders(result, {
-        factories: seederFactories,
-        seeds: [MainSeeder],
-      });
+      // await runSeeders(result, {
+      //   factories: seederFactories,
+      //   seeds: [MainSeeder],
+      // });
 
       console.log("Seeding complete...");
       await result.destroy();

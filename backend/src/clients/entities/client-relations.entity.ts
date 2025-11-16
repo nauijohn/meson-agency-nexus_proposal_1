@@ -1,27 +1,17 @@
-import { JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
 
 import { Campaign } from "../../campaigns/entities/campaign.entity";
 import { ClientContact } from "../../client-contacts/entities/client-contact.entity";
 import { ClientNumber } from "../../client-numbers/client-number.entity";
 import { NamedEntity } from "../../common/bases";
-import { UserClient } from "../../user-clients/entities/user-client.entity";
+import { EmployeeClient } from "../../employee-clients/entities/employee-client.entity";
+import { User } from "../../users";
 
 export abstract class ClientRelationsEntity extends NamedEntity {
-  @ManyToMany(() => ClientContact, (contact) => contact.clients, {
+  @OneToMany(() => ClientContact, (contact) => contact.client, {
     cascade: true,
   })
-  @JoinTable({
-    name: "client_client_contacts", // join table name
-    joinColumn: { name: "client_id", referencedColumnName: "id" },
-    inverseJoinColumn: {
-      name: "client_contact_id",
-      referencedColumnName: "id",
-    },
-  })
   contacts: ClientContact[];
-
-  // @OneToMany(() => ClientClientContact, (ccc) => ccc.client)
-  // clientClientContacts: ClientClientContact[];
 
   @ManyToMany(() => ClientNumber, (number) => number.clients)
   @JoinTable({
@@ -37,7 +27,10 @@ export abstract class ClientRelationsEntity extends NamedEntity {
   })
   campaigns: Campaign[];
 
+  @OneToMany(() => EmployeeClient, (ec) => ec.client)
+  employeeClients: EmployeeClient[];
+
   // client.entity.ts
-  @OneToMany(() => UserClient, (uc) => uc.client)
-  users: UserClient[];
+  @OneToOne(() => User, (user) => user.client)
+  user: User;
 }

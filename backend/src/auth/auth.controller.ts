@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -10,16 +11,18 @@ import {
   UseGuards,
 } from "@nestjs/common";
 
+import { Public } from "../common/decorators/is-public.decorator";
 import { RefreshTokensService } from "../refresh-tokens/refresh-tokens.service";
+import { RoleType } from "../roles/entities";
 import { User, UsersService } from "../users/";
 import { AuthService } from "./auth.service";
 import { BearerToken } from "./decorators/bearer-token.decorator";
 import { ReqUser } from "./decorators/req-user.decorator";
 import { SignUpDto } from "./dto";
+import { JwtRefreshUser } from "./entities/jwt-refresh-user.entity";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { RefreshTokenGuard } from "./guards/refresh-token.guard";
-import type { JwtRefreshUser } from "./strategies/refresh-token.strategy";
 
 @Controller("auth")
 export class AuthController {
@@ -29,6 +32,7 @@ export class AuthController {
     private readonly refreshTokensService: RefreshTokensService,
   ) {}
 
+  @Public()
   @Post("sign-up")
   async signUp(@Body() request: SignUpDto) {
     let user = await this.usersService.findByEmail(request.email);
@@ -36,7 +40,10 @@ export class AuthController {
       throw new UnprocessableEntityException("User already exists");
     }
 
-    user = await this.usersService.create(request);
+    user = await this.usersService.create({
+      ...request,
+      roles: [RoleType.USER],
+    });
     if (!user) {
       throw new InternalServerErrorException("Error creating user");
     }
@@ -54,6 +61,7 @@ export class AuthController {
     return tokens;
   }
 
+  @Public()
   @Post("sign-in")
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
@@ -72,22 +80,23 @@ export class AuthController {
       });
     }
 
-    if (!refreshToken) {
-      throw new InternalServerErrorException();
-    }
+    if (!refreshToken) throw new InternalServerErrorException();
 
     return tokens;
   }
 
+  @Public()
   @Post("sign-out")
+  @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
   async signOut(@ReqUser() user: JwtRefreshUser) {
     if (!user?.tokenId) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
     await this.refreshTokensService.delete(user.tokenId);
   }
 
+  @Public()
   @Post("refresh-token")
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
@@ -99,6 +108,7 @@ export class AuthController {
       reqUser.id,
       bearerToken,
     );
+    console.log("tokens:", tokens);
     if (!tokens) {
       throw new InternalServerErrorException("Invalid Token");
     }
@@ -106,9 +116,9 @@ export class AuthController {
     return tokens;
   }
 
-  @Get()
+  @Get("me")
   @UseGuards(JwtAuthGuard)
-  test() {
-    return "Auth works!";
+  me(@ReqUser() user: User) {
+    return user;
   }
 }

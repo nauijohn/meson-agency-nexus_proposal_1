@@ -34,6 +34,6 @@ export class CreateClientContactDto {
   status?: ClientContactStatus;
 
   @IsOptional()
-  @IsString({ each: true })
-  clientIds?: string[];
+  @IsString()
+  clientId?: string;
 }

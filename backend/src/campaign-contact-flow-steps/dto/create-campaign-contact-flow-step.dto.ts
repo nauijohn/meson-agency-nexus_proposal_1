@@ -5,10 +5,7 @@ export class CreateCampaignContactFlowStepDto {
   @IsString()
   clientContactId: string;
 
-  // @Column({
-  //   type: "enum",
-  //   enum: ["none", "no_answer", "busy", "voicemail", "connect"],
-  //   default: "none",
-  // })
-  // callResult: "none" | "no_answer" | "busy" | "voicemail" | "connect";
+  @IsNotEmpty()
+  @IsString()
+  campaignId: string;
 }

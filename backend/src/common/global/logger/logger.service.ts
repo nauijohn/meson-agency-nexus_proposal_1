@@ -60,9 +60,9 @@ export class LoggerService extends ConsoleLogger implements NestLoggerService {
   }
 
   private parseData(message: string, data: any): string {
-    if (typeof data === "object") data = JSON.stringify(data, null, 0);
+    if (typeof data === "object") data = `${JSON.stringify(data, null, 0)}`;
     if (typeof data === "boolean") data = String(data);
-    return data ? `${message}${data}` : message;
+    return data ? `${message}: ${data}` : message;
   }
 
   private get requestIdSection() {

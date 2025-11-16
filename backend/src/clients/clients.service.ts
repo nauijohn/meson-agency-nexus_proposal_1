@@ -3,20 +3,20 @@ import { InjectMapper } from "automapper-nestjs";
 import { ClsService } from "nestjs-cls";
 import { Repository } from "typeorm";
 
-import { Injectable } from "@nestjs/common";
+import { Injectable, Scope } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { TOTAL_KEY } from "../common/bases";
+import { CLS_USER_ID } from "../common/constants";
 import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
 import { CreateClientDto, UpdateClientDto } from "./dto";
 import { QueryClientDto } from "./dto/query-client.dto";
 import { Client } from "./entities/client.entity";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ClientsService {
   constructor(
-    @InjectRepository(Client)
-    private readonly repository: Repository<Client>,
+    @InjectRepository(Client) private readonly repository: Repository<Client>,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly cls: ClsService,
   ) {}
@@ -27,8 +27,16 @@ export class ClientsService {
   }
 
   async findAll(query: QueryClientDto): Promise<Client[]> {
+    const userId = this.cls.get<string>(CLS_USER_ID);
+
     const [entities, total] = await this.repository.findAndCount({
-      relations: { contacts: false },
+      where: {
+        employeeClients: { employee: { id: userId } },
+      },
+      relations: {
+        contacts: true,
+        campaigns: true,
+      },
       ...applyPaginationAndSorting(query),
     });
 
@@ -38,10 +46,17 @@ export class ClientsService {
   }
 
   findOne(id: string): Promise<Client | null> {
+    const userId = this.cls.get<string>(CLS_USER_ID);
+
     return this.repository.findOne({
-      where: { id },
+      where: {
+        id,
+        user: { id: userId },
+      },
       relations: {
         campaigns: true,
+        contacts: true,
+        user: true,
       },
     });
   }

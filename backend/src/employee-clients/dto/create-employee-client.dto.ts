@@ -1,10 +1,10 @@
 import { AutoMap } from "automapper-classes";
 import { IsString } from "class-validator";
 
-export class CreateUserClientDto {
+export class CreateEmployeeClientDto {
   @IsString()
   @AutoMap()
-  userId: string;
+  employeeId: string;
 
   @IsString()
   @AutoMap()

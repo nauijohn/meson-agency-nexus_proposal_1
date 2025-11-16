@@ -1,3 +1,5 @@
+import type { Mapper } from "automapper-core";
+import { InjectMapper } from "automapper-nestjs";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { Injectable, UnauthorizedException } from "@nestjs/common";
@@ -5,15 +7,8 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 
 import { LoggerService } from "../../common/global/logger/logger.service";
-import { JwtPayload, JwtUser } from "./jwt.strategy";
-
-export type JwtRefreshUser = JwtUser & {
-  tokenId: string;
-};
-
-type JwtRefreshPayload = JwtPayload & {
-  tokenId: string;
-};
+import { JwtRefreshUser } from "../entities/jwt-refresh-user.entity";
+import { JwtRefreshPayload } from "../payload/jwt-refresh.payload";
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -22,6 +17,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(
     private readonly logger: LoggerService,
+    @InjectMapper() private readonly mapper: Mapper,
     configService: ConfigService,
   ) {
     super({
@@ -32,8 +28,12 @@ export class RefreshTokenStrategy extends PassportStrategy(
   }
 
   validate(payload: JwtRefreshPayload): JwtRefreshUser {
-    console.log("validate RefreshTokenStrategy22", payload);
     if (!payload) throw new UnauthorizedException();
-    return { id: payload.sub, email: payload.email, tokenId: payload.tokenId };
+    const jwtRefreshUser = this.mapper.map(
+      payload,
+      JwtRefreshPayload,
+      JwtRefreshUser,
+    );
+    return jwtRefreshUser;
   }
 }

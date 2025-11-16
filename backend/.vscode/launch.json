@@ -10,6 +10,7 @@
       "restart": true,
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "/app",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "skipFiles": ["<node_internals>/**"]
     }
   ]

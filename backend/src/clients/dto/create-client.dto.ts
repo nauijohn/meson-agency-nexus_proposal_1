@@ -1,5 +1,23 @@
 import { AutoMap } from "automapper-classes";
-import { IsEmail, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  IsArray,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
+
+class ClientContactDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  contactNumber: string;
+}
 
 export class CreateClientDto {
   @IsString()
@@ -22,4 +40,10 @@ export class CreateClientDto {
   @IsString()
   @AutoMap()
   phoneNumber: string;
+
+  @IsOptional()
+  @Type(() => ClientContactDto)
+  @ValidateNested({ each: true })
+  @IsArray()
+  contacts?: ClientContactDto[];
 }

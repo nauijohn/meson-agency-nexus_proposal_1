@@ -32,6 +32,7 @@ export class CampaignsListener {
       clientContacts?.map((contact) => {
         return this.campaignContactFlowStepsService.create({
           clientContactId: contact.id,
+          campaignId: campaign.id,
         });
       }),
     )
@@ -57,8 +58,8 @@ export class CampaignsListener {
         });
       }),
     )
-      .then(() => {
-        console.log("Campaign flow steps created successfully");
+      .then((cfs) => {
+        console.log("Campaign flow steps created successfully: ", cfs);
       })
       .catch((error) => {
         console.error("Error creating campaign flow steps:", error);

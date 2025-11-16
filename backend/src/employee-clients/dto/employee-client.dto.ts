@@ -3,16 +3,15 @@ import { Expose, Type } from "class-transformer";
 import { ClientDto } from "../../clients";
 import { UserDto } from "../../users/dto/user.dto";
 
-export class UserClientDto {
+export class EmployeeClientDto {
   @Expose()
   @Type(() => UserDto)
-  user: UserDto;
+  employee: UserDto;
 
   @Expose()
   @Type(() => ClientDto)
   client: ClientDto;
 
   @Expose()
-  // @Transform(({ value }) => "test")
   assignedDate: Date;
 }

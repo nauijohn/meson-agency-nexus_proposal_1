@@ -28,8 +28,8 @@ export class ClientContactProfile extends AutomapperProfile {
         CreateClientContactDto,
         ClientContact,
         forMember(
-          (dest: ClientContact) => dest.clients,
-          mapFrom((src: CreateClientContactDto) => idRefMapper(src.clientIds)),
+          (dest: ClientContact) => dest.client,
+          mapFrom((src: CreateClientContactDto) => idRefMapper(src.clientId)),
         ),
       );
       createMap(

@@ -19,9 +19,7 @@ export class RefreshTokensService {
   ) {}
 
   async create(dto: CreateRefreshTokenDto): Promise<RefreshToken> {
-    console.log("Create DTO:", dto);
     const entity = this.mapper.map(dto, CreateRefreshTokenDto, RefreshToken);
-    console.log("Mapped Entity:", entity);
     return this.repository.save(entity);
   }
 

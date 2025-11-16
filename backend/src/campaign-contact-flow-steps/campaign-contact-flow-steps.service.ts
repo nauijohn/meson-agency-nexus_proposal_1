@@ -38,7 +38,22 @@ export class CampaignContactFlowStepsService {
     query: QueryCampaignContactFlowStepDto,
   ): Promise<CampaignContactFlowStep[]> {
     const [entities, total] = await this.repository.findAndCount({
-      ...applyPaginationAndSorting(query),
+      relations: {
+        campaignFlowStep: true,
+        campaign: {
+          campaignFlowSteps: true,
+        },
+      },
+      where: {
+        campaign: {
+          client: {
+            employeeClients: {
+              employeeId: "2e2268bd-ef2f-431a-8c8f-6a15785ea219",
+            },
+          },
+        },
+      },
+      ...applyPaginationAndSorting(query, "startedAt", "DESC"),
     });
 
     this.cls.set(TOTAL_KEY, total);

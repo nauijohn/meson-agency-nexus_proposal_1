@@ -7,11 +7,14 @@ import * as uuid from "uuid";
 
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AuthModule } from "./auth/auth.module";
+import { AbilitiesGuard } from "./auth/guards/abilities.guard";
+import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
+import { RolesGuard } from "./auth/guards/roles.guard";
 import { CampaignFlowStepsModule } from "./campaign-flow-steps/campaign-flow-steps.module";
 import { CampaignsModule } from "./campaigns/campaigns.module";
 import { ClientContactsModule } from "./client-contacts/client-contacts.module";
@@ -20,6 +23,7 @@ import { LoggerModule } from "./common/global/logger/logger.module";
 import { RequestContextInterceptor } from "./common/interceptors/request-context.interceptor";
 import { LoggerMiddleware } from "./common/middlewares/logger.middleware";
 import { RequestIdMiddleware } from "./common/middlewares/request-id.middleware";
+import { EmployeeClientsModule } from "./employee-clients/employee-clients.module";
 import { EventsModule } from "./events/events.module";
 import { ExperimentsModule } from "./experiments/experiments.module";
 import { FlowActivitiesModule } from "./flow-activities/flow-activities.module";
@@ -28,7 +32,6 @@ import { FlowsModule } from "./flows/flows.module";
 import { RefreshTokensModule } from "./refresh-tokens/refresh-tokens.module";
 import { TwilioModule } from "./twilio/twilio.mdule";
 import { typeOrmConfigFactory } from "./typeorm.config";
-import { UserClientsModule } from "./user-clients/user-clients.module";
 import { UsersModule } from "./users";
 
 @Module({
@@ -86,7 +89,7 @@ import { UsersModule } from "./users";
     CampaignsModule,
     TwilioModule,
     ClientsModule,
-    UserClientsModule,
+    EmployeeClientsModule,
     FlowActivitiesModule,
     FlowsModule,
     FlowStepsModule,
@@ -98,17 +101,21 @@ import { UsersModule } from "./users";
       provide: APP_INTERCEPTOR,
       useClass: RequestContextInterceptor,
     },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: JwtAuthGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AbilitiesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {
-  onModuleInit() {
-    console.log("AppModule initialized");
-  }
-
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestIdMiddleware).forRoutes("*");
     consumer.apply(LoggerMiddleware).forRoutes("*");

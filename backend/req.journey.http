@@ -1,0 +1,123 @@
+@host = http://localhost:3000/api
+
+################################################
+## Step 1: Create Client with Client Contacts ##
+################################################
+
+###
+POST {{host}}/clients
+Content-Type: application/json
+
+{
+	"name": "New Client4",
+	"email": "client4@test.com",
+	"contactPerson": "Jeff2",
+	"businessName": "Client Business2",
+	"phoneNumber": "+1234567890",
+	"contacts": [
+		{"name": "Anthony Naui", "contactNumber": "+61493233059"},
+		{"name": "Another Contact", "contactNumber": "+61493233060"}
+	]
+}
+
+###
+GET {{host}}/clients
+
+###
+GET {{host}}/clients/e7270045-6859-4522-8cf6-6e8778dc0ca1
+
+
+############################################
+## Step 2: Create a Campaign for a Client ##
+############################################
+
+###
+POST {{host}}/campaigns/
+Content-Type: application/json
+
+{
+	"name": "New Campaign",
+	"description": "Description of the new campaign",
+	"startDate": "2025-11-15T00:00:00Z",
+	"endDate": "2025-11-30T23:59:59Z",
+	"clientId": "e7270045-6859-4522-8cf6-6e8778dc0ca1"
+}
+
+###
+GET {{host}}/campaigns
+
+###
+GET {{host}}/campaigns/6c1a6097-debe-41ad-a521-0467649eacfd
+
+###########################
+## Step 3: Create a Flow ##
+###########################
+
+###
+GET {{host}}/flow-activities
+
+###
+POST {{host}}/flows
+Content-Type: application/json
+
+{
+	"name": "New Flow",
+	"steps": [
+		{
+			"name": "Step 1",
+			"order": 1,
+			"activities": [
+				"1447d974-eaec-42af-bf51-2609930fd1c3",
+				"bed299c9-b8f3-458f-ac8c-3129a4959c3f"
+			]
+		}
+	]
+}
+
+###
+GET {{host}}/flows
+
+###
+GET {{host}}/flows/afdf6775-bf80-4d2a-b8ca-a56357a35a64
+
+
+#########################################
+## Step 4: Assign a Flow to a Campaign ##
+#########################################
+
+###
+PATCH {{host}}/campaigns/6c1a6097-debe-41ad-a521-0467649eacfd
+Content-Type: application/json
+
+{
+	"flowId": "afdf6775-bf80-4d2a-b8ca-a56357a35a64"
+}
+
+###
+GET {{host}}/campaign-flow-steps
+
+#########################################
+## Step 5: Assign a Client to a User.  ##
+#########################################
+
+###
+GET {{host}}/users/2e2268bd-ef2f-431a-8c8f-6a15785ea219
+
+###
+GET {{host}}/clients/e7270045-6859-4522-8cf6-6e8778dc0ca1
+
+###
+GET {{host}}/user-clients
+
+
+###
+POST {{host}}/user-clients
+Content-Type: application/json
+
+{
+	"userId": "2e2268bd-ef2f-431a-8c8f-6a15785ea219",
+	"clientId": "e7270045-6859-4522-8cf6-6e8778dc0ca1"
+}
+
+###
+GET {{host}}/users/2e2268bd-ef2f-431a-8c8f-6a15785ea219/campaign-contacts

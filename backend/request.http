@@ -1,6 +1,6 @@
 # @host = https://epiploic-temperance-unwhimperingly.ngrok-free.dev/api
 @host = http://localhost:3000/api
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhMzUzZWE0Zi1hZDMxLTQzMDgtYWFhMi0xYmIyZDAyMGExNzMiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NjI3NzAxMTEsImV4cCI6MTc2Mjc3MDE0MX0.-O0x5mL9qOO7Jif30KvKgLL1-TcDtZQh9fvSsMD38zw
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyZTIyNjhiZC1lZjJmLTQzMWEtOGM4Zi02YTE1Nzg1ZWEyMTkiLCJlbWFpbCI6ImFudGhvbnluYXVpQGdtYWlsLmNvbSIsInJvbGVzIjpbImVtcGxveWVlIl0sImlhdCI6MTc2MzIwOTUwOSwiZXhwIjoxNzYzMjk1OTA5fQ.vPgEMH0yPMyCMUyhpPDjRZ52cEIrgbgarSfabDc7QbI
 @refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYWEyMDcyMy1hOGVhLTRmNzEtODkwNC0xMWY5MTg3NjQxNGIiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJ0b2tlbklkIjoiOGNmNTBmYTMtNmUzYy00Mjc1LWFlYWUtM2VhMDkyYjI1YjE4IiwiaWF0IjoxNzYyNTg3NjY2LCJleHAiOjE3NjMxOTI0NjZ9.vzqlsDXfmKj0Tea3d8UX_opESgWk2hD4NJiXUviA2Xs
 
 
@@ -24,8 +24,8 @@ POST {{host}}/auth/sign-in
 Content-Type: application/json
 
 {
-	"email": "test@example.com",
-	"password": "testpass"
+	"email": "anthonynaui@gmail.com",
+	"password": "Test123Test123"
 }
 
 ###
@@ -56,11 +56,15 @@ POST {{host}}/clients
 Content-Type: application/json
 
 {
-	"name": "New Client3",
-	"email": "client3@test.com",
+	"name": "New Client4",
+	"email": "client4@test.com",
 	"contactPerson": "Jeff2",
 	"businessName": "Client Business2",
-	"phoneNumber": "+1234567890"
+	"phoneNumber": "+1234567890",
+	"contacts": [
+		{"name": "Anthony Naui", "contactNumber": "+61493233059"},
+		{"name": "Another Contact", "contactNumber": "+61493233060"}
+	]
 }
 ###
 GET {{host}}/clients
@@ -70,13 +74,14 @@ GET {{host}}/clients
 #######################################
 
 ###
-GET {{host}}/campaigns?clientId=1be7a1c0-f58c-40a7-8d8a-0856f2a67178
+GET {{host}}/campaigns
+Authorization: Bearer {{accessToken}}
 
 ###
 GET {{host}}/campaigns?unassignedFlow=true
 
 ###
-GET {{host}}/campaigns/19395bd8-13db-4f2f-a519-567889e7f4a3
+GET {{host}}/campaigns/47e53f6f-3058-4c00-a09b-809e2ea9d5b7
 
 ###
 POST {{host}}/campaigns/
@@ -91,11 +96,11 @@ Content-Type: application/json
 }
 
 ###
-PATCH {{host}}/campaigns/af52a19a-a029-4d3c-b7e8-5b7948668156
+PATCH {{host}}/campaigns/47e53f6f-3058-4c00-a09b-809e2ea9d5b7
 Content-Type: application/json
 
 {
-	"flowId": "12cab2de-c5b9-4d7c-a332-d2f0f67fea42"
+	"flowId": "6279c50a-266a-4a2d-a8bc-803ac702b6c3"
 }
 
 ###
@@ -111,7 +116,8 @@ GET {{host}}/flows
 #####################################
 
 ###
-GET {{host}}/users?page=-3
+GET {{host}}/users/2e2268bd-ef2f-431a-8c8f-6a15785ea219
+Authorization: Bearer {{accessToken}}
 
 ###
 POST {{host}}/users
@@ -120,7 +126,7 @@ Content-Type: application/json
 {
 	"firstName": "John",
 	"lastName": "Doe",
-	"email": "john.doe@example.com",
+	"email": "john.doe11@example.com",
 	"password": "securePassword123"
 }
 
@@ -231,7 +237,8 @@ GET {{host}}/campaign-flow-steps
 GET {{host}}/client-contacts
 
 ###
-GET {{host}}/clients
+GET {{host}}/clients/3cf72497-df14-4f2a-8522-adebf10c8935
+Authorization: Bearer {{accessToken}}
 
 ###
 POST {{host}}/client-contacts
@@ -250,3 +257,11 @@ Content-Type: application/json
 
 ###
 GET {{host}}/client-client-contacts
+
+
+###################################
+##  Campaign Contact Flow Steps  ##
+###################################
+
+###
+GET {{host}}/campaign-contact-flow-steps

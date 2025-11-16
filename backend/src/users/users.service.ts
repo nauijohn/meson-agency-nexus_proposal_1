@@ -8,6 +8,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { TOTAL_KEY } from "../common/bases";
 import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
+import { RoleType } from "../roles/entities";
+import { RolesService } from "../roles/roles.service";
 import { CreateUserDto, UpdateUserDto } from "./dto";
 import { QueryUserDto } from "./dto/query-user.dto";
 import { User } from "./entities/user.entity";
@@ -20,18 +22,26 @@ export class UsersService {
     @InjectMapper()
     private readonly mapper: Mapper,
     private readonly cls: ClsService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async create(dto: CreateUserDto): Promise<User> {
     const entity = this.mapper.map(dto, CreateUserDto, User);
-    return this.repository.save(entity);
+
+    if (dto.roles && dto.roles.length > 0) {
+      dto.roles = Array.from(new Set([...dto.roles, RoleType.USER]));
+    } else {
+      dto.roles = [RoleType.USER];
+    }
+
+    const roles = await this.rolesService.findAll();
+    entity.roles = roles.filter((role) => dto.roles?.includes(role.type));
+
+    return this.repository.save(entity, { data: dto });
   }
 
   async findAll(query: QueryUserDto): Promise<User[]> {
     const [entities, total] = await this.repository.findAndCount({
-      relations: {
-        userClients: { client: true },
-      },
       ...applyPaginationAndSorting(query),
     });
 
@@ -46,7 +56,8 @@ export class UsersService {
       .where("user.id = :id", { id })
       .leftJoinAndSelect("user.refreshToken", "refreshToken")
       .leftJoinAndSelect("user.userClients", "userClients")
-      .leftJoinAndSelect("userClients.client", "client");
+      .leftJoinAndSelect("userClients.client", "client")
+      .leftJoinAndSelect("client.campaigns", "campaign");
 
     if (query?.includeUnassignedClients) {
       qb.leftJoinAndMapMany(

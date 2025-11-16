@@ -3,7 +3,7 @@ import { Expose, Type } from "class-transformer";
 import { ClientDto } from "../../clients";
 import { BaseDto } from "../../common/bases/base.dto";
 import { RefreshTokenDto } from "../../refresh-tokens/dto/refresh-token.dto";
-import { Role } from "../../roles";
+import { Role } from "../../roles/entities";
 
 export class UserDto extends BaseDto {
   @Expose()

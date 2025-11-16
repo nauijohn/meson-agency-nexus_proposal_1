@@ -1,5 +1,5 @@
 import { AutoMap } from "automapper-classes";
-import { AfterLoad, Column, Entity } from "typeorm";
+import { Column, Entity } from "typeorm";
 
 import { UserRelationsEntity } from "./user-relations.entity";
 
@@ -20,9 +20,4 @@ export class User extends UserRelationsEntity {
   @Column()
   @AutoMap()
   password: string;
-
-  @AfterLoad()
-  private populateClients() {
-    this.clients = this.userClients?.map((uc) => uc.client) || [];
-  }
 }

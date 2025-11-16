@@ -1,3 +1,5 @@
+import type { Request } from "express";
+
 import {
   Body,
   Controller,
@@ -5,12 +7,15 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   Patch,
   Post,
   Query,
 } from "@nestjs/common";
+import { REQUEST } from "@nestjs/core";
 
+import { CaslAbilityFactory } from "../auth/permissions/casl-ability.factory";
 import { PaginationHeaders } from "../common/decorators/pagination-headers.decorator";
 import { LoggerService } from "../common/global/logger/logger.service";
 import { Serialize } from "../common/interceptors/serialize.interceptor";
@@ -26,6 +31,8 @@ export class CampaignsController {
   constructor(
     private readonly service: CampaignsService,
     private readonly logger: LoggerService,
+    private readonly abilityFactory: CaslAbilityFactory,
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
 
   @Post()
@@ -42,7 +49,7 @@ export class CampaignsController {
   @Get(":id")
   async findOne(@Param("id") id: string) {
     const campaign = await this.service.findOne(id);
-    this.logger.debug("Fetched campaign:", campaign);
+
     return campaign;
   }
 

@@ -1,6 +1,8 @@
 import {
   createMap,
   extend,
+  forMember,
+  mapFrom,
   type Mapper,
   MappingProfile,
 } from "automapper-core";
@@ -19,7 +21,20 @@ export class ClientProfile extends AutomapperProfile {
 
   get profile(): MappingProfile {
     return (mapper) => {
-      createMap(mapper, CreateClientDto, Client);
+      createMap(
+        mapper,
+        CreateClientDto,
+        Client,
+        forMember(
+          (dest: Client) => dest.contacts,
+          mapFrom((src: CreateClientDto) =>
+            src.contacts?.map((c) => ({
+              name: c.name,
+              contactNumber: c.contactNumber,
+            })),
+          ),
+        ),
+      );
       createMap(
         mapper,
         UpdateClientDto,

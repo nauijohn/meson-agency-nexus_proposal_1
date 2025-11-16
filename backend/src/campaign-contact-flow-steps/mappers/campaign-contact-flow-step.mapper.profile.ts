@@ -33,6 +33,12 @@ export class CampaignContactFlowStepProfile extends AutomapperProfile {
             idRefMapper(src.clientContactId),
           ),
         ),
+        forMember(
+          (dest: CampaignContactFlowStep) => dest.campaign,
+          mapFrom((src: CreateCampaignContactFlowStepDto) =>
+            idRefMapper(src.campaignId),
+          ),
+        ),
       );
       createMap(
         mapper,

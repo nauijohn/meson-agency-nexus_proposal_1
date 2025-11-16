@@ -30,7 +30,7 @@ export class ClientContactsService {
   async findAll(query: QueryClientContactDto): Promise<ClientContact[]> {
     const [entities, total] = await this.repository.findAndCount({
       relations: {
-        clients: true,
+        client: true,
       },
       ...applyPaginationAndSorting(query),
     });

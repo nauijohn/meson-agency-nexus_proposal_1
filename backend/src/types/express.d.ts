@@ -1,7 +1,7 @@
-import { User } from "../users/index.ts";
+import { JwtUser } from "../auth/entities/jwt-user.entity";
 
 declare module "express" {
   interface Request {
-    user: User; // keep optional globally
+    user: JwtUser; // keep optional globally
   }
 }

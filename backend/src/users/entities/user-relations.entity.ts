@@ -1,21 +1,12 @@
-import {
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-} from "typeorm";
+import { JoinColumn, JoinTable, ManyToMany, OneToOne } from "typeorm";
 
 import { Client } from "../../clients";
 import { BaseEntity } from "../../common/bases";
+import { Employee } from "../../employees/entities/employee.entity";
 import { RefreshToken } from "../../refresh-tokens";
-import { Role } from "../../roles";
-import { UserClient } from "../../user-clients/entities/user-client.entity";
+import { Role } from "../../roles/entities";
 
 export abstract class UserRelationsEntity extends BaseEntity {
-  @OneToMany(() => UserClient, (uc) => uc.user)
-  userClients: UserClient[];
-
   @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user, {
     cascade: true,
     eager: true,
@@ -40,5 +31,11 @@ export abstract class UserRelationsEntity extends BaseEntity {
   })
   roles: Role[];
 
-  clients: Client[] = [];
+  @OneToOne(() => Employee, (employee) => employee.user, { nullable: true })
+  @JoinColumn({ name: "employee_id" }) // User owns the join
+  employee?: Employee;
+
+  @OneToOne(() => Client, (client) => client.user, { nullable: true })
+  @JoinColumn({ name: "client_id" }) // User owns the join
+  client?: Client;
 }

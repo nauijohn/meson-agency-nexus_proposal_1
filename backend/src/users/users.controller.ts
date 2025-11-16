@@ -12,8 +12,10 @@ import {
   Query,
 } from "@nestjs/common";
 
+import { Roles } from "../auth/decorators/roles.decorator";
 import { PaginationHeaders } from "../common/decorators";
 import { Serialize } from "../common/interceptors/serialize.interceptor";
+import { RoleType } from "../roles/entities";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { QueryUserDto } from "./dto/query-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -22,6 +24,7 @@ import { UsersService } from "./users.service";
 
 @Serialize(UserDto)
 @Controller("users")
+@Roles(RoleType.ADMIN, RoleType.SUPER_ADMIN)
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
@@ -39,7 +42,6 @@ export class UsersController {
   @Get(":id")
   async findOne(@Param("id") id: string, @Query() query?: QueryUserDto) {
     const entity = await this.service.findOne(id, query);
-    console.log("Fetched user entity:", entity);
     if (!entity) throw new NotFoundException();
     return entity;
   }

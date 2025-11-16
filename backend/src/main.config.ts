@@ -7,6 +7,7 @@ import {
   JsonWebTokenExceptionFilter,
   TokenExpiredExceptionFilter,
 } from "./common/filters";
+import { CaslForbiddenExceptionFilter } from "./common/filters/casl-forbidden-exception.filter";
 import { TypeORMErrorExceptionFilter } from "./common/filters/typeorm-error-exception.filter";
 
 export function config(app: INestApplication<any>): void {
@@ -23,7 +24,7 @@ export function config(app: INestApplication<any>): void {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      // forbidNonWhitelisted: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
@@ -34,6 +35,7 @@ export function config(app: INestApplication<any>): void {
     new TokenExpiredExceptionFilter(httpAdapter),
     new JsonWebTokenExceptionFilter(httpAdapter),
     new TypeORMErrorExceptionFilter(httpAdapter),
+    new CaslForbiddenExceptionFilter(httpAdapter),
   );
 
   app.use(passport.initialize());

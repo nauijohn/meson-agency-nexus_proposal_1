@@ -1,6 +1,12 @@
 import { AutoMap } from "automapper-classes";
 import { Transform, Type } from "class-transformer";
-import { IsDate, IsOptional, IsString } from "class-validator";
+import {
+  IsArray,
+  IsDate,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 
 import { CreateCampaignFlowStepDto } from "../../campaign-flow-steps/dto/create-campaign-flow-step.dto";
 
@@ -34,6 +40,8 @@ export class CreateCampaignDto {
   flowId?: string;
 
   @IsOptional({ each: true })
+  @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => CreateCampaignFlowStepDto)
   campaignFlowSteps?: CreateCampaignFlowStepDto[];
 }

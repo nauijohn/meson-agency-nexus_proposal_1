@@ -9,28 +9,28 @@ import {
 } from "typeorm";
 
 import { Client } from "../../clients";
-import { User } from "../../users";
+import { Employee } from "../../employees/entities/employee.entity";
 
-@Entity({ name: "user_clients" })
-export class UserClient {
-  @PrimaryColumn("uuid", { name: "user_id" })
-  @RelationId((userClient: UserClient) => userClient.user)
+@Entity({ name: "employee_clients" })
+export class EmployeeClient {
+  @PrimaryColumn("uuid", { name: "employee_id" })
+  @RelationId((ec: EmployeeClient) => ec.employee)
   @AutoMap()
-  userId: string;
+  employeeId: string;
 
   @PrimaryColumn("uuid", { name: "client_id" })
-  @RelationId((userClient: UserClient) => userClient.client)
+  @RelationId((ec: EmployeeClient) => ec.client)
   @AutoMap()
   clientId: string;
 
-  @ManyToOne(() => User, (user) => user.userClients, {
+  @ManyToOne(() => Employee, (e) => e.employeeClients, {
     eager: true,
     onDelete: "NO ACTION",
   })
-  @JoinColumn({ name: "user_id" })
-  user: User;
+  @JoinColumn({ name: "employee_id" })
+  employee: Employee;
 
-  @ManyToOne(() => Client, (client) => client.users, {
+  @ManyToOne(() => Client, (c) => c.employeeClients, {
     eager: true,
     onDelete: "NO ACTION",
   })

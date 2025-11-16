@@ -34,7 +34,8 @@ export class CampaignsService {
       .leftJoinAndSelect("campaign.client", "client")
       .leftJoinAndSelect("client.contacts", "contacts")
       .leftJoinAndSelect("campaign.flow", "flow")
-      .leftJoinAndSelect("campaign.campaignFlowSteps", "campaignFlowSteps");
+      .leftJoinAndSelect("campaign.campaignFlowSteps", "campaignFlowSteps")
+      .leftJoinAndSelect("client.users", "users");
 
     // ✅ Filter: only campaigns with no assigned flow
     if (query?.unassignedFlow) {
@@ -65,7 +66,9 @@ export class CampaignsService {
         client: {
           contacts: true,
         },
-        flow: true,
+        flow: {
+          steps: true,
+        },
         campaignFlowSteps: {
           flowStep: true,
         },
