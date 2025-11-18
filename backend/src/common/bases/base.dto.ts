@@ -15,4 +15,10 @@ export class BaseDto {
 
   @Expose()
   updatedAt: Date;
+
+  @Expose()
+  createdBy?: string;
+
+  @Expose()
+  updatedBy?: string;
 }

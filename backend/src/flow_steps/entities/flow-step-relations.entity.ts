@@ -10,7 +10,7 @@ export abstract class FlowStepRelationsEntity extends NamedEntity {
   flow: Flow;
 
   @OneToMany(() => FlowStepActivity, (fsa) => fsa.flowStep, { cascade: true })
-  stepActivities: FlowStepActivity[];
+  activities: FlowStepActivity[];
 
   @OneToMany(() => CampaignFlowStep, (cfs) => cfs.flowStep)
   campaignFlowSteps: CampaignFlowStep[];

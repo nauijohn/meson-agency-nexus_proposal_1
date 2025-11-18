@@ -1,6 +1,6 @@
 import { JoinColumn, ManyToOne, OneToMany, RelationId } from "typeorm";
 
-import { CampaignContactFlowStep } from "../../campaign-contact-flow-steps/entities/campaign-contact-flow-step.entity";
+import { CampaignContact } from "../../campaign-contacts/entities/campaign-contact.entity";
 import { CampaignFlowStep } from "../../campaign-flow-steps/entities/campaign-flow-step.entity";
 import { Client } from "../../clients/entities/client.entity";
 import { NamedEntity } from "../../common/bases";
@@ -25,8 +25,8 @@ export abstract class CampaignRelationsEntity extends NamedEntity {
   @OneToMany(() => CampaignFlowStep, (cfs) => cfs.campaign, { nullable: true })
   campaignFlowSteps?: CampaignFlowStep[];
 
-  @OneToMany(() => CampaignContactFlowStep, (ccfs) => ccfs.campaign, {
+  @OneToMany(() => CampaignContact, (ccfs) => ccfs.campaign, {
     onDelete: "CASCADE",
   })
-  contactFlowSteps?: CampaignContactFlowStep[];
+  campaignContacts?: CampaignContact[];
 }

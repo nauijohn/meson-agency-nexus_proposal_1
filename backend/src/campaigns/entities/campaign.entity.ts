@@ -1,9 +1,10 @@
 import { AutoMap } from "automapper-classes";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, Unique } from "typeorm";
 
 import { CampaignRelationsEntity } from "./campaign-relations.entity";
 
 @Entity({ name: "campaigns" })
+@Unique(["name"])
 export class Campaign extends CampaignRelationsEntity {
   @Column({ type: "text", nullable: true })
   @AutoMap()

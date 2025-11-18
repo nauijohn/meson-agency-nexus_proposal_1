@@ -1,9 +1,8 @@
-import { Expose, Type } from "class-transformer";
+import { Expose, Transform, Type } from "class-transformer";
 
-import { ClientDto } from "../../clients";
 import { BaseDto } from "../../common/bases/base.dto";
-import { RefreshTokenDto } from "../../refresh-tokens/dto/refresh-token.dto";
-import { Role } from "../../roles/entities";
+import { EmployeeDto } from "../../employees/dto/employee.dto";
+import { RoleDto } from "../../roles/dto/role.dto";
 
 export class UserDto extends BaseDto {
   @Expose()
@@ -16,16 +15,13 @@ export class UserDto extends BaseDto {
   email: string;
 
   @Expose()
-  @Type(() => ClientDto)
-  clients: ClientDto[];
+  @Type(() => RoleDto)
+  @Transform(({ value }: { value: RoleDto[] }) => {
+    return value.map((role) => role.type) || [];
+  })
+  roles: string[];
 
   @Expose()
-  @Type(() => ClientDto)
-  unassignedClients: ClientDto[];
-
-  @Expose()
-  @Type(() => RefreshTokenDto)
-  refreshToken?: RefreshTokenDto;
-
-  roles: Role[];
+  @Type(() => EmployeeDto)
+  employee: EmployeeDto;
 }

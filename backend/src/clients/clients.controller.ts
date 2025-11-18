@@ -17,10 +17,7 @@ import {
 import { REQUEST } from "@nestjs/core";
 
 import { CheckAbilities } from "../auth/decorators/check-abilities.decorator";
-import {
-  Action,
-  CaslAbilityFactory,
-} from "../auth/permissions/casl-ability.factory";
+import { Action } from "../auth/permissions/casl-ability.factory";
 import { PaginationHeaders } from "../common";
 import { ClientsService } from "./clients.service";
 import { UpdateClientDto } from "./dto";
@@ -33,7 +30,6 @@ export class ClientsController {
   constructor(
     private readonly service: ClientsService,
     @Inject(REQUEST) private readonly request: Request,
-    private readonly ability: CaslAbilityFactory,
   ) {}
 
   @Post()
@@ -43,6 +39,7 @@ export class ClientsController {
   }
 
   @Get()
+  @CheckAbilities({ action: Action.Read, subject: Client })
   @PaginationHeaders()
   findAll(@Query() query: QueryClientDto) {
     return this.service.findAll(query);
@@ -50,9 +47,6 @@ export class ClientsController {
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
-    // const jwtUser = this.request.user;
-    // const ability = this.ability.createForUser(jwtUser);
-    // ForbiddenError.from(ability).throwUnlessCan(Action.Read, Client);
     const entity = await this.service.findOne(id);
     if (!entity) throw new NotFoundException();
     return entity;

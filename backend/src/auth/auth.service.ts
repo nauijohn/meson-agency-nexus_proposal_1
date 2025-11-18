@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 
+import { EmployeeRoleType } from "../employee-roles/entities/employee-role.entity";
 import { RoleType } from "../roles/entities";
 import { User, UsersService } from "../users/";
 import { compare } from "./utils/security";
@@ -11,13 +12,14 @@ type TokenPayload = {
   email: string;
   roles?: RoleType[];
   tokenId?: string;
+  employeeId?: string;
+  employeeRoles?: EmployeeRoleType[];
 };
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -40,6 +42,8 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       roles: user.roles?.map((role) => role.type),
+      employeeId: user.employee?.id,
+      employeeRoles: user.employee?.roles?.map((role) => role.type),
     };
     const accessToken = this.createToken(payload);
     const refreshToken = this.createToken(

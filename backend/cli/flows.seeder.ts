@@ -47,7 +47,7 @@ export class FlowsSeeder implements Seeder {
             return flowStepFactory.save({
               flow: flow,
               order: i + 1,
-              stepActivities: await Promise.all(
+              activities: await Promise.all(
                 Array.from({ length: FLOW_STEP_ACTIVITY_COUNT }).map(() =>
                   flowStepActivityFactory.save({
                     activity:

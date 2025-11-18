@@ -42,6 +42,10 @@ export class UsersService {
 
   async findAll(query: QueryUserDto): Promise<User[]> {
     const [entities, total] = await this.repository.findAndCount({
+      relations: {
+        employee: true,
+        roles: true,
+      },
       ...applyPaginationAndSorting(query),
     });
 
@@ -89,6 +93,13 @@ export class UsersService {
   }
 
   findByEmail(email: string): Promise<User | null> {
-    return this.repository.findOne({ where: { email } });
+    return this.repository.findOne({
+      where: { email },
+      relations: {
+        employee: {
+          roles: true,
+        },
+      },
+    });
   }
 }

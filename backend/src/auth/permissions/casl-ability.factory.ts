@@ -9,6 +9,7 @@ import { Injectable } from "@nestjs/common";
 
 import { Campaign } from "../../campaigns/entities/campaign.entity";
 import { Client } from "../../clients";
+import { EmployeeRoleType } from "../../employee-roles/entities/employee-role.entity";
 import { RoleType } from "../../roles/entities";
 import { User } from "../../users";
 import { JwtUser } from "../entities/jwt-user.entity";
@@ -38,7 +39,16 @@ export class CaslAbilityFactory {
 
       // Clients
       can(Action.Read, Client);
-      cannot(Action.Create, Client);
+
+      if (this.hasEmployeeRole(user, EmployeeRoleType.AGENT)) {
+        cannot(Action.Create, Client);
+        cannot(Action.Create, Campaign);
+      }
+
+      if (this.hasEmployeeRole(user, EmployeeRoleType.LEAD)) {
+        can(Action.Create, Client);
+        can(Action.Create, Campaign);
+      }
     }
 
     return build({
@@ -54,5 +64,9 @@ export class CaslAbilityFactory {
 
   private hasAnyRole(user: JwtUser, roles: RoleType[]): boolean {
     return roles.some((role) => user?.roles?.includes(role));
+  }
+
+  private hasEmployeeRole(user: JwtUser, role: EmployeeRoleType): boolean {
+    return !!user?.employeeRoles?.includes(role);
   }
 }

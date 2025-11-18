@@ -1,6 +1,6 @@
 import { Expose, Type } from "class-transformer";
 
-import { CampaignContactFlowStepDto } from "../../campaign-contact-flow-steps/dto/campaign-contact-flow-step.dto";
+import { CampaignContactDto } from "../../campaign-contacts/dto/campaign-contact.dto";
 import { CampaignFlowStepDto } from "../../campaign-flow-steps/dto/campaign-flow-step.dto";
 import { ClientDto } from "../../clients/dto/client.dto";
 import { BaseDto } from "../../common/bases/base.dto";
@@ -29,6 +29,6 @@ export class CampaignDto extends BaseDto {
   campaignFlowSteps: CampaignFlowStepDto[];
 
   @Expose()
-  @Type(() => CampaignContactFlowStepDto)
-  contactFlowSteps: CampaignContactFlowStepDto[];
+  @Type(() => CampaignContactDto)
+  campaignContacts: CampaignContactDto[];
 }

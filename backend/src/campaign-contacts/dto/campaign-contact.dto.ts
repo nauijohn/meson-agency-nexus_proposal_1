@@ -1,10 +1,10 @@
 import { Expose } from "class-transformer";
 
-import { CampaignContactFlowStepStatus } from "../entities/campaign-contact-flow-step.entity";
+import { CampaignContactStatus } from "../entities/campaign-contact.entity";
 
-export class CampaignContactFlowStepDto {
+export class CampaignContactDto {
   @Expose()
-  status: CampaignContactFlowStepStatus;
+  status: CampaignContactStatus;
 
   @Expose()
   startedAt?: Date | null;

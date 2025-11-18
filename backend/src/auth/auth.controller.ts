@@ -20,6 +20,7 @@ import { BearerToken } from "./decorators/bearer-token.decorator";
 import { ReqUser } from "./decorators/req-user.decorator";
 import { SignUpDto } from "./dto";
 import { JwtRefreshUser } from "./entities/jwt-refresh-user.entity";
+import { JwtUser } from "./entities/jwt-user.entity";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { RefreshTokenGuard } from "./guards/refresh-token.guard";
@@ -90,9 +91,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
   async signOut(@ReqUser() user: JwtRefreshUser) {
-    if (!user?.tokenId) {
-      throw new BadRequestException();
-    }
+    if (!user?.tokenId) throw new BadRequestException();
     await this.refreshTokensService.delete(user.tokenId);
   }
 
@@ -108,17 +107,13 @@ export class AuthController {
       reqUser.id,
       bearerToken,
     );
-    console.log("tokens:", tokens);
-    if (!tokens) {
-      throw new InternalServerErrorException("Invalid Token");
-    }
-
+    if (!tokens) throw new InternalServerErrorException("Invalid Token");
     return tokens;
   }
 
   @Get("me")
   @UseGuards(JwtAuthGuard)
-  me(@ReqUser() user: User) {
+  me(@ReqUser() user: JwtUser) {
     return user;
   }
 }

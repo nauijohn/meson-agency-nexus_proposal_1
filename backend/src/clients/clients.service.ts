@@ -1,19 +1,22 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
 import { ClsService } from "nestjs-cls";
-import { Repository } from "typeorm";
+import { FindOptionsWhere, Repository } from "typeorm";
 
-import { Injectable, Scope } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { JwtUser } from "../auth/entities/jwt-user.entity";
 import { TOTAL_KEY } from "../common/bases";
-import { CLS_USER_ID } from "../common/constants";
+import { CLS_USER } from "../common/constants";
 import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
+import { EmployeeRoleType } from "../employee-roles/entities/employee-role.entity";
+import { RoleType } from "../roles/entities";
 import { CreateClientDto, UpdateClientDto } from "./dto";
 import { QueryClientDto } from "./dto/query-client.dto";
 import { Client } from "./entities/client.entity";
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ClientsService {
   constructor(
     @InjectRepository(Client) private readonly repository: Repository<Client>,
@@ -27,12 +30,8 @@ export class ClientsService {
   }
 
   async findAll(query: QueryClientDto): Promise<Client[]> {
-    const userId = this.cls.get<string>(CLS_USER_ID);
-
     const [entities, total] = await this.repository.findAndCount({
-      where: {
-        employeeClients: { employee: { id: userId } },
-      },
+      where: this.applyRoleFilter(),
       relations: {
         contacts: true,
         campaigns: true,
@@ -46,12 +45,10 @@ export class ClientsService {
   }
 
   findOne(id: string): Promise<Client | null> {
-    const userId = this.cls.get<string>(CLS_USER_ID);
-
     return this.repository.findOne({
       where: {
         id,
-        user: { id: userId },
+        ...this.applyRoleFilter(),
       },
       relations: {
         campaigns: true,
@@ -68,5 +65,31 @@ export class ClientsService {
 
   delete(id: string) {
     void this.repository.delete(id);
+  }
+
+  private applyRoleFilter():
+    | FindOptionsWhere<Client>
+    | FindOptionsWhere<Client>[]
+    | undefined {
+    const user = this.cls.get<JwtUser>(CLS_USER);
+    console.log("Applying role filter for user: ", user);
+
+    if (
+      user.roles.includes(RoleType.SUPER_ADMIN) ||
+      user.roles.includes(RoleType.ADMIN) ||
+      user.employeeRoles?.includes(EmployeeRoleType.LEAD)
+    )
+      return {};
+
+    if (user.roles.includes(RoleType.EMPLOYEE))
+      return {
+        user: {
+          employee: {
+            id: user.employeeId,
+          },
+        },
+      };
+
+    throw new ForbiddenException("Unknown role.");
   }
 }

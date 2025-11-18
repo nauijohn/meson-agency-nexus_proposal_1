@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 
-import { CampaignContactFlowStepsModule } from "../campaign-contact-flow-steps/campaign-contact-flow-steps.module";
+import { CampaignContactsModule } from "../campaign-contacts/campaign-contacts.module";
 import { CampaignFlowStepsModule } from "../campaign-flow-steps";
 import { CampaignsModule } from "../campaigns/campaigns.module";
 import { EmployeesModule } from "../employees/employees.module";
@@ -13,7 +13,7 @@ import { UserEventsListener } from "./listeners/user.events.listener";
     FlowsModule,
     CampaignsModule,
     CampaignFlowStepsModule,
-    CampaignContactFlowStepsModule,
+    CampaignContactsModule,
 
     EmployeesModule,
   ],

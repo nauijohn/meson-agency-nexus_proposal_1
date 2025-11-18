@@ -1,13 +1,16 @@
+import { ClsService } from "nestjs-cls";
 import {
   DataSource,
   EntitySubscriberInterface,
   EventSubscriber,
+  InsertEvent,
   UpdateEvent,
 } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
+import { CLS_USER_ID } from "../../common/constants";
 import {
   CampaignEvents,
   CampaignFlowAssignedEvent,
@@ -21,12 +24,17 @@ export class CampaignSubscriber implements EntitySubscriberInterface<Campaign> {
   constructor(
     datasource: DataSource,
     private readonly eventEmitter: EventEmitter2,
+    private readonly cls: ClsService,
   ) {
     datasource.subscribers.push(this);
   }
 
   listenTo() {
     return Campaign;
+  }
+
+  beforeInsert(event: InsertEvent<Campaign>): Promise<any> | void {
+    event.entity.createdBy = this.cls.get(CLS_USER_ID);
   }
 
   afterUpdate(event: UpdateEvent<Campaign>): Promise<any> | void {

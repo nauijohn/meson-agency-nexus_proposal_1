@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 
-import { CampaignContactFlowStepsService } from "../../campaign-contact-flow-steps/campaign-contact-flow-steps.service";
+import { CampaignContactsService } from "../../campaign-contacts/campaign-contacts.service";
 import { CampaignFlowStepsService } from "../../campaign-flow-steps/campaign-flow-steps.service";
 import { CampaignsService } from "../../campaigns/campaigns.service";
 import {
@@ -16,7 +16,7 @@ export class CampaignsListener {
     private readonly flowsService: FlowsService,
     private readonly campaignsService: CampaignsService,
     private readonly campaignFlowStepsService: CampaignFlowStepsService,
-    private readonly campaignContactFlowStepsService: CampaignContactFlowStepsService,
+    private readonly campaignContactsService: CampaignContactsService,
   ) {}
 
   @OnEvent(CampaignEvents.FlowAssigned)
@@ -30,7 +30,7 @@ export class CampaignsListener {
 
     Promise.all(
       clientContacts?.map((contact) => {
-        return this.campaignContactFlowStepsService.create({
+        return this.campaignContactsService.create({
           clientContactId: contact.id,
           campaignId: campaign.id,
         });

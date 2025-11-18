@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class CreateCampaignContactFlowStepDto {
+export class CreateCampaignContactDto {
   @IsNotEmpty()
   @IsString()
   clientContactId: string;

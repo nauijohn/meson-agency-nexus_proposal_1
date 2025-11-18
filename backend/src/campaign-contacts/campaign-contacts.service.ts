@@ -8,35 +8,31 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { TOTAL_KEY } from "../common/bases";
 import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
-import { CreateCampaignContactFlowStepDto } from "./dto/create-campaign-contact-flow-step.dto";
-import { QueryCampaignContactFlowStepDto } from "./dto/query-campaign-contact-flow-step.dto";
-import { UpdateCampaignContactFlowStepDto } from "./dto/update-campaign-contact-flow-step.dto";
-import { CampaignContactFlowStep } from "./entities/campaign-contact-flow-step.entity";
+import { CreateCampaignContactDto } from "./dto/create-campaign-contact.dto";
+import { QueryCampaignContactDto } from "./dto/query-campaign-contact.dto";
+import { UpdateCampaignContactDto } from "./dto/update-campaign-contact.dto";
+import { CampaignContact } from "./entities/campaign-contact.entity";
 
 @Injectable()
-export class CampaignContactFlowStepsService {
+export class CampaignContactsService {
   constructor(
-    @InjectRepository(CampaignContactFlowStep)
-    private readonly repository: Repository<CampaignContactFlowStep>,
+    @InjectRepository(CampaignContact)
+    private readonly repository: Repository<CampaignContact>,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly cls: ClsService,
   ) {}
 
-  create(
-    dto: CreateCampaignContactFlowStepDto,
-  ): Promise<CampaignContactFlowStep> {
+  create(dto: CreateCampaignContactDto): Promise<CampaignContact> {
     const entity = this.mapper.map(
       dto,
-      CreateCampaignContactFlowStepDto,
-      CampaignContactFlowStep,
+      CreateCampaignContactDto,
+      CampaignContact,
     );
-    console.log("Creating CampaignContactFlowStep entity:", entity);
+    console.log("Creating CampaignContact entity:", entity);
     return this.repository.save(entity);
   }
 
-  async findAll(
-    query: QueryCampaignContactFlowStepDto,
-  ): Promise<CampaignContactFlowStep[]> {
+  async findAll(query: QueryCampaignContactDto): Promise<CampaignContact[]> {
     const [entities, total] = await this.repository.findAndCount({
       relations: {
         campaignFlowStep: true,
@@ -61,22 +57,17 @@ export class CampaignContactFlowStepsService {
     return entities;
   }
 
-  async findOne(id: string): Promise<CampaignContactFlowStep> {
+  async findOne(id: string): Promise<CampaignContact> {
     return this.repository.findOneOrFail({
       where: { id },
     });
   }
 
   async update(
-    entity: CampaignContactFlowStep,
-    dto: UpdateCampaignContactFlowStepDto,
-  ): Promise<CampaignContactFlowStep> {
-    this.mapper.mutate(
-      dto,
-      entity,
-      UpdateCampaignContactFlowStepDto,
-      CampaignContactFlowStep,
-    );
+    entity: CampaignContact,
+    dto: UpdateCampaignContactDto,
+  ): Promise<CampaignContact> {
+    this.mapper.mutate(dto, entity, UpdateCampaignContactDto, CampaignContact);
     return this.repository.save(entity);
   }
 

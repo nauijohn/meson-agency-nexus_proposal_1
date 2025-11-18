@@ -31,7 +31,7 @@ export class FlowsService {
     const [entities, total] = await this.repository.findAndCount({
       relations: {
         steps: {
-          stepActivities: true,
+          activities: true,
         },
       },
       ...applyPaginationAndSorting(query),

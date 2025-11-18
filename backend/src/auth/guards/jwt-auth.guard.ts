@@ -6,7 +6,7 @@ import { Reflector } from "@nestjs/core";
 import { JsonWebTokenError, TokenExpiredError } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 
-import { CLS_USER_ID } from "../../common/constants";
+import { CLS_EMPLOYEE_ID, CLS_USER, CLS_USER_ID } from "../../common/constants";
 import { IS_PUBLIC_KEY } from "../../common/decorators/is-public.decorator";
 import { LoggerService } from "../../common/global/logger/logger.service";
 import { JwtUser } from "../entities/jwt-user.entity";
@@ -29,7 +29,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
       context.getClass(),
     ]);
     if (isPublic) {
-      // 💡 See this condition
+      this.logger.warn("Public route accessed, skipping JWT authentication.");
       return true;
     }
 
@@ -44,10 +44,10 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     context: ExecutionContext,
     status?: any,
   ): TUser {
-    console.log("JWT HandleRequest Guard");
+    this.logger.verbose("JWT HandleRequest Guard");
 
     if (status) {
-      console.log("status: ", status);
+      this.logger.log("status: ", status);
     }
 
     if (info) {
@@ -56,18 +56,20 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
       }
 
       if (!TokenExpiredError && !JsonWebTokenError) {
-        console.log("info: ", info);
+        this.logger.verbose("info: ", info);
       }
     }
 
     if (err) {
-      console.log("err: ", err);
+      this.logger.error("err: ", err);
       throw err;
     }
 
     if (!user) throw new TokenExpiredError("Token expired", new Date());
 
-    this.cls.set(CLS_USER_ID, user?.id);
+    this.cls.set<string>(CLS_USER_ID, user?.id);
+    this.cls.set<string>(CLS_EMPLOYEE_ID, user?.employeeId);
+    this.cls.set<JwtUser>(CLS_USER, user);
 
     return user as TUser;
   }

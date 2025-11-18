@@ -5,7 +5,7 @@ import { Campaign } from "../../campaigns/entities/campaign.entity";
 import { ClientContact } from "../../client-contacts/entities/client-contact.entity";
 import { BaseIdEntity } from "../../common/bases";
 
-export abstract class CampaignContactFlowStepRelations extends BaseIdEntity {
+export abstract class CampaignContactRelations extends BaseIdEntity {
   @ManyToOne(() => CampaignFlowStep, { onDelete: "CASCADE", nullable: true })
   @JoinColumn({
     name: "campaign_flow_step_id",
@@ -18,7 +18,7 @@ export abstract class CampaignContactFlowStepRelations extends BaseIdEntity {
   })
   clientContact: ClientContact;
 
-  @ManyToOne(() => Campaign, (campaign) => campaign.contactFlowSteps, {
+  @ManyToOne(() => Campaign, (campaign) => campaign.campaignContacts, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "campaign_id" })

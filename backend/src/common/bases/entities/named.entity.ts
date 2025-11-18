@@ -4,7 +4,7 @@ import { Column } from "typeorm";
 import { BaseEntity } from "./base.entity";
 
 export abstract class NamedEntity extends BaseEntity {
-  @Column()
+  @Column({ nullable: false })
   @AutoMap()
   name: string;
 }

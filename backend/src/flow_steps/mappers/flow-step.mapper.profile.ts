@@ -27,7 +27,7 @@ export class FlowStepProfile extends AutomapperProfile {
         CreateFlowStepDto,
         FlowStep,
         forMember(
-          (dest: FlowStep) => dest.stepActivities,
+          (dest: FlowStep) => dest.activities,
           mapFrom(
             (source: CreateFlowStepDto) =>
               source.activities.map((id) => ({ id })), // transform string ID → object with id

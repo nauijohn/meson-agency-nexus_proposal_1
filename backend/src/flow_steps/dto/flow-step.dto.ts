@@ -8,5 +8,5 @@ export class FlowStepDto extends BaseDto {
   order: number;
 
   @Expose()
-  stepActivities: FlowStepActivityDto[];
+  activities: FlowStepActivityDto[];
 }

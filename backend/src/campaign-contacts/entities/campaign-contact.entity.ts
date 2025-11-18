@@ -1,22 +1,22 @@
 import { Column, Entity } from "typeorm";
 
-import { CampaignContactFlowStepRelations } from "./campaign-contact-flow-step-relations.entity";
+import { CampaignContactRelations } from "./campaign-contact-relations.entity";
 
-export enum CampaignContactFlowStepStatus {
+export enum CampaignContactStatus {
   NOT_STARTED = "not_started",
   IN_PROGRESS = "in_progress",
   COMPLETED = "completed",
   STOPPED = "stopped",
 }
 
-@Entity({ name: "campaign_contact_flow_steps" })
-export class CampaignContactFlowStep extends CampaignContactFlowStepRelations {
+@Entity({ name: "campaign_contacts" })
+export class CampaignContact extends CampaignContactRelations {
   @Column({
     type: "enum",
-    enum: CampaignContactFlowStepStatus,
-    default: CampaignContactFlowStepStatus.NOT_STARTED,
+    enum: CampaignContactStatus,
+    default: CampaignContactStatus.NOT_STARTED,
   })
-  status: CampaignContactFlowStepStatus;
+  status: CampaignContactStatus;
 
   @Column({ type: "timestamp", nullable: true, default: null })
   startedAt?: Date | null;

@@ -12,14 +12,14 @@ import { User } from "../../users/";
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard("local") {
-  constructor(private readonly loggerService: LoggerService) {
+  constructor(private readonly logger: LoggerService) {
     super();
   }
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    console.log("LocalAuthGuard: canActivate");
+    this.logger.verbose("LocalAuthGuard: canActivate");
 
     return super.canActivate(context);
   }
@@ -31,15 +31,15 @@ export class LocalAuthGuard extends AuthGuard("local") {
     context: ExecutionContext,
     status?: any,
   ): TUser {
-    this.loggerService.warn("LocalAuthGuard: handleRequest called...");
-    console.log("info: ", info);
-    console.log("status: ", status);
+    this.logger.warn("LocalAuthGuard: handleRequest called...");
+    this.logger.log("info: ", info);
+    this.logger.log("status: ", status);
 
-    console.log("user: ", user);
-    console.log("err: ", err);
+    this.logger.log("user: ", user);
+    this.logger.log("err: ", err);
 
     if (err) {
-      console.log("Throwing error from LocalAuthGuard");
+      this.logger.error("Throwing error from LocalAuthGuard");
       throw err;
     }
 

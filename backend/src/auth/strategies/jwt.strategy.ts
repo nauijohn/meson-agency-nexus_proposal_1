@@ -27,10 +27,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   validate(payload: JwtPayload): JwtUser {
     this.logger.warn("JwtStrategy: validate called...");
-    console.log("JWT Payload:", payload);
     if (!payload) throw new UnauthorizedException();
     const jwtUser = this.mapper.map(payload, JwtPayload, JwtUser);
-    console.log("Validated JWT User:", jwtUser);
     return jwtUser;
   }
 }

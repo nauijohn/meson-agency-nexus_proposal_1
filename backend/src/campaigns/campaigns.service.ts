@@ -1,13 +1,17 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
 import { ClsService } from "nestjs-cls";
-import { Repository } from "typeorm";
+import { Repository, SelectQueryBuilder } from "typeorm";
 
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { JwtUser } from "../auth/entities/jwt-user.entity";
 import { TOTAL_KEY } from "../common/bases";
+import { CLS_USER } from "../common/constants";
 import { applyPaginationAndSorting } from "../common/utils/query-builder.pagination";
+import { EmployeeRoleType } from "../employee-roles/entities/employee-role.entity";
+import { RoleType } from "../roles/entities";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
 import { QueryCampaignDto } from "./dto/query-campaign.dto";
 import { UpdateCampaignDto } from "./dto/update-campaign.dto";
@@ -33,9 +37,12 @@ export class CampaignsService {
       .createQueryBuilder("campaign")
       .leftJoinAndSelect("campaign.client", "client")
       .leftJoinAndSelect("client.contacts", "contacts")
+      .leftJoinAndSelect("client.employeeClients", "employeeClients") // 👈 important join
       .leftJoinAndSelect("campaign.flow", "flow")
       .leftJoinAndSelect("campaign.campaignFlowSteps", "campaignFlowSteps")
-      .leftJoinAndSelect("client.users", "users");
+      .leftJoinAndSelect("campaign.campaignContacts", "campaignContacts");
+
+    qb = this.applyRoleFilter(qb);
 
     // ✅ Filter: only campaigns with no assigned flow
     if (query?.unassignedFlow) {
@@ -50,10 +57,8 @@ export class CampaignsService {
 
     qb = applyPaginationAndSorting(qb, { ...query });
 
-    // Execute query
     const [result, total] = await qb.getManyAndCount();
 
-    // Store total in CLS for interceptor/decorator to access
     this.cls.set(TOTAL_KEY, total);
 
     return result;
@@ -84,5 +89,27 @@ export class CampaignsService {
 
   delete(id: string) {
     void this.repository.delete(id);
+  }
+
+  private applyRoleFilter(qb: SelectQueryBuilder<Campaign>) {
+    const { roles, employeeId, employeeRoles } =
+      this.cls.get<JwtUser>(CLS_USER);
+
+    if (
+      roles.includes(RoleType.SUPER_ADMIN) ||
+      roles.includes(RoleType.ADMIN) ||
+      employeeRoles?.includes(EmployeeRoleType.LEAD)
+    ) {
+      return qb;
+    }
+
+    if (roles.includes(RoleType.EMPLOYEE)) {
+      qb.andWhere("employeeClients.employee_id = :employeeId", {
+        employeeId,
+      });
+      return qb;
+    }
+
+    throw new ForbiddenException("Unknown role.");
   }
 }

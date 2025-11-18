@@ -13,26 +13,26 @@ import {
 
 import { PaginationHeaders } from "../common";
 import { LoggerService } from "../common/global/logger/logger.service";
-import { CampaignContactFlowStepsService } from "./campaign-contact-flow-steps.service";
-import { CreateCampaignContactFlowStepDto } from "./dto/create-campaign-contact-flow-step.dto";
-import { QueryCampaignContactFlowStepDto } from "./dto/query-campaign-contact-flow-step.dto";
-import { UpdateCampaignContactFlowStepDto } from "./dto/update-campaign-contact-flow-step.dto";
+import { CampaignContactsService } from "./campaign-contacts.service";
+import { CreateCampaignContactDto } from "./dto/create-campaign-contact.dto";
+import { QueryCampaignContactDto } from "./dto/query-campaign-contact.dto";
+import { UpdateCampaignContactDto } from "./dto/update-campaign-contact.dto";
 
-@Controller("campaign-contact-flow-steps")
-export class CampaignContactFlowStepsController {
+@Controller("campaign-contacts")
+export class CampaignContactsController {
   constructor(
-    private readonly service: CampaignContactFlowStepsService,
+    private readonly service: CampaignContactsService,
     private readonly logger: LoggerService,
   ) {}
 
   @Post()
-  async create(@Body() dto: CreateCampaignContactFlowStepDto) {
+  async create(@Body() dto: CreateCampaignContactDto) {
     return this.service.create(dto);
   }
 
   @Get()
   @PaginationHeaders()
-  findAll(@Query() query: QueryCampaignContactFlowStepDto) {
+  findAll(@Query() query: QueryCampaignContactDto) {
     console.log("Query Params:", query);
     return this.service.findAll(query);
   }
@@ -45,10 +45,7 @@ export class CampaignContactFlowStepsController {
   }
 
   @Patch(":id")
-  async update(
-    @Param("id") id: string,
-    @Body() dto: UpdateCampaignContactFlowStepDto,
-  ) {
+  async update(@Param("id") id: string, @Body() dto: UpdateCampaignContactDto) {
     const entity = await this.service.findOne(id);
     return this.service.update(entity, dto);
   }
