@@ -4,6 +4,7 @@ import {
   EntitySubscriberInterface,
   EventSubscriber,
   InsertEvent,
+  UpdateEvent,
 } from "typeorm";
 
 import { Injectable } from "@nestjs/common";
@@ -14,7 +15,7 @@ import { Client } from "../entities/client.entity";
 
 @EventSubscriber()
 @Injectable()
-export class ClientSubscriber implements EntitySubscriberInterface<Client> {
+export class ClientsSubscriber implements EntitySubscriberInterface<Client> {
   constructor(
     datasource: DataSource,
     private readonly eventEmitter: EventEmitter2,
@@ -29,5 +30,10 @@ export class ClientSubscriber implements EntitySubscriberInterface<Client> {
 
   beforeInsert(event: InsertEvent<Client>): Promise<any> | void {
     event.entity.createdBy = this.cls.get(CLS_USER_ID);
+  }
+
+  beforeUpdate(event: UpdateEvent<Client>): Promise<any> | void {
+    if (event.entity?.updatedBy)
+      event.entity.updatedBy = this.cls.get<string>(CLS_USER_ID);
   }
 }

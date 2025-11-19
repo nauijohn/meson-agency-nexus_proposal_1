@@ -26,7 +26,6 @@ export const {
       invalidatesTags: [API_TAGS.CAMPAIGNS],
       argSchema: createCampaignSchema,
       query: (body) => {
-        console.log("body campaign: ", body);
         return {
           url: URL(),
           method: HttpMethods.POST,
@@ -39,7 +38,6 @@ export const {
       invalidatesTags: [API_TAGS.CAMPAIGNS],
       argSchema: updateCampaignSchema,
       query: ({ id, ...body }) => {
-        console.log("body campaign: ", body);
         return {
           url: URL(id),
           method: HttpMethods.PATCH,
@@ -55,7 +53,6 @@ export const {
         if (args.clientId) {
           queryParams.append("clientId", args.clientId);
         }
-        console.log("Query Params:", queryParams.toString());
 
         const URL_WITH_QUERY = queryParams.toString()
           ? `${URL()}?${queryParams.toString()}`

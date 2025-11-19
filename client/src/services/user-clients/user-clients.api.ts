@@ -25,15 +25,14 @@ const userClientsApi = api.injectEndpoints({
       }),
     }),
 
-    getUserClients: query<UserClient[], UserClientQuery>({
+    getUserClients: query<UserClient[], void | UserClientQuery>({
       providesTags: [API_TAGS.USER_CLIENTS],
-      argSchema: userClientQuerySchema,
+      argSchema: userClientQuerySchema.optional(),
       query: (args) => {
         const queryParams = new URLSearchParams();
-        if (args.userId) {
+        if (args?.userId) {
           queryParams.append("userId", args.userId);
         }
-        console.log("Query Params:", queryParams.toString());
 
         const URL_WITH_QUERY = queryParams.toString()
           ? `${URL()}?${queryParams.toString()}`

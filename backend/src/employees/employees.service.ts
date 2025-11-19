@@ -27,9 +27,6 @@ export class EmployeesService {
   async create(dto: CreateEmployeeDto): Promise<Employee> {
     const entity = this.mapper.map(dto, CreateEmployeeDto, Employee);
 
-    console.log("Created Employee Entity11:", entity);
-    console.log("Created Employee dto11:", dto);
-
     if (dto.employeeRoles && dto.employeeRoles.length > 0) {
       const roles = await this.employeeRolesService.findAll();
       const filteredRoles = roles.filter((role) =>
@@ -38,14 +35,15 @@ export class EmployeesService {
       entity.roles = filteredRoles;
     }
 
-    console.log("Created Employee Entity22:", entity);
-
     return this.repository.save(entity, { data: dto });
   }
 
   async findAll(query: QueryEmployeeDto): Promise<Employee[]> {
     const [entities, total] = await this.repository.findAndCount({
-      relations: {},
+      relations: {
+        user: true,
+      },
+      select: {},
       ...applyPaginationAndSorting(query),
     });
 
@@ -54,8 +52,8 @@ export class EmployeesService {
     return entities;
   }
 
-  findOne(id: string): Promise<Employee | null> {
-    return this.repository.findOne({
+  findOne(id: string): Promise<Employee> {
+    return this.repository.findOneOrFail({
       where: { id },
       relations: {},
     });

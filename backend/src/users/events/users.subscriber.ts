@@ -1,3 +1,4 @@
+import { ClsService } from "nestjs-cls";
 import {
   DataSource,
   EntitySubscriberInterface,
@@ -10,6 +11,7 @@ import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
 import { hash } from "../../auth/utils/security";
+import { CLS_USER_ID } from "../../common/constants";
 import { UserCreatedEvent, UserEvents } from "../../common/events/user.events";
 import { CreateUserDto } from "../dto";
 import { User } from "../entities/user.entity";
@@ -20,6 +22,7 @@ export class UsersSubscriber implements EntitySubscriberInterface<User> {
   constructor(
     dataSource: DataSource,
     private readonly eventEmitter: EventEmitter2,
+    private readonly cls: ClsService,
   ) {
     dataSource.subscribers.push(this);
   }
@@ -29,6 +32,7 @@ export class UsersSubscriber implements EntitySubscriberInterface<User> {
   }
 
   async beforeInsert(event: InsertEvent<User>): Promise<void> {
+    event.entity.createdBy = this.cls.get(CLS_USER_ID);
     if (event.entity?.password) {
       event.entity.password = await hash(event.entity.password);
     }
@@ -41,6 +45,10 @@ export class UsersSubscriber implements EntitySubscriberInterface<User> {
   async beforeUpdate(event: UpdateEvent<User>): Promise<void> {
     if (event.entity?.password) {
       event.entity.password = await hash(String(event.entity.password));
+    }
+
+    if (event.entity?.updatedBy) {
+      event.entity.updatedBy = this.cls.get<string>(CLS_USER_ID);
     }
   }
 

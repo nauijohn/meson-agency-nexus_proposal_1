@@ -24,6 +24,7 @@ import { RequestContextInterceptor } from "./common/interceptors/request-context
 import { LoggerMiddleware } from "./common/middlewares/logger.middleware";
 import { RequestIdMiddleware } from "./common/middlewares/request-id.middleware";
 import { EmployeeClientsModule } from "./employee-clients/employee-clients.module";
+import { EmployeesModule } from "./employees/employees.module";
 import { EventsModule } from "./events/events.module";
 import { ExperimentsModule } from "./experiments/experiments.module";
 import { FlowActivitiesModule } from "./flow-activities/flow-activities.module";
@@ -95,6 +96,7 @@ import { UsersModule } from "./users";
     FlowStepsModule,
     CampaignFlowStepsModule,
     ClientContactsModule,
+    EmployeesModule,
   ],
   providers: [
     {

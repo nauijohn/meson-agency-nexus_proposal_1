@@ -1,6 +1,12 @@
-import { useDispatch } from "react-redux";
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
 
-import type { AppDispatch } from "@/store";
+import type {
+  AppDispatch,
+  RootState,
+} from "@/store";
 import { setCampaignId } from "@/store/campaigns.slice";
 import { setClientId } from "@/store/clients.slice";
 import { setUserId } from "@/store/users.slice";
@@ -16,7 +22,7 @@ import {
   ComboboxTrigger,
 } from "../ui/shadcn-io/combobox";
 
-type Option = {
+export type Option = {
   label: string;
   value: string;
 };
@@ -60,12 +66,26 @@ const Dropdown = ({ values, dropDownType }: Props) => {
     }
   };
 
+  const selectedValue = useSelector((state: RootState) => {
+    switch (dropDownType) {
+      case "users":
+        return state.users.userId;
+      case "clients":
+        return state.clients.id;
+      case "campaigns":
+        return state.campaigns.id;
+      default:
+        return null;
+    }
+  });
+
   return (
     <Combobox
       data={values}
       // onOpenChange={(open) => console.log("Combobox is open?", open)}
       onValueChange={handleValueChange}
       type={dropDownType}
+      value={selectedValue ?? ""}
     >
       <ComboboxTrigger className="w-full" />
       <ComboboxContent>
@@ -73,9 +93,9 @@ const Dropdown = ({ values, dropDownType }: Props) => {
         <ComboboxEmpty />
         <ComboboxList>
           <ComboboxGroup>
-            {values.map((v) => (
-              <ComboboxItem key={v.value} value={v.value}>
-                {v.label}
+            {values.map(({ value, label }) => (
+              <ComboboxItem key={value} value={value}>
+                {label}
               </ComboboxItem>
             ))}
           </ComboboxGroup>

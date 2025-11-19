@@ -1,25 +1,51 @@
 "use client";
 
-import { useSelector } from "react-redux";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import Dropdown, { toOptions } from "@/components/app/Dropdown";
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
+import CampaignContactFlowSteps
+  from "@/components/app/CampaignContactFlowSteps";
+import Dropdown, {
+  type Option,
+  toOptions,
+} from "@/components/app/Dropdown";
 import TableData from "@/components/app/TableData";
 import { Separator } from "@/components/ui/separator";
 import { useGetCampaignsQuery } from "@/services/campaigns/campaigns.api";
+import type { Client } from "@/services/clients/clients.type";
 import {
   useGetUserClientsQuery,
 } from "@/services/user-clients/user-clients.api";
 import { useGetUsersQuery } from "@/services/users/users.api";
-import type { RootState } from "@/store";
+import type {
+  AppDispatch,
+  RootState,
+} from "@/store";
+import { setCampaignId } from "@/store/campaigns.slice";
+import { setClientId } from "@/store/clients.slice";
 import {
   paymentColumns,
   payments,
 } from "@/utils/dummy";
 
 const Home = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const userId = useSelector((state: RootState) => state.users.userId);
   const clientId = useSelector((state: RootState) => state.clients.id);
 
+  // ✅ local state for dropdown options
+  const [clientsOptions, setClientsOptions] = useState<Option[]>([]);
+  const [campaignsOptions, setCampaignsOptions] = useState<Option[]>([]);
+
+  // USERS
   const { data: users, isFetching } = useGetUsersQuery();
   const usersOptions = toOptions(
     users,
@@ -27,25 +53,64 @@ const Home = () => {
     (u) => u.id,
   );
 
+  // USER CLIENTS
   const { data: userClients } = useGetUserClientsQuery(
     { userId },
     { skip: !userId },
   );
-  const clientsOptions = toOptions(
-    userClients?.map((uc) => uc.client) || [],
-    (c) => c.name,
-    (c) => c.id,
-  );
 
+  // Update clientsOptions when userClients changes
+  useEffect(() => {
+    if (userClients && userClients.length > 0) {
+      const opts = toOptions(
+        userClients
+          ? userClients
+              .map((uc) => uc.client ?? null)
+              .filter((c): c is Client => c !== null)
+          : [],
+        (c) => c.name,
+        (c) => c.id,
+      );
+      setClientsOptions(opts);
+    } else {
+      setClientsOptions([]);
+    }
+  }, [userClients]);
+
+  // CAMPAIGNS
   const { data: campaigns } = useGetCampaignsQuery(
     { clientId },
-    { skip: !clientId },
+    { skip: !clientId, refetchOnMountOrArgChange: true },
   );
-  const campaignsOptions = toOptions(
-    campaigns,
-    (c) => c.name,
-    (c) => c.id,
-  );
+
+  useEffect(() => {
+    if (campaigns && campaigns.length > 0) {
+      setCampaignsOptions(
+        toOptions(
+          campaigns,
+          (c) => c.name,
+          (c) => c.id,
+        ),
+      );
+    } else {
+      setCampaignsOptions([]);
+    }
+  }, [campaigns]);
+
+  // ✅ Reset logic
+  useEffect(() => {
+    // When user changes, reset everything
+    dispatch(setClientId(null));
+    dispatch(setCampaignId(null));
+    setClientsOptions([]);
+    setCampaignsOptions([]);
+  }, [userId, dispatch]);
+
+  useEffect(() => {
+    // When client changes, reset campaign
+    dispatch(setCampaignId(null));
+    setCampaignsOptions([]);
+  }, [clientId, dispatch]);
 
   if (isFetching) return <div>Loading...</div>;
 
@@ -83,11 +148,7 @@ const Home = () => {
 
       <Separator className="my-4" />
 
-      <h1 className="font-extrabold text-4xl text-balance tracking-tight scroll-m-20">
-        Client Contacts
-      </h1>
-
-      <TableData data={payments} columns={paymentColumns} />
+      <CampaignContactFlowSteps />
 
       <Separator className="mx-auto my-4 w-full max-w-6xl" />
 

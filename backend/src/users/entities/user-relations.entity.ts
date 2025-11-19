@@ -1,12 +1,12 @@
 import { JoinColumn, JoinTable, ManyToMany, OneToOne } from "typeorm";
 
 import { Client } from "../../clients";
-import { BaseEntity } from "../../common/bases";
+import { BaseAuditEntity } from "../../common/bases/entities/base-audit.entity";
 import { Employee } from "../../employees/entities/employee.entity";
 import { RefreshToken } from "../../refresh-tokens";
 import { Role } from "../../roles/entities";
 
-export abstract class UserRelationsEntity extends BaseEntity {
+export abstract class UserRelationsEntity extends BaseAuditEntity {
   @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user, {
     cascade: true,
     eager: true,

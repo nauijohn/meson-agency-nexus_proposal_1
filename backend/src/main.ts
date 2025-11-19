@@ -7,6 +7,7 @@ import { config } from "./main.config";
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const env = app.get(ConfigService);
   const PORT = env.getOrThrow<number>("PORT");
 

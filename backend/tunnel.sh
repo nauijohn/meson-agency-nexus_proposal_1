@@ -1,0 +1,1 @@
+ssh -i nexus-bastion.pem -L 5432:rds-cluster.cluster-cp4ms4y8cdu0.ap-southeast-1.rds.amazonaws.com:5432 ec2-user@54.255.7.89

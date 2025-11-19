@@ -1,5 +1,6 @@
 import { AutoMap } from "automapper-classes";
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -36,6 +37,9 @@ export class EmployeeClient {
   })
   @JoinColumn({ name: "client_id" })
   client: Client;
+
+  @Column({ nullable: true })
+  assignedBy?: string;
 
   @CreateDateColumn()
   assignedDate: Date;

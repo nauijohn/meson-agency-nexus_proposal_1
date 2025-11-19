@@ -15,6 +15,7 @@ import {
   CampaignEvents,
   CampaignFlowAssignedEvent,
 } from "../../common/events/campaign.events";
+import { LoggerService } from "../../common/global/logger/logger.service";
 import { UpdateCampaignDto } from "../dto/update-campaign.dto";
 import { Campaign } from "../entities/campaign.entity";
 
@@ -25,6 +26,7 @@ export class CampaignSubscriber implements EntitySubscriberInterface<Campaign> {
     datasource: DataSource,
     private readonly eventEmitter: EventEmitter2,
     private readonly cls: ClsService,
+    private readonly logger: LoggerService,
   ) {
     datasource.subscribers.push(this);
   }
@@ -35,6 +37,11 @@ export class CampaignSubscriber implements EntitySubscriberInterface<Campaign> {
 
   beforeInsert(event: InsertEvent<Campaign>): Promise<any> | void {
     event.entity.createdBy = this.cls.get(CLS_USER_ID);
+  }
+
+  beforeUpdate(event: UpdateEvent<Campaign>): Promise<any> | void {
+    if (event.entity?.updatedBy)
+      event.entity.updatedBy = this.cls.get<string>(CLS_USER_ID);
   }
 
   afterUpdate(event: UpdateEvent<Campaign>): Promise<any> | void {
@@ -52,7 +59,7 @@ export class CampaignSubscriber implements EntitySubscriberInterface<Campaign> {
     const updatedFlowId = updatedEntity.flow?.id;
 
     if (!originalFlowId && updatedFlowId) {
-      console.log("Flow assigned event detected");
+      this.logger.verbose("Flow assigned event detected");
       eventType = CampaignEvents.FlowAssigned;
       const dto = event.queryRunner.data as UpdateCampaignDto;
       eventPayload = new CampaignFlowAssignedEvent({
@@ -65,17 +72,17 @@ export class CampaignSubscriber implements EntitySubscriberInterface<Campaign> {
     }
 
     if (originalFlowId && !updatedFlowId) {
-      console.log("Flow unassigned event detected");
+      this.logger.verbose("Flow unassigned event detected");
       eventType = CampaignEvents.FlowUnassigned;
     }
 
     if (originalFlowId && updatedFlowId && originalFlowId !== updatedFlowId) {
-      console.log("Flow reassigned event detected");
+      this.logger.verbose("Flow reassigned event detected");
       eventType = CampaignEvents.FlowReassigned;
     }
 
     if (eventType) {
-      console.log("Emitting event:", eventType);
+      this.logger.verbose("Emitting event: " + eventType);
       this.eventEmitter.emit(eventType, eventPayload);
     }
   }

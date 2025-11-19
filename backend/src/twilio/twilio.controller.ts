@@ -3,6 +3,9 @@ import { VoiceGrant } from "twilio/lib/jwt/AccessToken";
 
 import { Body, Controller, Get, Header, Post } from "@nestjs/common";
 
+import { Public } from "../common/decorators/is-public.decorator";
+
+@Public()
 @Controller("twilio")
 export class TwilioController {
   @Get("token")

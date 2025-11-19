@@ -8,8 +8,9 @@ import {
 import { Injectable } from "@nestjs/common";
 
 import { Campaign } from "../../campaigns/entities/campaign.entity";
-import { Client } from "../../clients";
+import { EmployeeClient } from "../../employee-clients/entities/employee-client.entity";
 import { EmployeeRoleType } from "../../employee-roles/entities/employee-role.entity";
+import { Employee } from "../../employees/entities/employee.entity";
 import { RoleType } from "../../roles/entities";
 import { User } from "../../users";
 import { JwtUser } from "../entities/jwt-user.entity";
@@ -34,20 +35,21 @@ export class CaslAbilityFactory {
     if (this.hasRole(user, RoleType.SUPER_ADMIN)) can(Action.Manage, "all");
 
     if (this.hasRole(user, RoleType.EMPLOYEE)) {
-      // Campaigns
-      can(Action.Read, Campaign);
-
-      // Clients
-      can(Action.Read, Client);
-
-      if (this.hasEmployeeRole(user, EmployeeRoleType.AGENT)) {
-        cannot(Action.Create, Client);
-        cannot(Action.Create, Campaign);
+      if (this.hasEmployeeRole(user, EmployeeRoleType.LEAD)) {
+        can(Action.Create, "all");
+        can(Action.Read, "all");
+        cannot(Action.Create, Employee).because(
+          "Only admins can create employees",
+        );
       }
 
-      if (this.hasEmployeeRole(user, EmployeeRoleType.LEAD)) {
-        can(Action.Create, Client);
-        can(Action.Create, Campaign);
+      if (this.hasEmployeeRole(user, EmployeeRoleType.AGENT)) {
+        cannot(Action.Create, "all");
+        cannot(Action.Create, EmployeeClient).because(
+          "Agents cannot assign clients to employees",
+        );
+
+        cannot(Action.Delete, "all");
       }
     }
 
