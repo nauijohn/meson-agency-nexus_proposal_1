@@ -22,5 +22,8 @@ export const typeOrmConfigFactory = (
     synchronize: isDev,
     autoLoadEntities: isDev,
     dropSchema: false,
+    ssl: {
+      rejectUnauthorized: false, // or true if you import the cert
+    },
   };
 };
