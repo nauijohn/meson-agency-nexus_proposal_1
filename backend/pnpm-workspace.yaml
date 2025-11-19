@@ -1,3 +1,7 @@
+packages:
+  - "backend"
+  # add other packages if you have a monorepo
+
 onlyBuiltDependencies:
   - '@nestjs/core'
   - '@swc/core'
