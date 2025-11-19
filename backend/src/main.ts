@@ -16,7 +16,7 @@ export async function bootstrap() {
   config(app);
 
   await app.listen(PORT, () => {
-    logger.verbose(`Users service is running on port ${PORT}...`);
+    logger.verbose(`Users service is running on port ${PORT}....`);
   });
 }
 
