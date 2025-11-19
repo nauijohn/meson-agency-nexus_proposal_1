@@ -55,4 +55,4 @@ COPY --from=deps /app/node_modules ./node_modules
 # EXPOSE 3000
 
 # # Start the app in production
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
