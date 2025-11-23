@@ -1,6 +1,7 @@
 import api from "@/services/api";
 import { configureStore } from "@reduxjs/toolkit";
 
+import authSlice from "./auth.slice";
 import campaignsSlice from "./campaigns.slice";
 import clientsSlice from "./clients.slice";
 import usersReducer from "./users.slice";
@@ -11,6 +12,7 @@ const store = configureStore({
     users: usersReducer,
     clients: clientsSlice,
     campaigns: campaignsSlice,
+    auth: authSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware), // needed for caching & refetching

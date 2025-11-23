@@ -11,16 +11,16 @@ const api = axios.create({
   timeout: 10000, // optional: 10s timeout
 });
 
-// // Optional: Add interceptors for request or response
-// api.interceptors.request.use(
-//   (config) => {
-//     // e.g., attach token if exists
-//     const token = localStorage.getItem("token");
-//     if (token) config.headers.Authorization = `Bearer ${token}`;
-//     return config;
-//   },
-//   (error) => Promise.reject(error),
-// );
+// Optional: Add interceptors for request or response
+api.interceptors.request.use(
+  (config) => {
+    // e.g., attach token if exists
+    const token = localStorage.getItem("accessToken");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 api.interceptors.response.use(
   (response) => response.data,

@@ -12,9 +12,11 @@ import {
   ChevronDownIcon,
   HelpCircleIcon,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router";
 
 import { cn } from "@/lib/utils";
+import type { RootState } from "@/store";
 import {
   Avatar,
   AvatarFallback,
@@ -281,7 +283,7 @@ export const Navbar05 = React.forwardRef<HTMLElement, Navbar05Props>(
     {
       className,
       logo = <Logo />,
-      logoHref = "#",
+      logoHref = "/",
       navigationLinks = defaultNavigationLinks,
       userName = "John Doe",
       userEmail = "john@example.com",
@@ -295,6 +297,8 @@ export const Navbar05 = React.forwardRef<HTMLElement, Navbar05Props>(
     },
     ref,
   ) => {
+    const user = useSelector((state: RootState) => state.users);
+
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef<HTMLElement>(null);
 
@@ -441,8 +445,8 @@ export const Navbar05 = React.forwardRef<HTMLElement, Navbar05Props>(
             </div>
             {/* User menu */}
             <UserMenu
-              userName={userName}
-              userEmail={userEmail}
+              userName={`${user.firstName} ${user.lastName}`}
+              userEmail={user.email}
               userAvatar={userAvatar}
               onItemClick={onUserItemClick}
             />

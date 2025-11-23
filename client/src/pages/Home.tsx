@@ -23,7 +23,6 @@ import type { Client } from "@/services/clients/clients.type";
 import {
   useGetUserClientsQuery,
 } from "@/services/user-clients/user-clients.api";
-import { useGetUsersQuery } from "@/services/users/users.api";
 import type {
   AppDispatch,
   RootState,
@@ -38,20 +37,12 @@ import {
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const userId = useSelector((state: RootState) => state.users.userId);
+  const userId = useSelector((state: RootState) => state.users.id);
   const clientId = useSelector((state: RootState) => state.clients.id);
 
   // ✅ local state for dropdown options
   const [clientsOptions, setClientsOptions] = useState<Option[]>([]);
   const [campaignsOptions, setCampaignsOptions] = useState<Option[]>([]);
-
-  // USERS
-  const { data: users, isFetching } = useGetUsersQuery();
-  const usersOptions = toOptions(
-    users,
-    (u) => `${u.firstName} ${u.lastName}`,
-    (u) => u.id,
-  );
 
   // USER CLIENTS
   const { data: userClients } = useGetUserClientsQuery(
@@ -112,20 +103,10 @@ const Home = () => {
     setCampaignsOptions([]);
   }, [clientId, dispatch]);
 
-  if (isFetching) return <div>Loading...</div>;
-
   return (
     <div className="my-12">
       <div className="flex justify-around items-center gap-5 font-extrabold text-4xl text-balance tracking-tight scroll-m-20">
         <div className="flex flex-col gap-5 w-full">
-          <div className="flex flex-col w-full">
-            <h4 className="font-semibold text-xl tracking-tight scroll-m-20">
-              Log in as user:
-            </h4>
-
-            <Dropdown dropDownType="users" values={usersOptions} />
-          </div>
-
           <div className="flex gap-5 w-full">
             <div className="flex flex-col w-full">
               <h4 className="font-semibold text-xl tracking-tight scroll-m-20">

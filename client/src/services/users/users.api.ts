@@ -3,6 +3,7 @@ import api, {
   HttpMethods,
 } from "../api";
 import {
+  type GetUserArgs,
   type TransformedUser,
   transformedUserSchema,
   transformSchema,
@@ -22,6 +23,12 @@ const usersApi = api.injectEndpoints({
       providesTags: [API_TAGS.USERS],
       query: () => URL(),
       responseSchema: userSchema.array(),
+    }),
+
+    getUser: builder.query<User, GetUserArgs>({
+      providesTags: [API_TAGS.USER],
+      query: ({ id }) => URL(id),
+      responseSchema: userSchema,
     }),
 
     getTransformedUsers: builder.query<TransformedUser[], void>({
@@ -62,4 +69,7 @@ export const {
   useGetUserWithUnassignedClientsQuery,
   useAddUserMutation,
   useUpdateUserMutation,
+  useGetUserQuery,
 } = usersApi;
+
+export default usersApi;

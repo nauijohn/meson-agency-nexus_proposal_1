@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { PaginatedResponse } from "@/services/base.type";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -34,6 +35,11 @@ import {
 } from "@tanstack/react-table";
 
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
+import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -46,13 +52,19 @@ export default function TableData<T>({
   data,
   columns,
   filterBy,
+  paginationMeta,
+  hoverContent,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
   filterBy?: string;
+  paginationMeta?: Partial<Omit<PaginatedResponse<T>, "items">> & {
+    setPage?: (page: number) => void;
+  };
+  hoverContent?: React.ReactNode;
 }) {
-  const [currIndexPage, setCurrIndexPage] = React.useState(0);
-  const currPage = React.useRef<HTMLAnchorElement>(null);
+  // const [currIndexPage, setCurrIndexPage] = React.useState(0);
+  // const currPage = React.useRef<HTMLAnchorElement>(null);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -78,14 +90,14 @@ export default function TableData<T>({
       columnVisibility,
       rowSelection,
       pagination: {
-        pageIndex: currIndexPage,
-        pageSize: 5,
+        pageSize: data.length,
+        pageIndex: 0,
       },
     },
   });
 
   return (
-    <div className="">
+    <div>
       <div className="flex items-center py-4">
         {filterBy && (
           <Input
@@ -148,21 +160,33 @@ export default function TableData<T>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const tableRowComp = (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+                if (!hoverContent) return tableRowComp;
+
+                return (
+                  <HoverCard key={row.id}>
+                    <HoverCardTrigger asChild>{tableRowComp}</HoverCardTrigger>
+                    <HoverCardContent className="w-80">
+                      {hoverContent}
+                    </HoverCardContent>
+                  </HoverCard>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell
@@ -176,42 +200,56 @@ export default function TableData<T>({
           </TableBody>
         </Table>
       </div>
-      <Pagination>
-        <PaginationContent>
-          {/** Previous Page */}
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={() => {
-                if (table.getState().pagination.pageIndex === 0) return;
-                setCurrIndexPage(table.getState().pagination.pageIndex - 1);
-                table.previousPage();
-              }}
-            />
-          </PaginationItem>
-          {/** Current Page */}
-          <PaginationItem>
-            <PaginationLink ref={currPage}>
-              {table.getState().pagination.pageIndex + 1}
-            </PaginationLink>
-          </PaginationItem>
-          {/* <PaginationItem>
+      {!(paginationMeta?.totalPages === 1) && (
+        <Pagination>
+          <PaginationContent>
+            {/** Previous Page */}
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => {
+                  if (!paginationMeta) return;
+                  if (!paginationMeta.hasPrevPage) return;
+                  if (paginationMeta.setPage && paginationMeta.page) {
+                    paginationMeta.setPage(paginationMeta.page - 1);
+                  }
+                  // if (table.getState().pagination.pageIndex === 0) return;
+                  // setCurrIndexPage(table.getState().pagination.pageIndex - 1);
+                  // table.previousPage();
+                }}
+              />
+            </PaginationItem>
+            {/** Current Page */}
+
+            <PaginationItem>
+              <PaginationLink>
+                {`${paginationMeta?.page} / ${paginationMeta?.totalPages}`}
+              </PaginationLink>
+            </PaginationItem>
+
+            {/* <PaginationItem>
             <PaginationEllipsis />
           </PaginationItem> */}
-          {/** Next Page */}
-          <PaginationItem>
-            <PaginationNext
-              onClick={() => {
-                const currentPage = table.getState().pagination.pageIndex + 1;
-                const lastPage = table.getPageCount();
 
-                if (currentPage === lastPage) return;
-                setCurrIndexPage(currentPage);
-                table.nextPage();
-              }}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            {/** Next Page */}
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => {
+                  if (!paginationMeta) return;
+                  if (!paginationMeta.hasNextPage) return;
+                  if (paginationMeta.setPage && paginationMeta.page) {
+                    paginationMeta.setPage(paginationMeta.page + 1);
+                  }
+                  // const currentPage = table.getState().pagination.pageIndex + 1;
+                  // const lastPage = table.getPageCount();
+                  // if (currentPage === lastPage) return;
+                  // setCurrIndexPage(currentPage);
+                  // table.nextPage();
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
       {/* <div className="flex justify-between items-center pt-4">
         <div className="text-muted-foreground text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}

@@ -82,15 +82,12 @@ const columns: ColumnDef<UserClient>[] = [
 ];
 
 const CampaignContactFlowSteps = () => {
-  const userId = useSelector((state: RootState) => state.users.userId);
-  console.log("User ID in CampaignContactFlowSteps: ", userId);
+  const userId = useSelector((state: RootState) => state.users.id);
 
   const { data: userClients } = useGetUserClientsQuery(
     { userId },
     { skip: !userId },
   );
-
-  console.log("User Clients Data: ", userClients);
 
   return (
     <>

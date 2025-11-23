@@ -9,7 +9,7 @@ import type {
 } from "@/store";
 import { setCampaignId } from "@/store/campaigns.slice";
 import { setClientId } from "@/store/clients.slice";
-import { setUserId } from "@/store/users.slice";
+import { setUser } from "@/store/users.slice";
 
 import {
   Combobox,
@@ -49,7 +49,7 @@ const Dropdown = ({ values, dropDownType }: Props) => {
   const setValue = (value: string) => {
     switch (dropDownType) {
       case "users":
-        return setUserId(value);
+        return setUser({ id: value });
       case "clients":
         return setClientId(value);
       case "campaigns":
@@ -69,7 +69,7 @@ const Dropdown = ({ values, dropDownType }: Props) => {
   const selectedValue = useSelector((state: RootState) => {
     switch (dropDownType) {
       case "users":
-        return state.users.userId;
+        return state.users.id;
       case "clients":
         return state.clients.id;
       case "campaigns":

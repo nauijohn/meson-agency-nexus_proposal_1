@@ -5,23 +5,22 @@ import {
   namedBaseSchema,
 } from "../base.type";
 
-const clientSchema = z.object({}).extend(namedBaseSchema.shape);
+export const getUserArgsSchema = z.object({
+  id: z.uuid(),
+});
 
 export const userSchema = z
   .object({
     email: z.email(),
     firstName: z.string(),
     lastName: z.string(),
-    clients: z.array(clientSchema),
-    unassignedClients: z.array(clientSchema).optional(),
+    roles: z.array(z.string()),
   })
   .extend(baseSchema.shape);
 
 export const transformedUserSchema = z
   .object({
     email: z.email(),
-    clients: z.array(clientSchema),
-    unassignedClients: z.array(clientSchema).optional(),
   })
   .extend(namedBaseSchema.shape);
 
@@ -36,3 +35,5 @@ export const transformSchema = userSchema.transform((base) => {
 
 export type User = z.infer<typeof userSchema>;
 export type TransformedUser = z.infer<typeof transformedUserSchema>;
+
+export type GetUserArgs = z.infer<typeof getUserArgsSchema>;

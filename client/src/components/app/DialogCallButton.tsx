@@ -51,10 +51,6 @@ export function DialogCallButton() {
           );
 
           if (res.ok) {
-            const a = await res.text();
-
-            console.log("Token fetched via fetch: ", a);
-
             const newDevice = new Device(res2.data.token, {
               codecPreferences: [Call.Codec.PCMU, Call.Codec.Opus],
             });

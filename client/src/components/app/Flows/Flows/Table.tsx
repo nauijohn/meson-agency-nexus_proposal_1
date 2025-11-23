@@ -35,10 +35,10 @@ const columns: ColumnDef<Flow["steps"][number]>[] = [
   },
 
   {
-    accessorKey: "stepActivities",
+    accessorKey: "activities",
     header: "Step Activities",
     cell: ({ row }) => {
-      const stepActivities = row.getValue("stepActivities") as {
+      const stepActivities = row.getValue("activities") as {
         activity: {
           name: string;
         };
@@ -88,7 +88,7 @@ const Table = () => {
   return (
     <>
       {data &&
-        data?.map((flow) => (
+        data.items.map((flow) => (
           <div key={flow.id}>
             {flow.steps &&
               flow.steps.map((step) => (
