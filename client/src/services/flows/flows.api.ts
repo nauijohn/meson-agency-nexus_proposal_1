@@ -14,6 +14,7 @@ import {
   type CreateFlow,
   type Flow,
   flowSchema,
+  type UpdateFlow,
 } from "./flows.type";
 
 const URL = (args?: PaginationArgs | void) => {
@@ -29,13 +30,25 @@ const URL = (args?: PaginationArgs | void) => {
 
 const flowsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    addFlow: builder.mutation<Flow, Partial<CreateFlow>>({
+    createFlow: builder.mutation<Flow, Partial<CreateFlow>>({
       invalidatesTags: [API_TAGS.FLOWS],
       query: (body) => {
         return {
           url: URL(),
           method: HttpMethods.POST,
           body,
+        };
+      },
+    }),
+
+    updateFlow: builder.mutation<Flow, UpdateFlow>({
+      invalidatesTags: [API_TAGS.FLOWS],
+      query: ({ id, ...data }) => {
+        console.log("Updating flow id:", id, "with data:", data);
+        return {
+          url: `flows/${id}`,
+          method: HttpMethods.PATCH,
+          body: data,
         };
       },
     }),
@@ -54,7 +67,11 @@ const flowsApi = api.injectEndpoints({
   }),
 });
 
-export const { useAddFlowMutation, useGetFlowsQuery, useLazyGetFlowsQuery } =
-  flowsApi;
+export const {
+  useCreateFlowMutation,
+  useGetFlowsQuery,
+  useLazyGetFlowsQuery,
+  useUpdateFlowMutation,
+} = flowsApi;
 
 export default flowsApi;

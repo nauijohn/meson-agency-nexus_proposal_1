@@ -16,6 +16,11 @@ export const createFlowSchema = z.object({
   ),
 });
 
+export const updateFlowSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
 export const flowSchema = z
   .object({
     steps: z.array(
@@ -25,7 +30,11 @@ export const flowSchema = z
           activities: z.array(
             z
               .object({
-                activity: z.any().nullable(),
+                activity: z
+                  .object({
+                    type: z.string(),
+                  })
+                  .extend(namedBaseSchema.shape),
               })
               .extend(baseSchema.shape),
           ),
@@ -37,3 +46,4 @@ export const flowSchema = z
 
 export type Flow = z.infer<typeof flowSchema>;
 export type CreateFlow = z.infer<typeof createFlowSchema>;
+export type UpdateFlow = z.infer<typeof updateFlowSchema>;

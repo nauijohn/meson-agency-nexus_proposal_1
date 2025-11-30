@@ -22,50 +22,50 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import useMutationToast from "@/hooks/useMutationToast";
+import { idParamSchema } from "@/services/base.type";
 import {
   useGetFlowActivitiesQuery,
 } from "@/services/flow-activities/flow-activities.api";
-import { useAddFlowMutation } from "@/services/flows/flows.api";
+import {
+  useCreateFlowStepActivityMutation,
+  useDeleteFlowStepActivityMutation,
+} from "@/services/flow-step-activities/flow-step-activities.api";
+import {
+  createFlowStepActivitySchema,
+  type FlowStepActivity,
+} from "@/services/flow-step-activities/flow-step-activities.type";
+import {
+  useCreateFlowStepMutation,
+  useUpdateFlowStepMutation,
+} from "@/services/flow-steps/flow-steps.api";
+import {
+  createFlowStepSchema,
+  type FlowStep,
+  updateFlowStepSchema,
+} from "@/services/flow-steps/flow-steps.type";
+import {
+  useCreateFlowMutation,
+  useUpdateFlowMutation,
+} from "@/services/flows/flows.api";
 import {
   createFlowSchema,
   type Flow,
+  updateFlowSchema,
 } from "@/services/flows/flows.type";
 import { useForm } from "@tanstack/react-form";
 
-const createFormSchema = z.object({
+const formSchema = z.object({
+  id: z.uuid().nullish(),
   name: z.string().min(1, "Flow name is required"),
   steps: z.array(
     z.object({
+      id: z.uuid().nullish(),
       name: z.string(),
       order: z.number(),
       activities: z.array(z.uuid()),
     }),
   ),
 });
-
-const editFormSchema = z.object({
-  id: z.uuid(),
-  name: z.string().min(1, "Flow name is required"),
-  steps: z.array(
-    z.object({
-      id: z.uuid(),
-      name: z.string(),
-      order: z.number(),
-      activities: z.array(z.uuid()),
-    }),
-  ),
-});
-
-// const createFlowsDefaultValues = {
-//   name: "",
-//   steps: [
-//     {
-//       name: "",
-//       order: 1,
-//       activities: [] as string[],
-//     },
-//   ],
-// };
 
 const DialogForm = ({
   isEdit = false,
@@ -80,7 +80,12 @@ const DialogForm = ({
   setShowForm?: React.Dispatch<React.SetStateAction<boolean>>;
   initialLoad?: Flow;
 }) => {
-  const [addFlow, { isError, isSuccess, reset }] = useAddFlowMutation();
+  const [createFlow, { isError, isSuccess, reset }] = useCreateFlowMutation();
+  const [updateFlow] = useUpdateFlowMutation();
+  const [updateFlowStep] = useUpdateFlowStepMutation();
+  const [createFlowStep] = useCreateFlowStepMutation();
+  const [createFlowStepActivity] = useCreateFlowStepActivityMutation();
+  const [deleteFlowStepActivity] = useDeleteFlowStepActivityMutation();
 
   const { data: flowActivities } = useGetFlowActivitiesQuery();
 
@@ -91,15 +96,17 @@ const DialogForm = ({
 
   const form = useForm({
     defaultValues: isEdit
-      ? {
+      ? ({
           ...initialLoad,
           steps:
             initialLoad?.steps.map((step) => ({
               ...step,
-              activities: step.activities.map((activity) => activity.id),
+              activities: step.activities.map(
+                (activity) => activity.activity.id,
+              ),
             })) || [],
-        }
-      : {
+        } as z.infer<typeof formSchema>)
+      : ({
           name: "",
           steps: [
             {
@@ -108,18 +115,136 @@ const DialogForm = ({
               activities: [] as string[],
             },
           ],
-        },
+        } as z.infer<typeof formSchema>),
     validators: {
-      onSubmit: isEdit ? editFormSchema : createFormSchema,
+      onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Submitting flow:", value);
-      // if (!isEdit) addFlow(createFlowSchema.parse(value));
+      console.log("Form submitted with value:", value);
 
       if (!isEdit) {
-        const result = await addFlow(createFlowSchema.parse(value)).unwrap();
+        console.log("NOT EDIT, CREATING FLOW....");
+        const result = await createFlow(createFlowSchema.parse(value)).unwrap();
         // if successful, close the dialog
         if (result && setShowForm) {
+          setShowForm(false);
+          form.reset();
+        }
+      }
+
+      if (isEdit) {
+        const steps = value.steps;
+        const newSteps = steps.filter((step) => !step.id);
+        const existingSteps = steps.filter((step) => step.id);
+
+        const originalSteps = initialLoad?.steps || [];
+
+        const flowStepActivitiesToDelete = existingSteps
+          .map((step) => {
+            const originalStep = originalSteps.find((s) => s.id === step.id);
+            if (originalStep) {
+              const removedActivities = originalStep.activities.filter(
+                (originalActivity) =>
+                  !step.activities.includes(originalActivity.activity.id),
+              );
+              return removedActivities.map((activity) => activity.id);
+            }
+            return [];
+          })
+          .flat()
+          .filter(Boolean);
+
+        const flowStepActivitiesToCreate = existingSteps
+          .map((step) => {
+            const originalStep = originalSteps.find((s) => s.id === step.id);
+            if (originalStep) {
+              const flowStepActivitiesToCreate: {
+                flowActivityId: string;
+                flowStepId: string;
+              }[] = [];
+              const originalStepActivitiesIds = originalStep.activities.map(
+                (a) => a.activity.id,
+              );
+              step.activities.forEach((activityId) => {
+                if (!originalStepActivitiesIds.includes(activityId)) {
+                  flowStepActivitiesToCreate.push({
+                    flowActivityId: activityId,
+                    flowStepId: step.id!,
+                  });
+                }
+              });
+
+              return flowStepActivitiesToCreate;
+            }
+            return [];
+          })
+          .flat()
+          .filter(Boolean);
+
+        const updateFlowPromise = updateFlow(
+          updateFlowSchema.parse(value),
+        ).unwrap();
+
+        let createNewFlowStepsPromise: Promise<FlowStep[]> = Promise.resolve(
+          [],
+        );
+        if (newSteps.length > 0) {
+          console.log("Creating new flow steps....");
+          createNewFlowStepsPromise = Promise.all(
+            newSteps.map((step) =>
+              createFlowStep(
+                createFlowStepSchema.parse({ ...step, flowId: value.id }),
+              ).unwrap(),
+            ),
+          );
+        }
+
+        let updateExistingFlowStepsPromise: Promise<FlowStep[]> =
+          Promise.resolve([]);
+        if (existingSteps.length > 0) {
+          console.log("Updating existing flow steps....");
+          console.log("Existing Steps to update:", existingSteps);
+          updateExistingFlowStepsPromise = Promise.all(
+            existingSteps.map((step) => {
+              const { activities, ...data } = step;
+              return updateFlowStep(updateFlowStepSchema.parse(data)).unwrap();
+            }),
+          );
+        }
+
+        let deleteRemovedStepActivitiesPromise: Promise<void[]> =
+          Promise.resolve([]);
+        if (flowStepActivitiesToDelete.length > 0) {
+          console.log("Deleting removed flow step activities....");
+          deleteRemovedStepActivitiesPromise = Promise.all(
+            flowStepActivitiesToDelete.map((id) =>
+              deleteFlowStepActivity(idParamSchema.parse({ id })).unwrap(),
+            ),
+          );
+        }
+
+        let createStepActivitiesPromise: Promise<FlowStepActivity[]> =
+          Promise.resolve([]);
+        if (flowStepActivitiesToCreate.length > 0) {
+          createStepActivitiesPromise = Promise.all(
+            flowStepActivitiesToCreate.map((c) =>
+              createFlowStepActivity(
+                createFlowStepActivitySchema.parse(c),
+              ).unwrap(),
+            ),
+          );
+        }
+
+        const x = await Promise.all([
+          updateFlowPromise,
+          updateExistingFlowStepsPromise,
+          createNewFlowStepsPromise,
+          deleteRemovedStepActivitiesPromise,
+          createStepActivitiesPromise,
+        ]);
+
+        // if successful, close the dialog
+        if (x && setShowForm) {
           setShowForm(false);
           form.reset();
         }
@@ -219,10 +344,7 @@ const DialogForm = ({
                     <>
                       {field.state.value.map((_, i) => {
                         return (
-                          <FieldGroup
-                            key={`flow-step-field-group-${i}`}
-                            className=""
-                          >
+                          <FieldGroup key={`flow-step-field-group-${i}`}>
                             {/** Flow Activity Name */}
                             <FieldLabel>{`Step ${i + 1}`}</FieldLabel>
                             <form.Field

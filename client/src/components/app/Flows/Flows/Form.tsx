@@ -13,7 +13,7 @@ import useMutationToast from "@/hooks/useMutationToast";
 import {
   useGetFlowActivitiesQuery,
 } from "@/services/flow-activities/flow-activities.api";
-import { useAddFlowMutation } from "@/services/flows/flows.api";
+import { useCreateFlowMutation } from "@/services/flows/flows.api";
 import { createFlowSchema } from "@/services/flows/flows.type";
 import { useForm } from "@tanstack/react-form";
 
@@ -29,7 +29,7 @@ const formSchema = z.object({
 });
 
 const Form = () => {
-  const [addFlow, { isError, isSuccess, reset }] = useAddFlowMutation();
+  const [createFlow, { isError, isSuccess, reset }] = useCreateFlowMutation();
 
   const { data: flowActivities } = useGetFlowActivitiesQuery();
 
@@ -53,7 +53,7 @@ const Form = () => {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      addFlow(createFlowSchema.parse(value));
+      createFlow(createFlowSchema.parse(value));
     },
   });
 

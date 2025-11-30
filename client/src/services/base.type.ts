@@ -1,5 +1,7 @@
 import z from "zod";
 
+export const DEFAULT_PAGINATION_LIMIT = 20;
+
 export const baseSchema = z.object({
   id: z.uuid(),
   createdAt: z.string().optional(),
@@ -7,10 +9,12 @@ export const baseSchema = z.object({
   createdBy: z.string().nullable().optional(),
   updatedBy: z.string().nullable().optional(),
 });
+export type BaseType = z.infer<typeof baseSchema>;
 
 export const namedBaseSchema = baseSchema.extend({
   name: z.string(),
 });
+export type NamedBaseType = z.infer<typeof namedBaseSchema>;
 
 export const paginationArgSchema = z
   .object({
@@ -18,6 +22,7 @@ export const paginationArgSchema = z
     limit: z.number().optional(),
   })
   .optional();
+export type PaginationArgs = z.infer<typeof paginationArgSchema>;
 
 export const paginatedResponseSchema = <T extends z.ZodTypeAny>(
   itemSchema: T,
@@ -31,10 +36,6 @@ export const paginatedResponseSchema = <T extends z.ZodTypeAny>(
     hasNextPage: z.boolean(),
     hasPrevPage: z.boolean(),
   });
-
-export type BaseType = z.infer<typeof baseSchema>;
-export type NamedBaseType = z.infer<typeof namedBaseSchema>;
-
 export type PaginatedResponse<T> = {
   items: T[];
   totalCount: number;
@@ -45,6 +46,7 @@ export type PaginatedResponse<T> = {
   hasPrevPage: boolean;
 };
 
-export type PaginationArgs = z.infer<typeof paginationArgSchema>;
-
-export const DEFAULT_PAGINATION_LIMIT = 20;
+export const idParamSchema = z.object({
+  id: z.uuid(),
+});
+export type IdParam = z.infer<typeof idParamSchema>;

@@ -10,7 +10,6 @@ type Props = {
 };
 
 const MultipleSelectDemo = ({ data, field, label, placeholder }: Props) => {
-  console.log("field: ", field.state.value);
   return (
     <div className="space-y-2 w-full">
       {label && <Label>{label}</Label>}

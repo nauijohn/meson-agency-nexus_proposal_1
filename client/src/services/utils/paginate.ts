@@ -6,8 +6,8 @@ export function paginate<T>(
   items: T[],
   meta: FetchBaseQueryMeta,
 ): PaginatedResponse<T> {
-  console.log("Items: ", items);
-  console.log("meta: ", meta);
+  // console.log("Items: ", items);
+  // console.log("meta: ", meta);
   return {
     items,
     totalCount: parseInt(
