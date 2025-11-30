@@ -7,7 +7,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { TOTAL_KEY } from "../common/bases";
-import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
+import {
+  applyPaginationAndSorting,
+} from "../common/utils/repository.pagination";
 import { CreateFlowStepActivityDto } from "./dto/create-flow-step-activity.dto";
 import { QueryFlowStepActivityDto } from "./dto/query-flow-step-activity.dto";
 import { UpdateFlowStepActivityDto } from "./dto/update-flow-step-activity.dto";
@@ -40,8 +42,8 @@ export class FlowStepActivitiesService {
     return entities;
   }
 
-  async findOne(id: string): Promise<FlowStepActivity | null> {
-    return this.repository.findOne({ where: { id } });
+  async findOne(id: string): Promise<FlowStepActivity> {
+    return this.repository.findOneOrFail({ where: { id } });
   }
 
   async update(

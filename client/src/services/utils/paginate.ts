@@ -4,8 +4,10 @@ import type { PaginatedResponse } from "../base.type";
 
 export function paginate<T>(
   items: T[],
-  meta: FetchBaseQueryMeta | undefined,
+  meta: FetchBaseQueryMeta,
 ): PaginatedResponse<T> {
+  console.log("Items: ", items);
+  console.log("meta: ", meta);
   return {
     items,
     totalCount: parseInt(

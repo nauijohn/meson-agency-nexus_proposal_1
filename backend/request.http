@@ -47,6 +47,14 @@ Authorization: Bearer {{accessToken}}
 ###
 GET {{host}}/twilio/token
 
+###
+POST {{host}}/twilio/call-status
+Content-Type: application/json
+
+{
+	"Test": "TEST"
+}
+
 #######################################
 ##              Clients              ##
 #######################################
@@ -265,3 +273,6 @@ GET {{host}}/client-client-contacts
 
 ###
 GET {{host}}/campaign-contact-flow-steps
+
+###
+GET {{host}}/twilio/test

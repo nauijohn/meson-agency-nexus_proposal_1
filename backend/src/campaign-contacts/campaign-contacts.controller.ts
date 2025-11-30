@@ -33,7 +33,6 @@ export class CampaignContactsController {
   @Get()
   @PaginationHeaders()
   findAll(@Query() query: QueryCampaignContactDto) {
-    console.log("Query Params:", query);
     return this.service.findAll(query);
   }
 

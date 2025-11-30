@@ -1,16 +1,26 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
 import { ClsService } from "nestjs-cls";
-import { Repository, SelectQueryBuilder } from "typeorm";
+import {
+  Repository,
+  SelectQueryBuilder,
+} from "typeorm";
 
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { JwtUser } from "../auth/entities/jwt-user.entity";
 import { TOTAL_KEY } from "../common/bases";
 import { CLS_USER } from "../common/constants";
-import { applyPaginationAndSorting } from "../common/utils/query-builder.pagination";
-import { EmployeeRoleType } from "../employee-roles/entities/employee-role.entity";
+import {
+  applyPaginationAndSorting,
+} from "../common/utils/query-builder.pagination";
+import {
+  EmployeeRoleType,
+} from "../employee-roles/entities/employee-role.entity";
 import { RoleType } from "../roles/entities";
 import { CreateCampaignDto } from "./dto/create-campaign.dto";
 import { QueryCampaignDto } from "./dto/query-campaign.dto";
@@ -39,8 +49,7 @@ export class CampaignsService {
       .leftJoinAndSelect("client.contacts", "contacts")
       .leftJoinAndSelect("client.employeeClients", "employeeClients") // 👈 important join
       .leftJoinAndSelect("campaign.flow", "flow")
-      .leftJoinAndSelect("campaign.campaignFlowSteps", "campaignFlowSteps")
-      .leftJoinAndSelect("campaign.campaignContacts", "campaignContacts");
+      .leftJoinAndSelect("campaign.campaignFlowSteps", "campaignFlowSteps");
 
     qb = this.applyRoleFilter(qb);
 

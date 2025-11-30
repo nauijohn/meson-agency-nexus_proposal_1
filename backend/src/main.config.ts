@@ -15,10 +15,25 @@ export function config(app: INestApplication<any>): void {
 
   app.setGlobalPrefix("api");
 
+  // app.enableCors();
+
   app.enableCors({
-    origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    allowedHeaders: "*",
+    // allowedHeaders: "*",
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    credentials: true,
+    exposedHeaders: [
+      "Set-Cookie",
+      "X-Powered-By",
+      "X-Request-Id",
+      "X-Total-Count",
+      "X-Page",
+      "X-Limit",
+      "X-Total-Pages",
+      "X-Has-Next",
+      "X-Has-Previous",
+    ],
+    origin: "http://localhost:5173", // your React app
   });
 
   app.useGlobalPipes(

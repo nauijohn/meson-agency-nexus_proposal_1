@@ -69,6 +69,7 @@ export class AuthService {
     user = await this.usersService.update(user, {
       refreshToken: tokens.refreshToken,
     });
+
     if (!user) return;
 
     return tokens;

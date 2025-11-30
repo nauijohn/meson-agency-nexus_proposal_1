@@ -1,13 +1,16 @@
+import { map, Subject } from "rxjs";
 import twilio, { twiml } from "twilio";
 import { VoiceGrant } from "twilio/lib/jwt/AccessToken";
 
-import { Body, Controller, Get, Header, Post } from "@nestjs/common";
+import { Body, Controller, Get, Header, Post, Sse } from "@nestjs/common";
 
 import { Public } from "../common/decorators/is-public.decorator";
 
 @Public()
 @Controller("twilio")
 export class TwilioController {
+  private stream$ = new Subject<string>();
+
   @Get("token")
   @Header("Content-Type", "application/json")
   getToken() {
@@ -33,6 +36,21 @@ export class TwilioController {
     return { token: token.toJwt() };
   }
 
+  // FRONTEND CONNECTS HERE
+  @Public()
+  @Sse()
+  sendEvents() {
+    return this.stream$.pipe(
+      map((data) => ({ data })), // SSE format
+    );
+  }
+
+  @Post("call-status")
+  handleCallStatus(@Body() body: any) {
+    console.log("Received call status update from Twilio:", body);
+    this.stream$.next(JSON.stringify(body));
+  }
+
   @Post("call")
   @Header("Content-Type", "text/xml")
   makeCall(@Body() body: { To: string }) {
@@ -41,22 +59,13 @@ export class TwilioController {
     const voiceResponse = new twiml.VoiceResponse();
 
     voiceResponse.dial().number(body.To);
+    voiceResponse.start().stream({
+      name: "Twilio Stream",
+      url: "wss://epiploic-temperance-unwhimperingly.ngrok-free.dev/twilio-stream",
+    });
 
     console.log("Voice Response:", voiceResponse.toString());
 
     return voiceResponse.toString();
   }
 }
-
-// backend_service  | Body: {
-// backend_service  |   ApplicationSid: 'APab0dad0b28675787f164557faabb5374',
-// backend_service  |   ApiVersion: '2010-04-01',
-// backend_service  |   Called: '',
-// backend_service  |   Caller: 'client:anthony',
-// backend_service  |   CallStatus: 'ringing',
-// backend_service  |   From: '+61468167473',
-// backend_service  |   To: '+61493233059',
-// backend_service  |   CallSid: 'CAa8434805d9ff71ce48a346232c99b070',
-// backend_service  |   Direction: 'inbound',
-// backend_service  |   AccountSid: 'AC8e7ea42e23ccd3e369665d9d3ea0d9f2'
-// backend_service  | }

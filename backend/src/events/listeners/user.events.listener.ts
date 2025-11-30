@@ -2,12 +2,16 @@ import { Injectable } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 
 import { UserCreatedEvent, UserEvents } from "../../common/events/user.events";
+import { LoggerService } from "../../common/global/logger/logger.service";
 import { EmployeesService } from "../../employees/employees.service";
 import { RoleType } from "../../roles/entities";
 
 @Injectable()
 export class UserEventsListener {
-  constructor(private readonly employeesService: EmployeesService) {}
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly employeesService: EmployeesService,
+  ) {}
 
   @OnEvent(UserEvents.Created)
   handleUserCreationEvent(payload: UserCreatedEvent) {
@@ -16,22 +20,24 @@ export class UserEventsListener {
     for (const role of roles) {
       switch (role) {
         case RoleType.EMPLOYEE:
-          console.log(`Employee role assigned to user with ID: ${userId}`);
           this.employeesService
             .create({
               userId: userId,
               employeeRoles: employeeRoles || [],
             })
             .then((employee) => {
-              console.log("Employee record created for user ID: ", employee);
+              this.logger.log(
+                "Employee record created for user ID: ",
+                employee,
+              );
             })
             .catch((error) => {
-              console.error("Error creating employee record: ", error);
+              this.logger.error("Error creating employee record: ", error);
             });
           break;
 
         default:
-          console.log(`No specific actions for role: ${role}`);
+          this.logger.warn(`No specific actions for role: ${role}`);
           break;
       }
     }

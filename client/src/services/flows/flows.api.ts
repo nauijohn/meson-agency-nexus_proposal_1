@@ -1,3 +1,5 @@
+import type { FetchBaseQueryMeta } from "@reduxjs/toolkit/query";
+
 import api, {
   API_TAGS,
   HttpMethods,
@@ -29,22 +31,23 @@ const flowsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     addFlow: builder.mutation<Flow, Partial<CreateFlow>>({
       invalidatesTags: [API_TAGS.FLOWS],
-      query: (body) => ({
-        url: URL(),
-        method: HttpMethods.POST,
-        body,
-      }),
+      query: (body) => {
+        return {
+          url: URL(),
+          method: HttpMethods.POST,
+          body,
+        };
+      },
     }),
 
     getFlows: builder.query<PaginatedResponse<Flow>, PaginationArgs | void>({
       providesTags: [API_TAGS.FLOWS],
       query: (args) => {
-        console.log("Fetching flows with args:", args);
         return URL(args);
       },
       rawResponseSchema: flowSchema.array(),
       responseSchema: paginatedResponseSchema(flowSchema),
-      transformResponse: (response: Flow[], meta) => {
+      transformResponse: (response: Flow[], meta: FetchBaseQueryMeta) => {
         return paginate(response, meta);
       },
     }),

@@ -1,13 +1,16 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
 import { ClsService } from "nestjs-cls";
-import { Repository } from "typeorm";
+import { FindOptionsWhere, Repository } from "typeorm";
 
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { JwtUser } from "../auth/entities/jwt-user.entity";
 import { TOTAL_KEY } from "../common/bases";
+import { CLS_USER } from "../common/constants";
 import { applyPaginationAndSorting } from "../common/utils/repository.pagination";
+import { EmployeeRoleType } from "../employee-roles/entities/employee-role.entity";
 import { RoleType } from "../roles/entities";
 import { RolesService } from "../roles/roles.service";
 import { CreateUserDto, UpdateUserDto } from "./dto";
@@ -55,27 +58,36 @@ export class UsersService {
   }
 
   async findOne(id: string, query?: QueryUserDto): Promise<User | null> {
-    const qb = this.repository
-      .createQueryBuilder("user")
-      .where("user.id = :id", { id })
-      .leftJoinAndSelect("user.refreshToken", "refreshToken")
-      .leftJoinAndSelect("user.userClients", "userClients")
-      .leftJoinAndSelect("userClients.client", "client")
-      .leftJoinAndSelect("client.campaigns", "campaign");
+    // const qb = this.repository
+    //   .createQueryBuilder("user")
+    //   .where("user.id = :id", { id })
+    //   .leftJoinAndSelect("user.refreshToken", "refreshToken")
+    //   .leftJoinAndSelect("user.userClients", "userClients")
+    //   .leftJoinAndSelect("userClients.client", "client")
+    //   .leftJoinAndSelect("client.campaigns", "campaign");
 
-    if (query?.includeUnassignedClients) {
-      qb.leftJoinAndMapMany(
-        "user.unassignedClients",
-        "Client",
-        "unassignedClient",
-        `unassignedClient.id NOT IN (
-          SELECT uc.client_id FROM user_clients uc WHERE uc.user_id = :id
-        )`,
-        { id },
-      );
-    }
+    // if (query?.includeUnassignedClients) {
+    //   qb.leftJoinAndMapMany(
+    //     "user.unassignedClients",
+    //     "Client",
+    //     "unassignedClient",
+    //     `unassignedClient.id NOT IN (
+    //       SELECT uc.client_id FROM user_clients uc WHERE uc.user_id = :id
+    //     )`,
+    //     { id },
+    //   );
+    // }
 
-    return qb.getOne();
+    // return qb.getOne();
+
+    return this.repository.findOneOrFail({
+      where: { ...this.applyRoleFilter(id) },
+      relations: {
+        refreshToken: true,
+        employee: true,
+        roles: true,
+      },
+    });
   }
 
   async update(entity: User, dto: UpdateUserDto): Promise<User> {
@@ -101,5 +113,30 @@ export class UsersService {
         },
       },
     });
+  }
+
+  private applyRoleFilter(
+    id?: string,
+  ): FindOptionsWhere<User> | FindOptionsWhere<User>[] | undefined {
+    const user = this.cls.get<JwtUser>(CLS_USER);
+
+    if (
+      user.roles.includes(RoleType.SUPER_ADMIN) ||
+      user.roles.includes(RoleType.ADMIN) ||
+      user.employeeRoles?.includes(EmployeeRoleType.LEAD)
+    )
+      return { id };
+
+    if (user.roles.includes(RoleType.EMPLOYEE)) {
+      if (id && id !== user.id) {
+        throw new ForbiddenException("Access denied.");
+      }
+
+      return {
+        id,
+      };
+    }
+
+    throw new ForbiddenException("Unknown role.");
   }
 }

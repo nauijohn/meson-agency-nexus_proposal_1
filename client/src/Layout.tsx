@@ -8,12 +8,14 @@ const Layout = () => {
   return (
     <>
       <Navbar05 />
-      <SidebarProvider>
-        <AppSidebar />
-        <main className="relative mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-7xl overflow-hidden">
-          <Outlet /> {/* child route pages render here */}
-        </main>
-      </SidebarProvider>
+      <main>
+        <SidebarProvider>
+          <AppSidebar />
+          <section className="relative mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-7xl overflow-hidden">
+            <Outlet /> {/* child route pages render here */}
+          </section>
+        </SidebarProvider>
+      </main>
     </>
   );
 };

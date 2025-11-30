@@ -1,3 +1,5 @@
+import type { CookieOptions, Response } from "express";
+
 import {
   BadRequestException,
   Body,
@@ -7,6 +9,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Post,
+  Res,
   UnprocessableEntityException,
   UseGuards,
 } from "@nestjs/common";
@@ -16,7 +19,7 @@ import { RefreshTokensService } from "../refresh-tokens/refresh-tokens.service";
 import { RoleType } from "../roles/entities";
 import { User, UsersService } from "../users/";
 import { AuthService } from "./auth.service";
-import { BearerToken } from "./decorators/bearer-token.decorator";
+import { CookieToken } from "./decorators/cookie-token.decorator";
 import { ReqUser } from "./decorators/req-user.decorator";
 import { SignUpDto } from "./dto";
 import { JwtRefreshUser } from "./entities/jwt-refresh-user.entity";
@@ -24,6 +27,14 @@ import { JwtUser } from "./entities/jwt-user.entity";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { RefreshTokenGuard } from "./guards/refresh-token.guard";
+
+const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: false,
+  sameSite: "lax",
+  path: "/", // send for all routes
+  maxAge: 1000 * 60 * 60 * 24 * 7,
+};
 
 @Controller("auth")
 export class AuthController {
@@ -66,7 +77,10 @@ export class AuthController {
   @Post("sign-in")
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
-  async signIn(@ReqUser() user: User) {
+  async signIn(
+    @Res({ passthrough: true }) res: Response,
+    @ReqUser() user: User,
+  ) {
     let { refreshToken } = user;
     const tokens = this.authService.createTokens(user);
 
@@ -82,8 +96,8 @@ export class AuthController {
     }
 
     if (!refreshToken) throw new InternalServerErrorException();
-
-    return tokens;
+    res.cookie("refreshToken", tokens.refreshToken, cookieOptions);
+    return { accessToken: tokens.accessToken };
   }
 
   @Public()
@@ -100,15 +114,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenGuard)
   async refreshToken(
+    @Res({ passthrough: true }) res: Response,
     @ReqUser() reqUser: JwtRefreshUser,
-    @BearerToken() bearerToken: string,
+    @CookieToken() refreshToken: string,
   ) {
     const tokens = await this.authService.refreshTokens(
       reqUser.id,
-      bearerToken,
+      refreshToken,
     );
     if (!tokens) throw new InternalServerErrorException("Invalid Token");
-    return tokens;
+    res.cookie("refreshToken", tokens.refreshToken, cookieOptions);
+    return { accessToken: tokens.accessToken };
   }
 
   @Get("me")

@@ -1,5 +1,6 @@
 import type { Mapper } from "automapper-core";
 import { InjectMapper } from "automapper-nestjs";
+import { Request } from "express";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { Injectable, UnauthorizedException } from "@nestjs/common";
@@ -9,6 +10,13 @@ import { PassportStrategy } from "@nestjs/passport";
 import { LoggerService } from "../../common/global/logger/logger.service";
 import { JwtRefreshUser } from "../entities/jwt-refresh-user.entity";
 import { JwtRefreshPayload } from "../payload/jwt-refresh.payload";
+
+const cookieExtractor = (req: Request): string | null => {
+  if (req && req.cookies && req.cookies.refreshToken) {
+    return req.cookies.refreshToken as string;
+  }
+  return null;
+};
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -21,7 +29,8 @@ export class RefreshTokenStrategy extends PassportStrategy(
     configService: ConfigService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+      // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.getOrThrow("JWT_REFRESH_TOKEN_SECRET"),
       passReqToCallback: false,
     });

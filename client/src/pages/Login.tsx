@@ -29,7 +29,6 @@ import { useForm } from "@tanstack/react-form";
 const Login = () => {
   const [signInResult, setSignInResult] = useState<Tokens>({
     accessToken: "",
-    refreshToken: "",
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();

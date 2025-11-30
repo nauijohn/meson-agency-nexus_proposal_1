@@ -11,7 +11,6 @@ import { Reflector } from "@nestjs/core";
 import { LoggerService } from "../../common/global/logger/logger.service";
 import { RoleType } from "../../roles/entities";
 import { ROLES_KEY } from "../decorators/roles.decorator";
-import { JwtUser } from "../entities/jwt-user.entity";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -30,9 +29,11 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) return true;
 
     const req = context.switchToHttp().getRequest<Request>();
-    const user = req.user satisfies JwtUser;
+    const user = req.user as { roles: RoleType[] | undefined };
 
-    const hasRole = requiredRoles.some((role) => user?.roles?.includes(role));
+    const roles = user?.roles;
+
+    const hasRole = requiredRoles.some((role) => roles?.includes(role));
 
     if (!hasRole) {
       throw new ForbiddenException(

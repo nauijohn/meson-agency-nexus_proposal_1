@@ -28,8 +28,6 @@ export class RefreshTokensSubscriber
   }
 
   async beforeUpdate(event: UpdateEvent<RefreshToken>): Promise<void> {
-    console.log("Event log: beforeUpdate RefreshToken...");
-
     if (event.entity?.token) {
       event.entity.token = await hash(String(event.entity.token));
     }

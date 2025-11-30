@@ -72,7 +72,6 @@ export class ClientsService {
     | FindOptionsWhere<Client>[]
     | undefined {
     const user = this.cls.get<JwtUser>(CLS_USER);
-    console.log("Applying role filter for user: ", user);
 
     if (
       user.roles.includes(RoleType.SUPER_ADMIN) ||

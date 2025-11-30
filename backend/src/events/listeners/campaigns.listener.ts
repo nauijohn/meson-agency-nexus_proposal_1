@@ -8,11 +8,13 @@ import {
   CampaignEvents,
   CampaignFlowAssignedEvent,
 } from "../../common/events/campaign.events";
+import { LoggerService } from "../../common/global/logger/logger.service";
 import { FlowsService } from "../../flows/flows.service";
 
 @Injectable()
 export class CampaignsListener {
   constructor(
+    private readonly logger: LoggerService,
     private readonly flowsService: FlowsService,
     private readonly campaignsService: CampaignsService,
     private readonly campaignFlowStepsService: CampaignFlowStepsService,
@@ -37,10 +39,10 @@ export class CampaignsListener {
       }),
     )
       .then(() => {
-        console.log("Campaign contact flow steps created successfully");
+        this.logger.log("Campaign contact flow steps created successfully");
       })
       .catch((error) => {
-        console.error("Error creating campaign contact flow steps:", error);
+        this.logger.error("Error creating campaign contact flow steps:", error);
       });
 
     const flowStepIds = flow?.steps.map((step) => step.id) || [];
@@ -59,10 +61,10 @@ export class CampaignsListener {
       }),
     )
       .then((cfs) => {
-        console.log("Campaign flow steps created successfully: ", cfs);
+        this.logger.log("Campaign flow steps created successfully: ", cfs);
       })
       .catch((error) => {
-        console.error("Error creating campaign flow steps:", error);
+        this.logger.error("Error creating campaign flow steps:", error);
       });
   }
 }

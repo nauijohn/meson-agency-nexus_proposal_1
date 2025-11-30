@@ -16,6 +16,7 @@ const authApi = api.injectEndpoints({
         url: URL("sign-in"),
         method: HttpMethods.POST,
         body,
+        credentials: "include", // required if refresh token is in cookies
       }),
       responseSchema: tokensSchema,
     }),

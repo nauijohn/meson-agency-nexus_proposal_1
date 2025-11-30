@@ -11,7 +11,9 @@ import Admin from "./pages/Admin";
 import Admin2 from "./pages/Admin2";
 import AdminHome from "./pages/AdminHome";
 import Flows from "./pages/Flows";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
+import TwilioStreamPage from "./pages/TwilioStream";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +27,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AdminHome />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/2",
+        element: (
+          <ProtectedRoute>
+            <Home />
           </ProtectedRoute>
         ),
       },
@@ -55,7 +65,15 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/twilio-stream",
+        element: <TwilioStreamPage />,
+      },
     ],
+  },
+  {
+    path: "/twilio-stream",
+    element: <TwilioStreamPage />,
   },
   { path: "/login", element: <Login /> },
 ]);

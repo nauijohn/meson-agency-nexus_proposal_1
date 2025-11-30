@@ -23,7 +23,6 @@ export class ClientContactsController {
 
   @Post()
   create(@Body() dto: CreateClientContactDto) {
-    console.log("DTO", dto);
     return this.service.create(dto);
   }
 

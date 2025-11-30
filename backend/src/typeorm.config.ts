@@ -10,7 +10,7 @@ export const typeOrmConfigFactory = (
   const isDev = configService.get<string>("NODE_ENV") === "development";
 
   return {
-    type: "postgres",
+    type: "mysql",
     host: configService.get("DB_HOST"),
     port: +configService.get("DB_PORT"),
     username: configService.get("DB_USERNAME"),
@@ -22,8 +22,10 @@ export const typeOrmConfigFactory = (
     synchronize: isDev,
     autoLoadEntities: isDev,
     dropSchema: false,
-    ssl: {
-      rejectUnauthorized: false, // or true if you import the cert
-    },
+    ssl: isDev
+      ? undefined
+      : {
+          rejectUnauthorized: false, // or true if you import the cert
+        },
   };
 };

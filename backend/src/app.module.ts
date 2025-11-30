@@ -28,6 +28,7 @@ import { EmployeesModule } from "./employees/employees.module";
 import { EventsModule } from "./events/events.module";
 import { ExperimentsModule } from "./experiments/experiments.module";
 import { FlowActivitiesModule } from "./flow-activities/flow-activities.module";
+import { FlowStepActivitiesModule } from "./flow-step-activities/flow-step-activities.module";
 import { FlowStepsModule } from "./flow_steps/flow-steps.module";
 import { FlowsModule } from "./flows/flows.module";
 import { RefreshTokensModule } from "./refresh-tokens/refresh-tokens.module";
@@ -97,6 +98,7 @@ import { UsersModule } from "./users";
     CampaignFlowStepsModule,
     ClientContactsModule,
     EmployeesModule,
+    FlowStepActivitiesModule,
   ],
   providers: [
     {

@@ -17,10 +17,6 @@ export class JsonWebTokenExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const path = `${httpAdapter.getRequestUrl(ctx.getRequest())}`;
 
-    console.log("From JsonWebTokenExceptionFilter....");
-
-    console.log("exception: ", JSON.stringify(exception));
-
     const responseBody = {
       message: exception.message ?? "Unauthorized",
       path,

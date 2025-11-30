@@ -7,7 +7,7 @@ export const signInSchema = z.object({
 
 export const tokensSchema = z.object({
   accessToken: z.string(),
-  refreshToken: z.string(),
+  // refreshToken: z.undefined(),
 });
 
 export const meSchema = z.object({

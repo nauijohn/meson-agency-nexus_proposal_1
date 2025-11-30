@@ -114,7 +114,16 @@ const DialogForm = ({
     },
     onSubmit: async ({ value }) => {
       console.log("Submitting flow:", value);
-      if (!isEdit) addFlow(createFlowSchema.parse(value));
+      // if (!isEdit) addFlow(createFlowSchema.parse(value));
+
+      if (!isEdit) {
+        const result = await addFlow(createFlowSchema.parse(value)).unwrap();
+        // if successful, close the dialog
+        if (result && setShowForm) {
+          setShowForm(false);
+          form.reset();
+        }
+      }
     },
   });
 
@@ -132,7 +141,6 @@ const DialogForm = ({
       <Dialog
         open={showForm}
         onOpenChange={(open) => {
-          console.log("open: ", open);
           if (setShowForm) {
             if (!open) {
               console.log("closing ....");
@@ -164,7 +172,11 @@ const DialogForm = ({
             }}
           >
             <DialogHeader>
-              <DialogTitle className="mb-5">Create New Flow</DialogTitle>
+              {isEdit ? (
+                <DialogTitle className="mb-5">Edit Flow</DialogTitle>
+              ) : (
+                <DialogTitle className="mb-5">Create New Flow</DialogTitle>
+              )}
               {/* <DialogDescription>
                 Make changes to your profile here. Click save when you&apos;re
                 done.
