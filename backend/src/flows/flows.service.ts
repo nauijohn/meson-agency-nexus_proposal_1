@@ -24,6 +24,9 @@ export class FlowsService {
 
   async create(dto: CreateFlowDto): Promise<Flow> {
     const entity = this.mapper.map(dto, CreateFlowDto, Flow);
+    console.log("CREATED ENTITY:", JSON.stringify(entity, null, 2));
+    console.log("CREATED ENTITY:", entity);
+    console.log("entity.steps[0]: ", entity.steps[0]);
     return this.repository.save(entity);
   }
 
@@ -32,6 +35,12 @@ export class FlowsService {
       relations: {
         steps: {
           activities: true,
+        },
+      },
+      relationLoadStrategy: "query", // << KEY — enables ordered loading
+      order: {
+        steps: {
+          order: "ASC",
         },
       },
       ...applyPaginationAndSorting(query),
@@ -51,6 +60,7 @@ export class FlowsService {
 
   async update(entity: Flow, dto: UpdateFlowDto): Promise<Flow> {
     this.mapper.mutate(dto, entity, UpdateFlowDto, Flow);
+    console.log("UPDATED ENTITY:", entity);
     return this.repository.save(entity);
   }
 

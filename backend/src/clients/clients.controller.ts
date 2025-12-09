@@ -1,5 +1,3 @@
-import type { Request } from "express";
-
 import {
   Body,
   Controller,
@@ -7,14 +5,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   NotFoundException,
   Param,
   Patch,
   Post,
   Query,
 } from "@nestjs/common";
-import { REQUEST } from "@nestjs/core";
 
 import { CheckAbilities } from "../auth/decorators/check-abilities.decorator";
 import { Action } from "../auth/permissions/casl-ability.factory";
@@ -27,10 +23,7 @@ import { Client } from "./entities/client.entity";
 
 @Controller("clients")
 export class ClientsController {
-  constructor(
-    private readonly service: ClientsService,
-    @Inject(REQUEST) private readonly request: Request,
-  ) {}
+  constructor(private readonly service: ClientsService) {}
 
   @Post()
   @CheckAbilities({ action: Action.Create, subject: Client })

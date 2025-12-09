@@ -5,7 +5,7 @@ import { FlowActivity } from "../../flow-activities/entities/flow-activity.entit
 import { FlowStep } from "../../flow_steps/entities/flow-step.entity";
 
 export abstract class FlowStepActivityRelationsEntity extends BaseEntity {
-  @ManyToOne(() => FlowStep, (step) => step.activities)
+  @ManyToOne(() => FlowStep, (step) => step.activities, { onDelete: "CASCADE" })
   flowStep: FlowStep;
 
   @ManyToOne(() => FlowActivity, { eager: true })

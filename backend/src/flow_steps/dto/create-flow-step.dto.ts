@@ -3,8 +3,9 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
-  ValidateNested,
+  IsUUID,
 } from "class-validator";
 
 export class CreateFlowStepDto {
@@ -19,6 +20,10 @@ export class CreateFlowStepDto {
   order: number;
 
   @IsArray()
-  @ValidateNested({ each: true })
+  @IsUUID("4", { each: true })
   activities: string[];
+
+  @IsOptional()
+  @IsUUID()
+  flowId?: string;
 }

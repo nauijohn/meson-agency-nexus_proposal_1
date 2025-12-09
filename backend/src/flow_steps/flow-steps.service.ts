@@ -26,12 +26,16 @@ export class FlowStepsService {
 
   async create(dto: CreateFlowStepDto): Promise<FlowStep> {
     const entity = this.mapper.map(dto, CreateFlowStepDto, FlowStep);
+    console.log("CREATED FLOW STEP:", entity);
     return this.repository.save(entity);
   }
 
   async findAll(query: QueryFlowStepDto): Promise<FlowStep[]> {
     const [entities, total] = await this.repository.findAndCount({
       ...applyPaginationAndSorting(query),
+      relations: {
+        activities: true,
+      },
     });
 
     this.cls.set(TOTAL_KEY, total);
@@ -45,6 +49,8 @@ export class FlowStepsService {
 
   async update(entity: FlowStep, dto: UpdateFlowStepDto): Promise<FlowStep> {
     this.mapper.mutate(dto, entity, UpdateFlowStepDto, FlowStep);
+    console.log("UPDATED FLOW STEP:", entity);
+    console.log("ACTIVITIES:", entity.activities);
     return this.repository.save(entity);
   }
 

@@ -25,19 +25,41 @@ export class FrontendAudioGateway implements OnGatewayConnection {
         }
         console.log("Received message from client:", msgString);
       });
-      ws.send("Welcome to the Twilio Stream Gateway!");
+      ws.send(
+        JSON.stringify({ message: "Welcome to the Twilio Stream Gateway!" }),
+      );
     });
   }
 
-  // handleConnection(client: WebSocket) {
-  //   console.log("Frontend client connected");
-
-  //   client.on("close", () => {
-  //     console.log("Frontend client disconnected");
-  //   });
-  // }
-
   broadcastAudio(audioBuffer: Buffer) {
+    // console.log("AUDIO BUFFER SIZE:", audioBuffer);
+    this.server.clients.forEach((client) => {
+      if (client.readyState === client.OPEN) {
+        client.send(audioBuffer); // send raw PCM
+      }
+    });
+  }
+
+  broadcastAudio2(audioBuffer: string) {
+    // console.log("AUDIO BUFFER SIZE:", audioBuffer);
+    this.server.clients.forEach((client) => {
+      if (client.readyState === client.OPEN) {
+        client.send(audioBuffer); // send raw PCM
+      }
+    });
+  }
+
+  broadcastAudio3(audioBuffer: Buffer<ArrayBuffer>) {
+    console.log("AUDIO BUFFER SIZE:", audioBuffer);
+    this.server.clients.forEach((client) => {
+      if (client.readyState === client.OPEN) {
+        client.send(audioBuffer); // send raw PCM
+      }
+    });
+  }
+
+  broadcastAudio4(audioBuffer: ArrayBuffer) {
+    console.log("AUDIO BUFFER SIZE:", audioBuffer);
     this.server.clients.forEach((client) => {
       if (client.readyState === client.OPEN) {
         client.send(audioBuffer); // send raw PCM
