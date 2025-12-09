@@ -1,79 +1,142 @@
-import {
-  useEffect,
-  useRef,
-} from "react";
+import { useEffect, useRef, useState } from "react";
+
+interface LiveCall {
+  callSid: string;
+  audioNode: AudioWorkletNode;
+}
 
 function TwilioStreamPage() {
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const pcmQueueRef = useRef<Float32Array[]>([]);
-  const isPlayingRef = useRef(false);
+  const [ready, setReady] = useState(false);
+  const [liveCalls, setLiveCalls] = useState<LiveCall[]>([]);
 
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+  const pcm16ToFloat32 = (pcm16: Int16Array) => {
+    const float32 = new Float32Array(pcm16.length);
+    for (let i = 0; i < pcm16.length; i++) {
+      float32[i] = (pcm16[i] / 32768) * 0.95; // reduce clipping
+    }
+    return float32;
+  };
+
+  const startAudio = async () => {
+    if (!audioCtxRef.current) return;
+    await audioCtxRef.current.resume();
+    setReady(true);
+    console.log("AudioContext resumed");
+  };
+
+  // -----------------------------
+  // WebSocket & AudioWorklet Setup
+  // -----------------------------
   useEffect(() => {
     const ws = new WebSocket(
       "wss://epiploic-temperance-unwhimperingly.ngrok-free.dev/twilio-audio",
     );
     ws.binaryType = "arraybuffer";
 
-    const audioCtx = new AudioContext();
+    const audioCtx = new AudioContext({ sampleRate: 8000 });
     audioCtxRef.current = audioCtx;
 
-    function playQueue() {
-      if (pcmQueueRef.current.length === 0) {
-        isPlayingRef.current = false;
-        return;
-      }
+    // Load AudioWorklet
+    audioCtx.audioWorklet
+      .addModule("/audio/stream-processor.js") // create this file in /public
+      .then(() => console.log("AudioWorklet loaded"))
+      .catch(console.error);
 
-      const chunk = pcmQueueRef.current.shift()!;
-      const buffer = audioCtx.createBuffer(1, chunk.length, 8000); // Twilio 8kHz
-      buffer.getChannelData(0).set(chunk);
-
-      const source = audioCtx.createBufferSource();
-      source.buffer = buffer;
-      source.connect(audioCtx.destination);
-      source.start();
-
-      source.onended = () => {
-        playQueue(); // play next chunk
-      };
-    }
+    ws.onopen = () => console.log("WS connected");
+    ws.onclose = () => console.log("WS closed");
+    ws.onerror = (err) => console.error("WS error:", err);
 
     ws.onmessage = async (event) => {
+      // -----------------------------
+      // Handle string messages safely
+      // -----------------------------
       if (typeof event.data === "string") {
-        // Could be logs, welcome messages, or control events
-        console.log("Text message from backend:", event.data);
+        let msg;
+        try {
+          msg = JSON.parse(event.data);
+        } catch {
+          console.warn("Skipping non-JSON message:", event.data);
+          return;
+        }
+
+        if (msg.type === "call-start") {
+          console.log("Call started:", msg.callSid);
+
+          if (!audioCtxRef.current || !ready) return;
+
+          const workletNode = new AudioWorkletNode(
+            audioCtxRef.current,
+            "stream-processor",
+          );
+          workletNode.connect(audioCtxRef.current.destination);
+
+          setLiveCalls((prev) => [
+            ...prev,
+            { callSid: msg.callSid, audioNode: workletNode },
+          ]);
+        }
+
+        if (msg.type === "call-end") {
+          console.log("Call ended:", msg.callSid);
+          setLiveCalls((prev) =>
+            prev.filter((c) => {
+              if (c.callSid === msg.callSid) {
+                c.audioNode.disconnect();
+                return false;
+              }
+              return true;
+            }),
+          );
+        }
+
         return;
       }
 
-      // Now we know it's binary (ArrayBuffer or Blob)
+      // -----------------------------
+      // Handle PCM16 audio chunks
+      // -----------------------------
       let arrayBuffer: ArrayBuffer;
-      if (event.data instanceof ArrayBuffer) {
-        arrayBuffer = event.data;
-      } else if (event.data instanceof Blob) {
+      if (event.data instanceof ArrayBuffer) arrayBuffer = event.data;
+      else if (event.data instanceof Blob)
         arrayBuffer = await event.data.arrayBuffer();
-      } else {
-        console.error("Unknown data type:", event.data);
-        return;
-      }
+      else return console.warn("Unknown data type:", event.data);
 
-      const dataView = new DataView(arrayBuffer);
-      const float32Array = new Float32Array(arrayBuffer.byteLength / 2);
+      const float32Array = pcm16ToFloat32(new Int16Array(arrayBuffer));
 
-      for (let i = 0; i < float32Array.length; i++) {
-        float32Array[i] = dataView.getInt16(i * 2, true) / 32768;
-      }
-
-      // Push chunk to queue and play
-      pcmQueueRef.current.push(float32Array);
-      if (!isPlayingRef.current) {
-        isPlayingRef.current = true;
-        playQueue();
-      }
+      // Broadcast to all live calls
+      liveCalls.forEach((c) =>
+        c.audioNode.port.postMessage({ float32: float32Array }),
+      );
     };
 
-    return () => ws.close();
-  }, []);
+    return () => {
+      ws.close();
+      liveCalls.forEach((c) => c.audioNode.disconnect());
+    };
+  }, [ready, liveCalls]);
 
-  return <div>Live Twilio Audio Stream</div>;
+  // -----------------------------
+  // Render
+  // -----------------------------
+  return (
+    <div>
+      {!ready ? (
+        <button onClick={startAudio}>🔊 Click to Enable Audio</button>
+      ) : liveCalls.length > 0 ? (
+        <div>
+          {liveCalls.map((c) => (
+            <div key={c.callSid}>📞 Live Call: {c.callSid}</div>
+          ))}
+        </div>
+      ) : (
+        <div>Waiting for call…</div>
+      )}
+    </div>
+  );
 }
 
 export default TwilioStreamPage;

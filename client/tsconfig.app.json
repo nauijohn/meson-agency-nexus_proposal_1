@@ -31,5 +31,5 @@
       "@repo/shadcn-ui/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "public/audio"]
 }

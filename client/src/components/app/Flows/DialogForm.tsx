@@ -5,15 +5,7 @@ import z from "zod";
 
 import MultipleSelectDemo from "@/components/shadcn-studio/select/select-32";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { DialogClose } from "@/components/ui/dialog";
 import {
   Field,
   FieldError,
@@ -32,15 +24,14 @@ import {
 } from "@/services/flow-step-activities/flow-step-activities.api";
 import {
   createFlowStepActivitySchema,
-  type FlowStepActivity,
 } from "@/services/flow-step-activities/flow-step-activities.type";
 import {
   useCreateFlowStepMutation,
+  useDeleteFlowStepMutation,
   useUpdateFlowStepMutation,
 } from "@/services/flow-steps/flow-steps.api";
 import {
   createFlowStepSchema,
-  type FlowStep,
   updateFlowStepSchema,
 } from "@/services/flow-steps/flow-steps.type";
 import {
@@ -54,38 +45,44 @@ import {
 } from "@/services/flows/flows.type";
 import { useForm } from "@tanstack/react-form";
 
+import MesonDialogForm from "../MesonDialogForm";
+
 const formSchema = z.object({
-  id: z.uuid().nullish(),
+  id: z.uuid(),
   name: z.string().min(1, "Flow name is required"),
   steps: z.array(
     z.object({
-      id: z.uuid().nullish(),
-      name: z.string(),
+      id: z.uuid(),
+      name: z.string().min(1, "Flow step name is required"),
       order: z.number(),
-      activities: z.array(z.uuid()),
+      activities: z.array(z.uuid()).min(1, "At least one activity is required"),
     }),
   ),
 });
 
+type FormType = z.infer<typeof formSchema>;
+type FormStep = FormType["steps"][number];
+
+type Props = {
+  isEdit: boolean;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  initialValues: Flow;
+};
+
 const DialogForm = ({
   isEdit = false,
-  showForm = false,
-  setShowForm,
-  initialLoad,
-  setIsEdit,
-}: {
-  isEdit?: boolean;
-  setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
-  showForm?: boolean;
-  setShowForm?: React.Dispatch<React.SetStateAction<boolean>>;
-  initialLoad?: Flow;
-}) => {
+  open = false,
+  setOpen,
+  initialValues,
+}: Props) => {
   const [createFlow, { isError, isSuccess, reset }] = useCreateFlowMutation();
   const [updateFlow] = useUpdateFlowMutation();
   const [updateFlowStep] = useUpdateFlowStepMutation();
   const [createFlowStep] = useCreateFlowStepMutation();
   const [createFlowStepActivity] = useCreateFlowStepActivityMutation();
   const [deleteFlowStepActivity] = useDeleteFlowStepActivityMutation();
+  const [deleteFlowStep] = useDeleteFlowStepMutation();
 
   const { data: flowActivities } = useGetFlowActivitiesQuery();
 
@@ -95,157 +92,159 @@ const DialogForm = ({
   }));
 
   const form = useForm({
-    defaultValues: isEdit
-      ? ({
-          ...initialLoad,
-          steps:
-            initialLoad?.steps.map((step) => ({
-              ...step,
-              activities: step.activities.map(
-                (activity) => activity.activity.id,
-              ),
-            })) || [],
-        } as z.infer<typeof formSchema>)
-      : ({
-          name: "",
-          steps: [
-            {
-              name: "",
-              order: 1,
-              activities: [] as string[],
-            },
-          ],
-        } as z.infer<typeof formSchema>),
+    defaultValues: {
+      ...initialValues,
+      steps:
+        initialValues?.steps.map((step) => ({
+          ...step,
+          activities: step.activities.map((activity) => activity.activity.id),
+        })) || [],
+    },
     validators: {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Form submitted with value:", value);
-
       if (!isEdit) {
-        console.log("NOT EDIT, CREATING FLOW....");
         const result = await createFlow(createFlowSchema.parse(value)).unwrap();
-        // if successful, close the dialog
-        if (result && setShowForm) {
-          setShowForm(false);
+        if (result) {
+          setOpen(false);
           form.reset();
         }
       }
 
       if (isEdit) {
         const steps = value.steps;
+
         const newSteps = steps.filter((step) => !step.id);
-        const existingSteps = steps.filter((step) => step.id);
+        const existingSteps = steps.filter((step) => step.id) || [];
 
-        const originalSteps = initialLoad?.steps || [];
+        const originalSteps = initialValues?.steps || [];
 
-        const flowStepActivitiesToDelete = existingSteps
-          .map((step) => {
-            const originalStep = originalSteps.find((s) => s.id === step.id);
-            if (originalStep) {
-              const removedActivities = originalStep.activities.filter(
-                (originalActivity) =>
-                  !step.activities.includes(originalActivity.activity.id),
-              );
-              return removedActivities.map((activity) => activity.id);
-            }
-            return [];
-          })
-          .flat()
-          .filter(Boolean);
+        // Create a fast lookup map
+        const originalStepMap = new Map(originalSteps.map((s) => [s.id, s]));
 
-        const flowStepActivitiesToCreate = existingSteps
-          .map((step) => {
-            const originalStep = originalSteps.find((s) => s.id === step.id);
-            if (originalStep) {
-              const flowStepActivitiesToCreate: {
-                flowActivityId: string;
-                flowStepId: string;
-              }[] = [];
-              const originalStepActivitiesIds = originalStep.activities.map(
-                (a) => a.activity.id,
-              );
-              step.activities.forEach((activityId) => {
-                if (!originalStepActivitiesIds.includes(activityId)) {
-                  flowStepActivitiesToCreate.push({
-                    flowActivityId: activityId,
-                    flowStepId: step.id!,
-                  });
-                }
+        // -------------------------------------
+        // Calculate activities to DELETE
+        // -------------------------------------
+        const flowStepActivitiesToDelete: string[] = [];
+
+        for (const step of existingSteps) {
+          const originalStep = step.id && originalStepMap.get(step.id);
+          if (!originalStep) continue;
+
+          const removedActivities = originalStep.activities.filter(
+            (origAct) => !step.activities.includes(origAct.activity.id),
+          );
+
+          for (const removed of removedActivities) {
+            flowStepActivitiesToDelete.push(removed.id);
+          }
+        }
+
+        // -------------------------------------
+        // Detect Flow Steps to DELETE
+        // -------------------------------------
+        const removedFlowSteps = originalSteps.filter(
+          (orig) => !existingSteps.some((step) => step.id === orig.id),
+        );
+
+        // Prepare delete promises for removed steps
+        const deleteRemovedFlowStepsPromise = removedFlowSteps.length
+          ? Promise.all(
+              removedFlowSteps.map((step) =>
+                deleteFlowStep(idParamSchema.parse({ id: step.id })).unwrap(),
+              ),
+            )
+          : Promise.resolve([]);
+
+        // -------------------------------------
+        // Calculate activities to CREATE
+        // -------------------------------------
+        const flowStepActivitiesToCreate: {
+          flowActivityId: string;
+          flowStepId: string;
+        }[] = [];
+
+        for (const step of existingSteps) {
+          const originalStep = step.id && originalStepMap.get(step.id);
+          if (!originalStep) continue;
+
+          const originalActivityIds = new Set(
+            originalStep.activities.map((a) => a.activity.id),
+          );
+
+          for (const activityId of step.activities) {
+            if (!originalActivityIds.has(activityId)) {
+              flowStepActivitiesToCreate.push({
+                flowActivityId: activityId,
+                flowStepId: step.id!,
               });
-
-              return flowStepActivitiesToCreate;
             }
-            return [];
-          })
-          .flat()
-          .filter(Boolean);
+          }
+        }
 
+        // -------------------------------------
+        // Promises
+        // -------------------------------------
         const updateFlowPromise = updateFlow(
           updateFlowSchema.parse(value),
         ).unwrap();
 
-        let createNewFlowStepsPromise: Promise<FlowStep[]> = Promise.resolve(
-          [],
-        );
-        if (newSteps.length > 0) {
-          console.log("Creating new flow steps....");
-          createNewFlowStepsPromise = Promise.all(
-            newSteps.map((step) =>
-              createFlowStep(
-                createFlowStepSchema.parse({ ...step, flowId: value.id }),
-              ).unwrap(),
-            ),
-          );
-        }
+        const createNewFlowStepsPromise = newSteps.length
+          ? Promise.all(
+              newSteps.map((step) =>
+                createFlowStep(
+                  createFlowStepSchema.parse({ ...step, flowId: value.id }),
+                ).unwrap(),
+              ),
+            )
+          : Promise.resolve([]);
 
-        let updateExistingFlowStepsPromise: Promise<FlowStep[]> =
-          Promise.resolve([]);
-        if (existingSteps.length > 0) {
-          console.log("Updating existing flow steps....");
-          console.log("Existing Steps to update:", existingSteps);
-          updateExistingFlowStepsPromise = Promise.all(
-            existingSteps.map((step) => {
-              const { activities, ...data } = step;
-              return updateFlowStep(updateFlowStepSchema.parse(data)).unwrap();
-            }),
-          );
-        }
+        const updateExistingFlowStepsPromise = existingSteps.length
+          ? Promise.all(
+              existingSteps.map((step) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { activities, ...data } = step;
+                return updateFlowStep(
+                  updateFlowStepSchema.parse(data),
+                ).unwrap();
+              }),
+            )
+          : Promise.resolve([]);
 
-        let deleteRemovedStepActivitiesPromise: Promise<void[]> =
-          Promise.resolve([]);
-        if (flowStepActivitiesToDelete.length > 0) {
-          console.log("Deleting removed flow step activities....");
-          deleteRemovedStepActivitiesPromise = Promise.all(
-            flowStepActivitiesToDelete.map((id) =>
-              deleteFlowStepActivity(idParamSchema.parse({ id })).unwrap(),
-            ),
-          );
-        }
+        const deleteRemovedStepActivitiesPromise =
+          flowStepActivitiesToDelete.length
+            ? Promise.all(
+                flowStepActivitiesToDelete.map((id) =>
+                  deleteFlowStepActivity(idParamSchema.parse({ id })).unwrap(),
+                ),
+              )
+            : Promise.resolve([]);
 
-        let createStepActivitiesPromise: Promise<FlowStepActivity[]> =
-          Promise.resolve([]);
-        if (flowStepActivitiesToCreate.length > 0) {
-          createStepActivitiesPromise = Promise.all(
-            flowStepActivitiesToCreate.map((c) =>
-              createFlowStepActivity(
-                createFlowStepActivitySchema.parse(c),
-              ).unwrap(),
-            ),
-          );
-        }
+        const createStepActivitiesPromise = flowStepActivitiesToCreate.length
+          ? Promise.all(
+              flowStepActivitiesToCreate.map((c) =>
+                createFlowStepActivity(
+                  createFlowStepActivitySchema.parse(c),
+                ).unwrap(),
+              ),
+            )
+          : Promise.resolve([]);
 
-        const x = await Promise.all([
+        // -------------------------------------
+        // Execute all
+        // -------------------------------------
+        const result = await Promise.all([
           updateFlowPromise,
           updateExistingFlowStepsPromise,
           createNewFlowStepsPromise,
-          deleteRemovedStepActivitiesPromise,
           createStepActivitiesPromise,
+          deleteRemovedStepActivitiesPromise,
+          deleteRemovedFlowStepsPromise,
         ]);
 
-        // if successful, close the dialog
-        if (x && setShowForm) {
-          setShowForm(false);
+        if (result) {
+          setOpen(false);
           form.reset();
         }
       }
@@ -262,52 +261,24 @@ const DialogForm = ({
   });
 
   return (
-    <div>
-      <Dialog
-        open={showForm}
+    <>
+      <MesonDialogForm
+        title={isEdit ? "Edit Flow" : "Create New Flow"}
+        description="Make changes to a flow and its steps here. Click save when you're done."
+        open={open}
         onOpenChange={(open) => {
-          if (setShowForm) {
-            if (!open) {
-              console.log("closing ....");
-              form.reset();
-              reset();
-              if (setIsEdit) setIsEdit(false);
-            }
-
-            setShowForm(open);
-          }
+          setOpen(open);
+          form.reset();
         }}
-      >
-        <DialogTrigger asChild>
-          {/* {isEdit ? (
-            <Button className="cursor-pointer" variant="ghost">
-              Edit Flow
-            </Button>
-          ) : ( */}
-          <Button variant="default">Create New Flow</Button>
-          {/* )} */}
-        </DialogTrigger>
-
-        <DialogContent className="max-h-[60vh] overflow-y-auto">
+        content={
           <form
+            id="flow-form"
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
               form.handleSubmit();
             }}
           >
-            <DialogHeader>
-              {isEdit ? (
-                <DialogTitle className="mb-5">Edit Flow</DialogTitle>
-              ) : (
-                <DialogTitle className="mb-5">Create New Flow</DialogTitle>
-              )}
-              {/* <DialogDescription>
-                Make changes to your profile here. Click save when you&apos;re
-                done.
-              </DialogDescription> */}
-            </DialogHeader>
-
             <FieldGroup>
               {/** Flow Activity Name */}
               <form.Field
@@ -379,8 +350,7 @@ const DialogForm = ({
                               }}
                             />
 
-                            {/** Client */}
-                            {/** activity Ids */}
+                            {/** Flow Activities*/}
                             <form.Field
                               name={`steps[${i}].activities`}
                               mode="array"
@@ -427,50 +397,54 @@ const DialogForm = ({
                           </FieldGroup>
                         );
                       })}
-                      <DialogFooter className="mt-5">
-                        <Button
-                          onClick={() => {
-                            field.pushValue({
-                              name: "",
-                              order: field.state.value.length + 1,
-                              activities: [],
-                            });
-                          }}
-                          type="button"
-                        >
-                          Add Flow Step
-                        </Button>
-
-                        <DialogClose asChild>
-                          <Button variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <form.Subscribe
-                          selector={(state) => [
-                            state.canSubmit,
-                            state.isSubmitting,
-                          ]}
-                          children={() => <Button type="submit">Submit</Button>}
-                        />
-                      </DialogFooter>
                     </>
                   );
                 }}
               </form.Field>
             </FieldGroup>
-            {/* <DialogFooter className="mt-5">
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <form.Subscribe
-                selector={(state) => [state.canSubmit, state.isSubmitting]}
-                children={() => <Button type="submit">Submit</Button>}
-              />
-            </DialogFooter> */}
           </form>
-        </DialogContent>
-      </Dialog>
+        }
+        footerContent={
+          <>
+            <Button
+              type="button"
+              onClick={() => {
+                form.setFieldValue("steps", (prev: FormStep[]) => {
+                  const updated = [
+                    ...prev,
+                    {
+                      id: "",
+                      name: "",
+                      order: prev.length + 1,
+                      activities: [],
+                    },
+                  ];
+
+                  return updated;
+                });
+              }}
+            >
+              Add Flow Step
+            </Button>
+
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={() => (
+                <Button type="submit" form="flow-form">
+                  Submit
+                </Button>
+              )}
+            />
+          </>
+        }
+      />
+
       <Toaster duration={3000} />
-    </div>
+    </>
   );
 };
 

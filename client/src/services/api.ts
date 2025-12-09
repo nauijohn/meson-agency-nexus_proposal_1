@@ -22,6 +22,7 @@ export const API_TAGS = {
   CAMPAIGNS: "Campaigns",
   CAMPAIGN_FLOW_STEPS: "CampaignFlowSteps",
   AUTH: "Auth",
+  CLIENTS: "Clients",
 };
 
 export const HttpMethods = {

@@ -1,8 +1,5 @@
-import api, {
-  API_TAGS,
-  HttpMethods,
-} from "../api";
-import { type PaginationArgs } from "../base.type";
+import api, { API_TAGS, HttpMethods } from "../api";
+import { type IdParam, type PaginationArgs } from "../base.type";
 import type {
   CreateFlowStep,
   FlowStep,
@@ -42,10 +39,22 @@ const flowStepsApi = api.injectEndpoints({
         };
       },
     }),
+    deleteFlowStep: builder.mutation<void, IdParam>({
+      invalidatesTags: [API_TAGS.CAMPAIGN_FLOW_STEPS, API_TAGS.FLOWS],
+      query: ({ id }) => {
+        return {
+          url: URL({ id }),
+          method: HttpMethods.DELETE,
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreateFlowStepMutation, useUpdateFlowStepMutation } =
-  flowStepsApi;
+export const {
+  useCreateFlowStepMutation,
+  useUpdateFlowStepMutation,
+  useDeleteFlowStepMutation,
+} = flowStepsApi;
 
 export default flowStepsApi;

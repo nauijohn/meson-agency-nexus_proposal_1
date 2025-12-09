@@ -54,6 +54,7 @@ export default function TableData<T>({
   filterBy,
   paginationMeta,
   hoverContent,
+  dialogFormTrigger,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
@@ -62,6 +63,7 @@ export default function TableData<T>({
     setPage?: (page: number) => void;
   };
   hoverContent?: React.ReactNode;
+  dialogFormTrigger?: React.ReactNode;
 }) {
   // const [currIndexPage, setCurrIndexPage] = React.useState(0);
   // const currPage = React.useRef<HTMLAnchorElement>(null);
@@ -98,7 +100,8 @@ export default function TableData<T>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-2 py-4">
+        {dialogFormTrigger}
         {filterBy && (
           <Input
             placeholder="Filter emails..."
@@ -145,7 +148,7 @@ export default function TableData<T>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-center">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -165,6 +168,7 @@ export default function TableData<T>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
+                    className="text-center"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

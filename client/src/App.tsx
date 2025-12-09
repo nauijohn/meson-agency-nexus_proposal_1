@@ -10,10 +10,14 @@ import { layoutLoader } from "./loaders/layout.loader";
 import Admin from "./pages/Admin";
 import Admin2 from "./pages/Admin2";
 import AdminHome from "./pages/AdminHome";
+import Campaigns from "./pages/Campaigns";
+import Clients from "./pages/Clients";
 import Flows from "./pages/Flows";
+import FormTest from "./pages/FormTest";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import TwilioStreamPage from "./pages/TwilioStream";
+import TwilioStreamLive from "./pages/TwilioStreamLive";
 
 const router = createBrowserRouter([
   {
@@ -66,6 +70,22 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/campaigns",
+        element: (
+          <ProtectedRoute>
+            <Campaigns />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/clients",
+        element: (
+          <ProtectedRoute>
+            <Clients />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/twilio-stream",
         element: <TwilioStreamPage />,
       },
@@ -75,6 +95,11 @@ const router = createBrowserRouter([
     path: "/twilio-stream",
     element: <TwilioStreamPage />,
   },
+  {
+    path: "/twilio-stream2",
+    element: <TwilioStreamLive />,
+  },
+  { path: "/form-test", element: <FormTest /> },
   { path: "/login", element: <Login /> },
 ]);
 

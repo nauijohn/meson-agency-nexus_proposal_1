@@ -5,29 +5,28 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 
-import DialogForm from "@/components/app/Flows/DialogForm";
+import DialogForm from "@/components/app/Clients/DialogForm";
 import TableActionDropdown from "@/components/app/TableActionDropdown";
 import TableData from "@/components/app/TableData";
 import Typography from "@/components/typography/Typography";
 import { Button } from "@/components/ui/button";
-import { useGetFlowsQuery } from "@/services/flows/flows.api";
-import { type Flow } from "@/services/flows/flows.type";
+import { useGetClientsQuery } from "@/services/clients/clients.api";
+import type { Client } from "@/services/clients/clients.type";
 import type { ColumnDef } from "@tanstack/react-table";
 
-const initialValues: Flow = {
+const init: Client = {
   id: "",
   name: "",
-  steps: [],
 };
 
-const Flows = () => {
+const Clients = () => {
   const [open, setOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [defaultValues, setDefaultValues] = useState<Flow>(initialValues);
+  const [initialValues, setInitialValues] = useState(init);
   const [page, setPage] = useState(1);
-  const { data } = useGetFlowsQuery({ page });
+  const { data } = useGetClientsQuery({ page });
 
-  const columns: ColumnDef<Flow>[] = [
+  const columns: ColumnDef<Client>[] = [
     {
       accessorKey: "name",
       header: ({ column }) => {
@@ -44,15 +43,6 @@ const Flows = () => {
       cell: ({ row }) => (
         <div className="lowercase">{row.getValue("name") ?? ""}</div>
       ),
-    },
-
-    {
-      accessorKey: "steps",
-      header: "Steps",
-      cell: ({ row }) => {
-        const steps: Array<object> = row.getValue("steps");
-        return <div className="font-medium">{steps.length}</div>;
-      },
     },
 
     {
@@ -88,7 +78,7 @@ const Flows = () => {
                 onClick: () => {
                   setOpen(true);
                   setIsEdit(true);
-                  setDefaultValues(row.original);
+                  setInitialValues(row.original);
                 },
               },
             ]}
@@ -100,34 +90,17 @@ const Flows = () => {
 
   return (
     <section className="flex flex-col gap-5 mx-auto pt-5 w-full h-full container">
-      <Typography.H1>Flows</Typography.H1>
+      <Typography.H1>Clients</Typography.H1>
 
       <TableData
         data={data?.items || []}
         columns={columns}
         paginationMeta={{ ...data, setPage }}
-        // hoverContent={
-        //   <div className="flex justify-between gap-4">
-        //     <Avatar>
-        //       <AvatarImage src="https://github.com/vercel.png" />
-        //       <AvatarFallback>VC</AvatarFallback>
-        //     </Avatar>
-        //     <div className="space-y-1">
-        //       <h4 className="font-semibold text-sm">@nextjs</h4>
-        //       <p className="text-sm">
-        //         The React Framework – created and maintained by @vercel.
-        //       </p>
-        //       <div className="text-muted-foreground text-xs">
-        //         Joined December 2021
-        //       </div>
-        //     </div>
-        //   </div>
-        // }
         dialogFormTrigger={
           <Button
             onClick={() => {
               setOpen(true);
-              setDefaultValues(initialValues);
+              setInitialValues(init);
             }}
           >
             Create
@@ -139,10 +112,10 @@ const Flows = () => {
         isEdit={isEdit}
         open={open}
         setOpen={setOpen}
-        initialValues={defaultValues}
+        initialValues={initialValues}
       />
     </section>
   );
 };
 
-export default Flows;
+export default Clients;
